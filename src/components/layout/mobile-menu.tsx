@@ -8,6 +8,7 @@
 import { ArrowRightIcon, ChevronDownIcon, MenuIcon, MessageCircleIcon, XIcon } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { ProductLogo } from "@/components/product-logo";
 import { Button } from "@/components/ui/button";
 import { PRODUCTS } from "@/content/products";
 import { whatsappLink } from "@/lib/site";
@@ -77,9 +78,7 @@ export function MobileMenu() {
                         onClick={close}
                         className={`product-${product.slug} flex items-center gap-3 rounded-2xl p-3 hover:bg-muted`}
                       >
-                        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-product-soft text-product">
-                          <product.icon className="size-5" />
-                        </span>
+                        <ProductLogo src={product.logo} className="size-10 rounded-xl" />
                         <span className="flex flex-col">
                           <span className="text-sm font-semibold">{product.name}</span>
                           <span className="text-xs text-muted-foreground">{product.tagline}</span>

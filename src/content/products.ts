@@ -17,11 +17,9 @@ import {
   NotebookPenIcon,
   PiggyBankIcon,
   ReceiptIcon,
-  ReceiptTextIcon,
   ScanLineIcon,
   ShoppingCartIcon,
   SheetIcon,
-  StoreIcon,
   TruckIcon,
   UserLockIcon,
   WalletIcon,
@@ -36,8 +34,8 @@ export type PlanMonths = 1 | 6 | 12;
 export type Product = {
   slug: ProductSlug;
   name: string;
-  // Ikon di menu Produk dan kartu produk.
-  icon: LucideIcon;
+  // Logo aplikasi (file di public/brand) untuk menu Produk dan kartu produk.
+  logo: string;
   tagline: string;
   // Satu kalimat untuk kartu produk & meta description.
   summary: string;
@@ -108,10 +106,10 @@ function archipayPlanPrice(months: PlanMonths, monthlyBase: number = ARCHIPAY_PR
 export const ARCHIPAY: Product = {
   slug: "archipay",
   name: "ArchiPay",
-  icon: ReceiptTextIcon,
+  logo: "/brand/archipay-icon.png",
   tagline: "Pengeluaran & keuntungan per project",
   summary:
-    "Catat uang muka dan nota karyawan per project, lihat keuntungan dan margin secara langsung, lalu unduh laporan PDF per project dalam satu klik.",
+    "Catat uang muka dan nota karyawan per project, lihat keuntungan dan margin secara langsung, lalu unduh laporan PDF atau daftar nota Excel per project dalam satu klik.",
   appUrl: "https://archipay.realitech.id",
   audiences: ["Kontraktor & developer", "Konsultan arsitek & interior", "Event organizer", "Bisnis berbasis project"],
   hero: {
@@ -161,7 +159,8 @@ export const ARCHIPAY: Product = {
     {
       icon: FileTextIcon,
       title: "Laporan PDF per project",
-      description: "Ringkasan keuangan, rincian per kategori dan karyawan, serta daftar nota yang disetujui dalam satu dokumen.",
+      description:
+        "Ringkasan keuangan, rincian per kategori dan karyawan, serta daftar nota yang disetujui dalam satu dokumen. Daftar nota juga bisa diunduh sebagai Excel untuk diolah akuntan.",
     },
     {
       icon: BellRingIcon,
@@ -211,6 +210,7 @@ export const ARCHIPAY: Product = {
       "Hanya Owner yang dapat mengunduh laporan.",
       "Keuntungan berlabel sementara selama project aktif, dan final setelah project ditandai selesai.",
       "Foto nota tidak ikut dicetak di PDF.",
+      "Daftar nota juga bisa diunduh sebagai Excel (urut tanggal nota, nomor laporan, lalu nomor uang muka) beserta rekap per kategori dan ringkasan, siap diolah akuntan.",
     ],
   },
   addons: {
@@ -256,6 +256,11 @@ export const ARCHIPAY: Product = {
         "Tidak harus lewat Play Store atau App Store. ArchiPay berbentuk PWA: bisa dipasang di layar utama HP dan tampil layar penuh seperti aplikasi biasa, atau cukup dibuka lewat browser. Login dengan email dan password. Setiap pengguna perlu memiliki nomor WhatsApp aktif, karena nomornya diverifikasi dengan kode OTP.",
     },
     {
+      question: "Apakah ArchiPay pengganti software akuntansi? Bisa dipakai untuk akuntan?",
+      answer:
+        "Bukan pengganti. ArchiPay mengurus uang project harian: uang muka, nota, pertanggungjawaban, dan keuntungan per project. Daftar nota yang disetujui bisa diunduh sebagai file Excel (lengkap dengan rekap per kategori) untuk diolah akuntan atau dimasukkan ke software akuntansi Anda. Belum ada sambungan otomatis ke software akuntansi.",
+    },
+    {
       question: "Siapa yang bisa melihat nilai kontrak, keuntungan, dan laporan PDF?",
       answer: "Hanya Owner. Finance dan karyawan hanya melihat data uang muka sesuai perannya.",
     },
@@ -288,7 +293,7 @@ export const ARCHIPAY: Product = {
 export const SAKUDAGANG: Product = {
   slug: "sakudagang",
   name: "SakuDagang",
-  icon: StoreIcon,
+  logo: "/brand/sakudagang-icon.png",
   tagline: "Kasir, stok & laba toko",
   summary:
     "Kasir di HP, stok otomatis, bon pelanggan, dan laporan laba yang memisahkan uang modal dari uang yang boleh Anda ambil.",

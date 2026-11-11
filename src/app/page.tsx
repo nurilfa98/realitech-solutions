@@ -7,12 +7,15 @@ import {
   CheckIcon,
   HeadsetIcon,
   MessageCircleIcon,
+  ReceiptTextIcon,
   ShieldCheckIcon,
   SmartphoneIcon,
+  TargetIcon,
   type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { ProductMockup } from "@/components/mockups/product-mockup";
+import { ProductLogo } from "@/components/product-logo";
 import { CtaBand } from "@/components/sections/cta-band";
 import { FaqList } from "@/components/sections/faq-list";
 import { HeroBackdrop } from "@/components/sections/hero-backdrop";
@@ -25,15 +28,25 @@ const CONSULT_MESSAGE = "Halo Realitech, saya ingin konsultasi kebutuhan aplikas
 
 const STRENGTHS: { icon: LucideIcon; title: string; description: string }[] = [
   {
+    icon: TargetIcon,
+    title: "Sederhana, langsung ke intinya",
+    description: "Satu aplikasi untuk satu masalah. Tanpa menu rumit, tanpa pelatihan panjang.",
+  },
+  {
     icon: SmartphoneIcon,
     title: "Pasang di layar HP",
     description:
-      "Berbentuk PWA: bisa dipasang di layar utama dan tampil layar penuh seperti aplikasi biasa, tanpa Play Store atau App Store. Di laptop cukup dibuka dari browser.",
+      "Berbentuk PWA: bisa dipasang di layar utama dan tampil layar penuh seperti aplikasi biasa, tanpa Play Store atau App Store.",
   },
   {
     icon: MessageCircleIcon,
     title: "Terhubung WhatsApp",
     description: "Pengingat dan notifikasi penting langsung masuk ke WhatsApp.",
+  },
+  {
+    icon: ReceiptTextIcon,
+    title: "Harga jelas",
+    description: "Paket dan harga ditampilkan terbuka, tanpa biaya tersembunyi. Coba gratis dulu sebelum berlangganan.",
   },
   {
     icon: ShieldCheckIcon,
@@ -63,7 +76,7 @@ const FAQ = [
   {
     question: "Apa itu PWA? Apakah harus lewat Play Store?",
     answer:
-      "PWA (Progressive Web App) adalah aplikasi web yang bisa dipasang di layar utama HP dan dibuka seperti aplikasi biasa, lengkap dengan ikon sendiri dan tampilan layar penuh. Tidak perlu lewat Play Store atau App Store. Di Android pilih \"Install app\" di browser, di iPhone pilih \"Tambahkan ke Layar Utama\" lewat Safari. Di laptop cukup dibuka dari browser.",
+      "PWA (Progressive Web App) adalah aplikasi web yang bisa dipasang di layar utama HP dan dibuka seperti aplikasi biasa, lengkap dengan ikon sendiri dan tampilan layar penuh. Tidak perlu lewat Play Store atau App Store. Di Android pilih \"Install app\" di browser, di iPhone pilih \"Tambahkan ke Layar Utama\" lewat Safari.",
   },
   {
     question: "Apakah perlu membeli perangkat khusus?",
@@ -149,9 +162,7 @@ export default function HomePage() {
               </div>
               <div className="flex flex-1 flex-col gap-4 p-6 sm:p-8">
                 <div className="flex items-center gap-3">
-                  <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-product-soft text-product">
-                    <product.icon className="size-5" />
-                  </span>
+                  <ProductLogo src={product.logo} className="size-12 rounded-[1.1rem] shadow-sm" />
                   <div>
                     <h3 className="text-xl font-semibold tracking-tight">{product.name}</h3>
                     <p className="text-sm text-muted-foreground">{product.tagline}</p>
@@ -170,7 +181,7 @@ export default function HomePage() {
                     Pelajari {product.name}
                     <ArrowRightIcon />
                   </Button>
-                  <Button size="lg" variant="outline" nativeButton={false} render={<a href={product.appUrl} />}>
+                  <Button size="lg" variant="outline" nativeButton={false} render={<a href={product.appUrl} target="_blank" rel="noopener noreferrer" />}>
                     Masuk
                   </Button>
                 </div>
@@ -184,10 +195,10 @@ export default function HomePage() {
       <Section className="bg-card">
         <SectionHeading
           eyebrow={`Kenapa ${SITE.shortName}`}
-          title="Dibuat untuk cara kerja usaha di Indonesia"
+          title="Aplikasi sederhana yang langsung menyelesaikan masalah usaha Anda"
           description="Bahasa Indonesia, rupiah, WhatsApp, dan HP sebagai perangkat utama."
         />
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {STRENGTHS.map((item) => (
             <div key={item.title} className="flex flex-col gap-3 rounded-3xl border bg-background p-6 transition duration-300 hover:shadow-md">
               <div className="flex size-11 items-center justify-center rounded-2xl bg-brand-soft text-brand">

@@ -53,7 +53,7 @@ export function ProductPage({ product }: { product: Product }) {
                 <MessageCircleIcon />
                 Coba gratis {product.trialDays} hari
               </Button>
-              <Button size="xl" variant="outline" nativeButton={false} render={<a href={product.appUrl} />}>
+              <Button size="xl" variant="outline" nativeButton={false} render={<a href={product.appUrl} target="_blank" rel="noopener noreferrer" />}>
                 <LogInIcon />
                 Masuk
               </Button>
@@ -126,7 +126,7 @@ export function ProductPage({ product }: { product: Product }) {
 
       {/* Fitur */}
       <Section id="fitur">
-        <SectionHeading eyebrow="Fitur" title="Semua yang dibutuhkan, tanpa yang tidak perlu" />
+        <SectionHeading eyebrow="Fitur" title="Hanya yang Anda butuhkan, langsung ke intinya" />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {product.features.map((feature) => (
             <div key={feature.title} className="flex flex-col gap-3 rounded-3xl border bg-card p-6">

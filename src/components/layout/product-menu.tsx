@@ -5,6 +5,7 @@
 
 import { ArrowRightIcon, ChevronDownIcon } from "lucide-react";
 import Link from "next/link";
+import { ProductLogo } from "@/components/product-logo";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -29,9 +30,7 @@ export function ProductMenu() {
             render={<Link href={`/${product.slug}`} />}
             className={`product-${product.slug} items-start gap-3 rounded-xl p-3`}
           >
-            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-product-soft text-product">
-              <product.icon className="size-5" />
-            </span>
+            <ProductLogo src={product.logo} className="size-10 rounded-xl" />
             <span className="flex flex-col gap-0.5">
               <span className="text-sm font-semibold">{product.name}</span>
               <span className="text-xs whitespace-normal text-muted-foreground">{product.tagline}</span>

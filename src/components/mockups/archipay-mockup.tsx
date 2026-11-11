@@ -62,7 +62,7 @@ export function ArchiPayMockup({ className }: { className?: string }) {
           </div>
 
           <div className="rounded-xl border">
-            <p className="border-b px-3 py-2 text-xs font-medium text-muted-foreground">PJ-2026-10-0009 · Siti Rahma</p>
+            <p className="border-b px-3 py-2 text-xs font-medium text-muted-foreground">PJ-2026-10-009 · Siti Rahma</p>
             <ul className="divide-y">
               {NOTES.map((note) => (
                 <li key={note.label} className="flex items-center gap-3 px-3 py-2">
@@ -84,7 +84,7 @@ export function ArchiPayMockup({ className }: { className?: string }) {
           <BellRingIcon className="size-3.5" />
         </div>
         <p>
-          <span className="font-semibold">WhatsApp:</span> Batas unggah nota UM-2026-11-0012 tinggal 1 hari.
+          <span className="font-semibold">WhatsApp:</span> Batas unggah nota UM-2026-11-012 tinggal 1 hari.
         </p>
       </div>
     </div>
