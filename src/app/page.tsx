@@ -79,7 +79,7 @@ const FAQ = [
   {
     question: "Apa yang terjadi bila langganan berakhir?",
     answer:
-      "Ada masa tenggang beberapa hari dengan pengingat. Setelah itu akses dikunci sementara dan data tetap tersimpan sampai langganan diperpanjang.",
+      "Pelanggan berbayar mendapat masa tenggang beberapa hari dengan pengingat. Setelah itu akses dikunci sementara, dan data tetap tersimpan sampai langganan diperpanjang. Pada masa coba gratis, akses langsung terkunci begitu masa coba habis.",
   },
 ];
 
@@ -95,7 +95,8 @@ export default function HomePage() {
           className="absolute inset-x-0 top-0 -z-10 h-[32rem] bg-linear-to-b from-brand-soft to-transparent"
         />
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-8 px-4 pt-16 pb-12 text-center sm:pt-24">
-          <p className="rounded-full border bg-background px-3 py-1 text-xs font-medium text-muted-foreground">
+          <p className="flex items-center gap-2 rounded-full border bg-background px-3 py-1 text-xs font-medium text-muted-foreground">
+            <span aria-hidden="true" className="size-1.5 rounded-full bg-brand-accent" />
             Aplikasi bisnis buatan Indonesia
           </p>
           <h1 className="max-w-3xl text-4xl font-semibold tracking-tight text-balance sm:text-6xl">

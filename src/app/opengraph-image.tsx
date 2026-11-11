@@ -9,6 +9,6 @@ export default function Image() {
   return renderOgImage({
     eyebrow: "ArchiPay · SakuDagang",
     title: "Rapikan uang dan operasional usaha Anda, mulai dari HP",
-    color: "#0d9488",
+    color: "#0b2545",
   });
 }

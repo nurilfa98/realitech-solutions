@@ -37,7 +37,7 @@ src/
 │   ├── archipay/, sakudagang/   # Halaman produk + gambar OG masing-masing
 │   ├── kebijakan-privasi/, syarat-layanan/
 │   ├── sitemap.ts, robots.ts, icon.svg, opengraph-image.tsx
-│   └── globals.css              # Warna Realitech (teal) & warna tiap produk
+│   └── globals.css              # Warna Realitech (navy + amber) & warna tiap produk
 ├── components/
 │   ├── layout/                  # Header, footer (id="kontak"), logo, menu
 │   ├── sections/                # Judul bagian, harga, FAQ, ajakan bertindak

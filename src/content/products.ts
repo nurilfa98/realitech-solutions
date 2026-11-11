@@ -7,7 +7,6 @@
 // fitur yang belum dibuat.
 
 import {
-  BadgeCheckIcon,
   BellRingIcon,
   BoxesIcon,
   ChartColumnIcon,
@@ -15,12 +14,10 @@ import {
   FileClockIcon,
   FileTextIcon,
   FolderKanbanIcon,
-  HandCoinsIcon,
   NotebookPenIcon,
   PiggyBankIcon,
   ReceiptIcon,
   ScanLineIcon,
-  ShieldCheckIcon,
   ShoppingCartIcon,
   SheetIcon,
   TruckIcon,
@@ -50,130 +47,231 @@ export type Product = {
   steps: { title: string; description: string }[];
   // Harga total per periode dalam rupiah. null = belum diumumkan
   // (tampil "Hubungi kami"). TODO: isi harga sebelum web dipublikasikan.
-  plans: { months: PlanMonths; price: number | null }[];
+  // normalPrice (opsional) = harga normal yang dicoret saat `price` adalah harga perkenalan.
+  plans: { months: PlanMonths; price: number | null; normalPrice?: number | null }[];
+  // Model harga per pengguna (bila ada): ditampilkan di bawah kartu paket.
+  pricing?: {
+    basePrice: number;
+    // Harga normal per bulan di masa depan; bila ada, harga basePrice tampil sebagai harga perkenalan.
+    normalBasePrice?: number;
+    includedUsers: number;
+    extraUserPrice: number;
+    discountPercent: { 6: number; 12: number };
+    addons: { name: string; pricePerUserMonth: number }[];
+  };
+  // Bagian khusus hasil akhir (mis. laporan PDF). Opsional.
+  report?: {
+    eyebrow: string;
+    title: string;
+    description: string;
+    contents: { title: string; description: string }[];
+    notes: string[];
+  };
+  // Add-on opsional (harga per pengguna ada di `pricing.addons`, dicocokkan lewat nama).
+  addons?: {
+    title: string;
+    description: string;
+    items: { name: string; description: string; points: string[] }[];
+  };
   // Lama masa coba gratis (hari). TODO: sesuaikan dengan aplikasi.
   trialDays: number;
   faq: { question: string; answer: string }[];
 };
 
+// Model harga ArchiPay, sama dengan aplikasi (docs/BUSINESS-FLOW.md bagian 17.1 & 17.6):
+//   harga per bulan = harga dasar + max(0, pengguna - termasuk) x harga per pengguna tambahan
+//   paket N bulan   = harga per bulan x N x (100 - diskon N bulan) / 100
+// Angka dicocokkan dengan halaman Langganan aplikasi (10 Nov 2026): harga normal Rp299.000 untuk 10 pengguna,
+// harga perkenalan Rp199.000 (di aplikasi: "Harga khusus" per company), tambahan pengguna Rp10.000,
+// add-on Absensi Rp7.500 dan Penggajian Rp5.000 per pengguna per bulan, diskon 10% (6 bln) dan 20% (1 thn).
+const ARCHIPAY_PRICING: NonNullable<Product["pricing"]> = {
+  basePrice: 199_000,
+  normalBasePrice: 299_000,
+  includedUsers: 10,
+  extraUserPrice: 10_000,
+  discountPercent: { 6: 10, 12: 20 },
+  addons: [
+    { name: "Absensi", pricePerUserMonth: 7_500 },
+    { name: "Penggajian", pricePerUserMonth: 5_000 },
+  ],
+};
+
+function archipayPlanPrice(months: PlanMonths, monthlyBase: number = ARCHIPAY_PRICING.basePrice) {
+  const discount = months === 1 ? 0 : ARCHIPAY_PRICING.discountPercent[months];
+  return Math.round((monthlyBase * months * (100 - discount)) / 100);
+}
+
 export const ARCHIPAY: Product = {
   slug: "archipay",
   name: "ArchiPay",
-  tagline: "Kontrol uang muka & keuntungan per project",
+  tagline: "Pengeluaran & keuntungan per project",
   summary:
-    "Uang muka (kasbon) karyawan, nota, dan pertanggungjawaban tercatat rapi per project, sehingga Anda tahu persis berapa pengeluaran dan keuntungan setiap project.",
+    "Catat uang muka dan nota karyawan per project, lihat keuntungan dan margin secara langsung, lalu unduh laporan PDF per project dalam satu klik.",
   appUrl: "https://archipay.realitech.id",
   audiences: ["Kontraktor & developer", "Konsultan arsitek & interior", "Event organizer", "Bisnis berbasis project"],
   hero: {
-    title: "Setiap rupiah uang muka karyawan jelas ke mana perginya",
+    title: "Tahu untung-rugi setiap project, dari nota lapangan sampai laporan PDF",
     description:
-      "ArchiPay mencatat uang muka per project dari pencairan sampai nota terakhir diverifikasi. Sisa dana kembali tepat waktu, dan Anda melihat keuntungan setiap project tanpa rekap manual.",
+      "ArchiPay mencatat setiap uang muka dan nota karyawan per project. Pengeluaran yang sudah diverifikasi langsung masuk ke perhitungan keuntungan, dan laporan PDF per project siap diunduh kapan saja.",
   },
   problems: [
     {
-      problem: "Kasbon karyawan hanya dicatat di buku atau chat WhatsApp, sulit dilacak siapa memegang berapa.",
-      solution: "Setiap uang muka punya nomor, penerima, project, dan saldo yang dihitung otomatis.",
+      problem: "Pengeluaran project tersebar di chat WhatsApp, buku catatan, dan tumpukan nota.",
+      solution: "Setiap uang muka dan nota tercatat per project: siapa yang memegang, untuk apa, berapa, lengkap dengan foto bukti.",
     },
     {
-      problem: "Nota hilang, terlambat dilaporkan, atau ditumpuk sampai akhir bulan.",
-      solution: "Karyawan memotret nota langsung dari HP, dengan batas waktu dan pengingat WhatsApp otomatis.",
+      problem: "Untung atau rugi project baru ketahuan setelah project selesai.",
+      solution: "Beranda Owner menampilkan nilai kontrak, pengeluaran, keuntungan, dan margin tiap project, dengan tanda peringatan saat pengeluaran mencapai 80% nilai kontrak.",
     },
     {
-      problem: "Sisa uang muka tidak pernah kembali, atau kekurangan karyawan tidak terganti.",
-      solution: "Selisih dihitung otomatis: sisa wajib dikembalikan, kekurangan diganti, yang lewat batas masuk daftar potong gaji.",
+      problem: "Nota terlambat dikumpulkan, sisa uang muka tidak kembali, kekurangan karyawan tidak terganti.",
+      solution: "Ada batas waktu dan pengingat WhatsApp otomatis. Selisih dihitung sistem, dan sisa yang lewat batas masuk daftar potong gaji.",
     },
     {
-      problem: "Untung atau rugi sebuah project baru ketahuan setelah project selesai.",
-      solution: "Beranda Owner menampilkan nilai kontrak, pengeluaran, keuntungan, dan margin per project secara langsung.",
+      problem: "Laporan pengeluaran per project disusun manual di Excel setiap akhir project.",
+      solution: "Laporan PDF per project dibuat otomatis dari data nota yang sudah diverifikasi.",
     },
   ],
   features: [
     {
       icon: FolderKanbanIcon,
       title: "Uang muka per project",
-      description: "Owner mencairkan langsung, Finance mengusulkan, atau karyawan mengajukan sendiri dengan persetujuan Owner.",
-    },
-    {
-      icon: BadgeCheckIcon,
-      title: "Konfirmasi terima dana",
-      description: "Karyawan mengonfirmasi dana yang diterima beserta pernyataan pertanggungjawabannya, tersimpan sebagai bukti.",
+      description: "Owner mencairkan langsung, Finance mengusulkan, atau karyawan mengajukan dengan persetujuan Owner. Selalu terikat ke satu project.",
     },
     {
       icon: ScanLineIcon,
       title: "Nota dari HP",
-      description: "Foto atau PDF nota diunggah dari HP dan dikompres otomatis. Biaya kecil tanpa nota cukup diberi alasan.",
+      description: "Karyawan memotret nota dan mengunggahnya dari HP. Biaya kecil seperti parkir boleh tanpa nota, cukup diberi alasan.",
     },
     {
       icon: ClipboardCheckIcon,
       title: "Verifikasi nota",
-      description: "Finance atau Owner menyetujui atau menolak tiap nota, dan bisa mengembalikan laporan untuk diperbaiki.",
-    },
-    {
-      icon: WalletIcon,
-      title: "Saldo otomatis",
-      description: "Pengembalian sisa dana dan penggantian kekurangan dicatat di buku besar, saldo selalu cocok.",
-    },
-    {
-      icon: BellRingIcon,
-      title: "Pengingat WhatsApp",
-      description: "Pengingat otomatis sebelum batas unggah nota dan batas pengembalian sisa dana.",
-    },
-    {
-      icon: HandCoinsIcon,
-      title: "Potong gaji",
-      description: "Sisa dana yang tidak dikembalikan tepat waktu masuk daftar potong gaji dan bisa diekspor ke Excel.",
+      description: "Finance atau Owner menyetujui atau menolak tiap nota, atau mengembalikan laporan untuk diperbaiki. Hanya nota yang disetujui dihitung sebagai pengeluaran.",
     },
     {
       icon: ChartColumnIcon,
-      title: "Keuntungan per project",
-      description: "Nilai kontrak, pengeluaran per kategori dan per bulan, keuntungan, margin, serta dana yang masih beredar.",
+      title: "Keuntungan & margin per project",
+      description: "Nilai kontrak, pengeluaran per kategori dan per bulan, keuntungan, margin, serta dana uang muka yang masih beredar.",
     },
     {
       icon: FileTextIcon,
       title: "Laporan PDF per project",
-      description: "Ringkasan, rincian per kategori & karyawan, dan daftar nota dalam satu dokumen siap dibagikan.",
+      description: "Ringkasan keuangan, rincian per kategori dan karyawan, serta daftar nota yang disetujui dalam satu dokumen.",
+    },
+    {
+      icon: BellRingIcon,
+      title: "Pengingat WhatsApp",
+      description: "Karyawan diingatkan sebelum batas unggah nota dan batas pengembalian sisa dana. Karyawan yang masih menunggak tidak bisa menerima uang muka baru.",
+    },
+    {
+      icon: WalletIcon,
+      title: "Saldo & potong gaji",
+      description: "Sisa dana dan kekurangan dihitung otomatis. Setiap perpindahan dana tercatat sebagai baris baru di riwayat saldo dan tidak pernah diubah. Sisa yang tidak dikembalikan tepat waktu bisa diekspor ke Excel untuk potong gaji.",
+    },
+    {
+      icon: UserLockIcon,
+      title: "Hak akses per peran",
+      description: "Nilai kontrak dan keuntungan hanya terlihat oleh Owner. Finance dan karyawan hanya melihat bagiannya.",
     },
     {
       icon: FileClockIcon,
       title: "Audit log",
       description: "Riwayat siapa melakukan apa dan kapan, lengkap dengan data sebelum dan sesudah perubahan.",
     },
-    {
-      icon: UserLockIcon,
-      title: "Hak akses per peran",
-      description: "Owner, Finance, dan Karyawan hanya melihat dan melakukan yang menjadi bagiannya.",
-    },
-    {
-      icon: ShieldCheckIcon,
-      title: "Batas kasbon tertunda",
-      description: "Karyawan yang masih menunggak pertanggungjawaban tidak bisa menerima uang muka baru.",
-    },
   ],
+  report: {
+    eyebrow: "Hasil akhirnya",
+    title: "Laporan PDF per project, siap dalam satu klik",
+    description:
+      "Unduh kapan saja dengan data terbaru, tanpa rekap manual. Cocok untuk evaluasi project, arsip, dan rapat dengan tim.",
+    contents: [
+      {
+        title: "Ringkasan keuangan",
+        description: "Nilai kontrak, pengeluaran disetujui, keuntungan dan margin, sisa nilai kontrak, serta dana yang masih beredar.",
+      },
+      {
+        title: "Per kategori & per bulan",
+        description: "Ke mana uang paling banyak keluar, dan bagaimana laju pengeluaran dari bulan ke bulan.",
+      },
+      {
+        title: "Per karyawan",
+        description: "Uang muka yang dicairkan, pengeluaran yang disetujui, dan sisa dana tiap karyawan.",
+      },
+      {
+        title: "Daftar nota yang disetujui",
+        description: "Tanggal, nomor laporan, karyawan, kategori, keterangan, dan jumlah. Biaya tanpa nota ditandai.",
+      },
+    ],
+    notes: [
+      "Hanya Owner yang dapat mengunduh laporan.",
+      "Keuntungan berlabel sementara selama project aktif, dan final setelah project ditandai selesai.",
+      "Foto nota tidak ikut dicetak di PDF.",
+    ],
+  },
+  addons: {
+    title: "Perlu absensi dan penggajian juga? Aktifkan sebagai add-on",
+    description:
+      "Fitur utama ArchiPay tetap pengeluaran dan margin project. Absensi dan Penggajian bersifat opsional, jadi Anda hanya membayar yang dipakai. Keduanya ikut aktif selama masa coba gratis.",
+    items: [
+      {
+        name: "Absensi",
+        description: "Kehadiran tim lapangan tercatat dengan bukti foto dan lokasi.",
+        points: ["Absen masuk dan pulang dengan selfie + GPS", "Cuti dan izin dengan persetujuan Owner", "Denda keterlambatan masuk ke daftar potong gaji"],
+      },
+      {
+        name: "Penggajian",
+        description: "Gaji bulanan dihitung dari data yang sudah ada di ArchiPay.",
+        points: ["Data gaji per karyawan", "Penggajian bulanan dengan potongan uang muka dan denda", "Slip Gaji dalam bentuk PDF"],
+      },
+    ],
+  },
   steps: [
     { title: "Uang muka dicairkan", description: "Owner atau Finance mencatat pencairan untuk karyawan di sebuah project." },
     { title: "Karyawan konfirmasi", description: "Karyawan menerima WhatsApp dan mengonfirmasi dana yang diterima." },
     { title: "Nota diunggah", description: "Setiap belanja difoto dari HP, lalu laporan dikirim sebelum batas waktu." },
-    { title: "Verifikasi & selisih", description: "Nota diverifikasi, sisa dana dikembalikan atau kekurangan diganti." },
-    { title: "Keuntungan terlihat", description: "Pengeluaran langsung masuk ke perhitungan keuntungan project." },
+    { title: "Nota diverifikasi", description: "Nota yang disetujui masuk ke pengeluaran project. Sisa dana dikembalikan atau kekurangan diganti." },
+    { title: "Unduh laporan PDF", description: "Keuntungan project terlihat, dan laporannya bisa diunduh kapan saja." },
   ],
+  pricing: ARCHIPAY_PRICING,
   plans: [
-    { months: 1, price: null },
-    { months: 6, price: null },
-    { months: 12, price: null },
+    { months: 1, price: archipayPlanPrice(1), normalPrice: archipayPlanPrice(1, ARCHIPAY_PRICING.normalBasePrice) },
+    { months: 6, price: archipayPlanPrice(6), normalPrice: archipayPlanPrice(6, ARCHIPAY_PRICING.normalBasePrice) },
+    { months: 12, price: archipayPlanPrice(12), normalPrice: archipayPlanPrice(12, ARCHIPAY_PRICING.normalBasePrice) },
   ],
-  trialDays: 14,
+  trialDays: 30,
   faq: [
     {
+      question: "Apakah ArchiPay memegang atau memindahkan uang kami?",
+      answer:
+        "Tidak. ArchiPay hanya mencatat. Uang muka tetap diserahkan tunai atau lewat transfer bank seperti biasa, lalu dicatat di aplikasi.",
+    },
+    {
       question: "Apakah karyawan harus memasang aplikasi?",
-      answer: "Tidak. ArchiPay dibuka lewat browser di HP atau laptop, cukup login dengan email dan password.",
+      answer:
+        "Tidak. ArchiPay dibuka lewat browser di HP atau laptop dengan email dan password. Setiap pengguna perlu memiliki nomor WhatsApp aktif, karena nomornya diverifikasi dengan kode OTP.",
+    },
+    {
+      question: "Siapa yang bisa melihat nilai kontrak, keuntungan, dan laporan PDF?",
+      answer: "Hanya Owner. Finance dan karyawan hanya melihat data uang muka sesuai perannya.",
+    },
+    {
+      question: "Perusahaan kami kecil dan tidak punya bagian keuangan. Apakah tetap bisa?",
+      answer:
+        "Bisa. Tanpa Finance, Owner memegang semua langkah, dan setiap langkah tetap tercatat di audit log.",
     },
     {
       question: "Bagaimana jika karyawan tidak menyimpan nota untuk biaya kecil?",
       answer: "Biaya kecil seperti parkir atau ojek boleh dicatat tanpa nota dengan alasan, sampai batas nominal yang Anda atur.",
     },
     {
-      question: "Siapa yang bisa melihat nilai kontrak dan keuntungan?",
-      answer: "Hanya Owner. Finance dan karyawan hanya melihat data uang muka sesuai perannya.",
+      question: "Berapa lama foto nota disimpan?",
+      answer:
+        "Umumnya 6 bulan setelah uang muka selesai. Setelah itu file foto atau PDF-nya dihapus otomatis, sedangkan nominal, keterangan, dan hasil verifikasi nota tetap tersimpan sehingga laporan PDF tetap lengkap.",
+    },
+    {
+      question: "Apa yang saya dapat selama masa coba 30 hari?",
+      answer:
+        "Semua fitur, termasuk add-on Absensi dan Penggajian. Setelah masa coba, Absensi dan Penggajian tetap aktif hanya bila Anda memilihnya saat memilih paket.",
     },
     {
       question: "Apakah data lama bisa dipindahkan?",

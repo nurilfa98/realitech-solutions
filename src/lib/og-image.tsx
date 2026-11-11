@@ -26,22 +26,12 @@ export function renderOgImage({ eyebrow, title, color }: { eyebrow: string; titl
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-          <div
-            style={{
-              width: 64,
-              height: 64,
-              borderRadius: 16,
-              background: "#0d9488",
-              color: "#ffffff",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 40,
-              fontWeight: 700,
-            }}
-          >
-            R
-          </div>
+          <svg width="64" height="64" viewBox="0 0 48 48">
+            <rect width="48" height="48" rx="12" fill="#0b2545" />
+            <path d="M15 37V11h10.5a8 8 0 0 1 0 16H15" fill="none" stroke="#ffffff" strokeWidth="5.4" strokeLinejoin="round" />
+            <path d="M25 27l8 10" fill="none" stroke="#ffffff" strokeWidth="5.4" />
+            <circle cx="37.5" cy="37" r="4.4" fill="#f5a623" />
+          </svg>
           <div style={{ fontSize: 32, fontWeight: 600 }}>{SITE.name}</div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>

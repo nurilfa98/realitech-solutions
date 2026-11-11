@@ -7,11 +7,11 @@ export const SITE = {
   shortName: "Realitech",
   url: "https://realitech.id",
   description:
-    "Realitech Solutions membuat aplikasi bisnis siap pakai untuk usaha di Indonesia: ArchiPay untuk kontrol uang muka & keuntungan per project, SakuDagang untuk kasir, stok, dan laba toko.",
+    "Realitech Solutions membuat aplikasi bisnis siap pakai untuk usaha di Indonesia: ArchiPay untuk pengeluaran, margin, dan laporan PDF per project, SakuDagang untuk kasir, stok, dan laba toko.",
   // TODO: isi nomor WhatsApp bisnis (format 62..., tanpa + dan spasi).
-  whatsapp: "6280000000000",
+  whatsapp: "6285714325506",
   // TODO: isi email bisnis.
-  email: "halo@realitech.id",
+  email: "nurilfa98@gmail.com",
   // Ditulis manual agar halaman tetap statis. Perbarui tiap tahun.
   copyrightYear: 2026,
 } as const;

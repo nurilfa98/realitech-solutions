@@ -1,50 +1,58 @@
 // Ilustrasi ArchiPay: ringkasan keuangan satu project + daftar nota +
-// pengingat WhatsApp. Data fiktif.
+// pengingat WhatsApp. Angka sama dengan data demo di aplikasi (scripts/seed-demo-project.mjs).
 
-import { BellRingIcon, Building2Icon, CheckIcon, ClockIcon, XIcon } from "lucide-react";
+import { BellRingIcon, Building2Icon, CheckIcon, ClockIcon, FileTextIcon, XIcon } from "lucide-react";
 import { formatRupiah } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { AppFrame } from "./app-frame";
 
 const NOTES = [
-  { label: "Semen 40 sak", category: "Material", amount: 2_600_000, status: "ok" },
-  { label: "Upah tukang minggu 2", category: "Tenaga kerja", amount: 3_500_000, status: "ok" },
-  { label: "Sewa molen", category: "Peralatan", amount: 450_000, status: "wait" },
-  { label: "Bensin & parkir", category: "Transport", amount: 85_000, status: "rejected" },
+  { label: "Katering & snack acara serah terima", category: "Konsumsi", amount: 3_750_000, status: "ok" },
+  { label: "Cetak & jilid laporan akhir proyek", category: "ATK & Fotokopi", amount: 925_000, status: "ok" },
+  { label: "Sewa scissor lift 5 hari", category: "Sewa Alat & Peralatan", amount: 2_750_000, status: "wait" },
+  { label: "Parkir lokasi klien", category: "Parkir & Tol", amount: 30_000, status: "rejected" },
 ] as const;
 
+const pct = (value: number) => `${(Math.round(value * 10) / 10).toString().replace(".", ",")}%`;
+
 export function ArchiPayMockup({ className }: { className?: string }) {
-  const contract = 185_000_000;
-  const expense = 112_400_000;
-  const used = Math.round((expense / contract) * 100);
+  const contract = 340_000_000;
+  const expense = 256_845_000;
+  const used = (expense / contract) * 100;
 
   return (
     <div className={cn("product-archipay relative", className)}>
-      <AppFrame url="archipay.realitech.id/projects" label="Contoh tampilan ArchiPay: keuangan project dan daftar nota">
+      <AppFrame url="archipay.realitech.id/projects" label="Contoh tampilan ArchiPay: keuangan project dan daftar nota (data demo)">
         <div className="flex flex-col gap-4 text-sm">
           <div className="flex items-center gap-3">
             <div className="flex size-10 items-center justify-center rounded-lg bg-product text-product-foreground">
               <Building2Icon className="size-5" />
             </div>
             <div className="min-w-0">
-              <p className="truncate font-semibold">Renovasi Ruko Blok A</p>
-              <p className="truncate text-xs text-muted-foreground">PT Contoh Sejahtera</p>
+              <p className="truncate font-semibold">Interior Showroom Kopi Senja</p>
+              <p className="truncate text-xs text-muted-foreground">CV Kopi Senja Nusantara</p>
             </div>
-            <span className="ml-auto rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
-              Aktif
+            <span className="ml-auto flex items-center gap-1.5">
+              <span className="flex items-center gap-1 rounded-md border px-2 py-0.5 text-xs font-medium">
+                <FileTextIcon className="size-3" />
+                PDF
+              </span>
+              <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+                Selesai
+              </span>
             </span>
           </div>
 
           <div className="grid grid-cols-3 gap-2">
             <Kpi label="Nilai kontrak" value={formatRupiah(contract)} />
             <Kpi label="Pengeluaran" value={formatRupiah(expense)} />
-            <Kpi label="Keuntungan" value={formatRupiah(contract - expense)} accent />
+            <Kpi label="Untung (final)" value={formatRupiah(contract - expense)} accent />
           </div>
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs text-muted-foreground">
               <span>Pemakaian nilai kontrak</span>
-              <span className="tabular-nums">{used}%</span>
+              <span className="tabular-nums">{pct(used)}</span>
             </div>
             <div className="h-2 overflow-hidden rounded-full bg-muted">
               <div className="h-full rounded-full bg-product" style={{ width: `${used}%` }} />
@@ -52,7 +60,7 @@ export function ArchiPayMockup({ className }: { className?: string }) {
           </div>
 
           <div className="rounded-xl border">
-            <p className="border-b px-3 py-2 text-xs font-medium text-muted-foreground">PJ-2026-11-0007 · Budi</p>
+            <p className="border-b px-3 py-2 text-xs font-medium text-muted-foreground">PJ-2026-10-0009 · Siti Rahma</p>
             <ul className="divide-y">
               {NOTES.map((note) => (
                 <li key={note.label} className="flex items-center gap-3 px-3 py-2">

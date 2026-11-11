@@ -8,7 +8,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: "bg-primary text-primary-foreground hover:bg-primary/80",
-        // Aksen Realitech (teal), varian bawaan tombol utama.
+        // Warna merek Realitech (navy; amber di mode gelap), varian bawaan tombol utama.
         brand: "bg-brand text-brand-foreground hover:bg-brand/85",
         // Warna produk yang sedang dibuka (.product-archipay / .product-sakudagang).
         product: "bg-product text-product-foreground hover:bg-product/85",

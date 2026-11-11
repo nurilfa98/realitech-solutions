@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <LegalPage title="Syarat Layanan" updated="31 Oktober 2026">
+    <LegalPage title="Syarat Layanan" updated="10 November 2026">
       <p>
         Dengan memakai ArchiPay atau SakuDagang (&quot;Layanan&quot;) dari {SITE.name} (&quot;kami&quot;), Anda
         menyetujui syarat berikut.
@@ -25,13 +25,23 @@ export default function TermsPage() {
           <li>Akun perusahaan/toko dan pengguna pertama dibuat oleh kami setelah konsultasi.</li>
           <li>Anda bertanggung jawab menjaga kerahasiaan password dan atas semua aktivitas di akun Anda.</li>
           <li>Anda bertanggung jawab atas kebenaran data yang dimasukkan ke Layanan.</li>
+          <li>
+            Bila memakai add-on Absensi atau Penggajian, perusahaan Anda bertanggung jawab memberi tahu karyawan
+            tentang pengolahan data wajah, lokasi, dan gaji, memperoleh persetujuan yang diperlukan, serta memastikan
+            denda dan potongan gaji sesuai perjanjian kerja atau peraturan perusahaan dan ketentuan yang berlaku.
+          </li>
         </ul>
       </section>
 
       <section>
         <h2>2. Masa coba & langganan</h2>
         <ul>
-          <li>Akun baru mendapat masa coba gratis sesuai yang tertera di halaman produk.</li>
+          <li>Akun baru mendapat masa coba gratis sesuai yang tertera di halaman produk. Masa coba tidak punya masa tenggang: begitu habis, akses dikunci sampai paket dibayar.</li>
+          <li>
+            ArchiPay memiliki add-on opsional Absensi dan Penggajian yang dibayar terpisah per pengguna per bulan.
+            Selama masa coba keduanya ikut aktif. Setelah itu, add-on aktif hanya bila dipilih saat memilih paket atau
+            diaktifkan kemudian, dan berhenti begitu periodenya habis.
+          </li>
           <li>Langganan tersedia dalam periode 1, 6, atau 12 bulan, dibayar di muka.</li>
           <li>Perpanjangan dihitung dari tanggal berakhirnya langganan yang sedang berjalan.</li>
           <li>

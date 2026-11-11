@@ -25,6 +25,7 @@
   --color-brand: var(--brand);
   --color-brand-foreground: var(--brand-foreground);
   --color-brand-soft: var(--brand-soft);
+  --color-brand-accent: var(--brand-accent);
   --color-product: var(--product);
   --color-product-foreground: var(--product-foreground);
   --color-product-soft: var(--product-soft);
@@ -43,8 +44,10 @@
 
 :root {
   /* ---------------------------------------------------------------------
-     Palet sama dengan aplikasi ArchiPay & SakuDagang (slate), dengan aksen
-     Realitech teal-600. Warna tiap produk ada di .product-archipay dan
+     Palet sama dengan aplikasi ArchiPay & SakuDagang (slate), dengan merek
+     Realitech navy + amber (keputusan 11 Nov 2026): navy #0B2545 = kokoh &
+     tepercaya, amber #F5A623 = solusi yang menyala (hanya untuk aksen kecil;
+     teks putih jangan ditaruh di atas amber, pakai navy). Warna tiap produk ada di .product-archipay dan
      .product-sakudagang di bawah, dipakai lewat kelas bg-product, dst.
      --------------------------------------------------------------------- */
   --background: oklch(98.4% 0.003 247.858); /* slate-50 */
@@ -61,13 +64,14 @@
   --muted-foreground: oklch(55.4% 0.046 257.417); /* slate-500 */
   --accent: oklch(96.8% 0.007 247.896);
   --accent-foreground: oklch(20.8% 0.042 265.755);
-  --brand: oklch(60% 0.118 184.704); /* teal-600 */
-  --brand-foreground: oklch(1 0 0);
-  --brand-soft: oklch(95.3% 0.051 180.801); /* teal-50 */
+  --brand: #0b2545; /* navy */
+  --brand-foreground: #ffffff;
+  --brand-soft: #e7eef8; /* navy-50 */
+  --brand-accent: #f5a623; /* amber */
   --destructive: oklch(58.6% 0.253 17.585); /* rose-600 */
   --border: oklch(92.9% 0.013 255.508); /* slate-200 */
   --input: oklch(92.9% 0.013 255.508);
-  --ring: oklch(60% 0.118 184.704);
+  --ring: #0b2545;
   --radius: 0.5rem;
   /* Bawaan bila tidak berada di dalam halaman produk. */
   --product: var(--brand);
@@ -90,13 +94,15 @@
   --muted-foreground: oklch(70.4% 0.04 256.788); /* slate-400 */
   --accent: oklch(27.9% 0.041 260.031);
   --accent-foreground: oklch(98.4% 0.003 247.858);
-  --brand: oklch(77.7% 0.152 181.912); /* teal-400 */
-  --brand-foreground: oklch(12.9% 0.042 264.695);
-  --brand-soft: oklch(27.7% 0.046 192.524); /* teal-950 */
+  /* Mode gelap: navy tidak terbaca di latar gelap, jadi amber jadi warna utama. */
+  --brand: #f5a623; /* amber */
+  --brand-foreground: #0b2545;
+  --brand-soft: #12233f; /* navy gelap */
+  --brand-accent: #f5a623;
   --destructive: oklch(71.2% 0.194 13.428);
   --border: oklch(27.9% 0.041 260.031);
   --input: oklch(37.2% 0.044 257.287);
-  --ring: oklch(77.7% 0.152 181.912);
+  --ring: #f5a623;
 }
 
 /* Warna produk, sama dengan warna brand di aplikasinya masing-masing. */
