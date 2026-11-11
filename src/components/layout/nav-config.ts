@@ -1,10 +1,7 @@
-// Menu header & footer. Produk diambil dari content/products.ts agar produk
-// baru otomatis muncul.
+// Menu header. "Produk" berupa dropdown yang daftarnya diambil dari
+// content/products.ts, jadi produk baru otomatis muncul tanpa mengubah menu.
 
-import { PRODUCTS } from "@/content/products";
-
-export const NAV_ITEMS = [
-  ...PRODUCTS.map((product) => ({ title: product.name, href: `/${product.slug}` })),
+export const NAV_LINKS = [
   { title: "Cara mulai", href: "/#cara-mulai" },
-  { title: "Kontak", href: "#kontak" },
+  { title: "Kontak", href: "/#kontak" },
 ];

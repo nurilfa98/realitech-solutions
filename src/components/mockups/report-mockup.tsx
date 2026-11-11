@@ -75,7 +75,7 @@ export function ReportMockup({ className }: { className?: string }) {
 function Cell({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
   return (
     <div className="rounded-lg bg-muted/60 p-2.5">
-      <p className="text-[0.7rem] text-muted-foreground">{label}</p>
+      <p className="text-xs text-muted-foreground">{label}</p>
       <p className={cn("truncate text-xs font-semibold tabular-nums sm:text-sm", accent && "text-product")}>{value}</p>
     </div>
   );

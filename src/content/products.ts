@@ -17,9 +17,11 @@ import {
   NotebookPenIcon,
   PiggyBankIcon,
   ReceiptIcon,
+  ReceiptTextIcon,
   ScanLineIcon,
   ShoppingCartIcon,
   SheetIcon,
+  StoreIcon,
   TruckIcon,
   UserLockIcon,
   WalletIcon,
@@ -34,6 +36,8 @@ export type PlanMonths = 1 | 6 | 12;
 export type Product = {
   slug: ProductSlug;
   name: string;
+  // Ikon di menu Produk dan kartu produk.
+  icon: LucideIcon;
   tagline: string;
   // Satu kalimat untuk kartu produk & meta description.
   summary: string;
@@ -104,6 +108,7 @@ function archipayPlanPrice(months: PlanMonths, monthlyBase: number = ARCHIPAY_PR
 export const ARCHIPAY: Product = {
   slug: "archipay",
   name: "ArchiPay",
+  icon: ReceiptTextIcon,
   tagline: "Pengeluaran & keuntungan per project",
   summary:
     "Catat uang muka dan nota karyawan per project, lihat keuntungan dan margin secara langsung, lalu unduh laporan PDF per project dalam satu klik.",
@@ -248,7 +253,7 @@ export const ARCHIPAY: Product = {
     {
       question: "Apakah karyawan harus memasang aplikasi?",
       answer:
-        "Tidak. ArchiPay dibuka lewat browser di HP atau laptop dengan email dan password. Setiap pengguna perlu memiliki nomor WhatsApp aktif, karena nomornya diverifikasi dengan kode OTP.",
+        "Tidak harus lewat Play Store atau App Store. ArchiPay berbentuk PWA: bisa dipasang di layar utama HP dan tampil layar penuh seperti aplikasi biasa, atau cukup dibuka lewat browser. Login dengan email dan password. Setiap pengguna perlu memiliki nomor WhatsApp aktif, karena nomornya diverifikasi dengan kode OTP.",
     },
     {
       question: "Siapa yang bisa melihat nilai kontrak, keuntungan, dan laporan PDF?",
@@ -283,6 +288,7 @@ export const ARCHIPAY: Product = {
 export const SAKUDAGANG: Product = {
   slug: "sakudagang",
   name: "SakuDagang",
+  icon: StoreIcon,
   tagline: "Kasir, stok & laba toko",
   summary:
     "Kasir di HP, stok otomatis, bon pelanggan, dan laporan laba yang memisahkan uang modal dari uang yang boleh Anda ambil.",
@@ -373,7 +379,8 @@ export const SAKUDAGANG: Product = {
   faq: [
     {
       question: "Apakah perlu komputer atau mesin kasir khusus?",
-      answer: "Tidak. SakuDagang dirancang untuk HP dan dibuka lewat browser, tanpa memasang aplikasi.",
+      answer:
+        "Tidak. SakuDagang dirancang untuk HP dan berbentuk PWA: bisa dipasang di layar utama seperti aplikasi biasa, tanpa Play Store atau App Store, atau dibuka lewat browser.",
     },
     {
       question: "Bagaimana kalau ada barang terjual tapi stok di sistem kosong?",

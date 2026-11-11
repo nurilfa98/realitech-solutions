@@ -53,7 +53,7 @@ export function SakuDagangMockup({ className }: { className?: string }) {
           <span>Total</span>
           <span>{formatRupiah(total)}</span>
         </div>
-        <div className="mt-2 grid grid-cols-3 gap-1 text-center text-[0.65rem]">
+        <div className="mt-2 grid grid-cols-3 gap-1 text-center text-xs">
           <span className="rounded-md bg-product py-1 text-product-foreground">Tunai</span>
           <span className="rounded-md bg-muted py-1">QRIS</span>
           <span className="rounded-md bg-muted py-1">Bon</span>
@@ -68,7 +68,7 @@ function Fund({ label, hint, value, accent }: { label: string; hint: string; val
     <div className={cn("rounded-lg p-2.5", accent ? "bg-product-soft" : "bg-muted/60")}>
       <p className="text-xs font-medium">{label}</p>
       <p className={cn("text-sm font-semibold tabular-nums", accent && "text-product")}>{formatRupiah(value)}</p>
-      <p className="text-[0.7rem] text-muted-foreground">{hint}</p>
+      <p className="text-xs text-muted-foreground">{hint}</p>
     </div>
   );
 }

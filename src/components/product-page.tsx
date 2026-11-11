@@ -7,6 +7,7 @@ import type { Metadata } from "next";
 import { ProductMockup } from "@/components/mockups/product-mockup";
 import { ReportMockup } from "@/components/mockups/report-mockup";
 import { CtaBand } from "@/components/sections/cta-band";
+import { HeroBackdrop } from "@/components/sections/hero-backdrop";
 import { FaqList } from "@/components/sections/faq-list";
 import { PricingTable } from "@/components/sections/pricing-table";
 import { Section, SectionHeading } from "@/components/sections/section";
@@ -33,17 +34,14 @@ export function ProductPage({ product }: { product: Product }) {
 
       {/* Hero */}
       <section className="relative overflow-hidden">
-        <div
-          aria-hidden="true"
-          className="absolute inset-x-0 top-0 -z-10 h-[36rem] bg-linear-to-b from-product-soft to-transparent"
-        />
-        <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-4 pt-14 pb-16 sm:pt-20 lg:grid-cols-2">
+        <HeroBackdrop glow="bg-product/15" />
+        <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-4 pt-14 pb-16 animate-in fade-in slide-in-from-bottom-3 duration-700 sm:pt-20 lg:grid-cols-2">
           <div className="flex flex-col gap-6">
-            <p className="w-fit rounded-full border bg-background px-3 py-1 text-xs font-medium">
+            <p className="w-fit rounded-full border bg-background/80 px-3.5 py-1.5 text-xs font-medium shadow-sm backdrop-blur">
               <span className="text-product">{product.name}</span>
               <span className="text-muted-foreground"> · {product.tagline}</span>
             </p>
-            <h1 className="text-4xl font-semibold tracking-tight text-balance sm:text-5xl">{product.hero.title}</h1>
+            <h1 className="text-[2.1rem] leading-[1.12] font-semibold tracking-tight text-balance sm:text-5xl sm:leading-[1.1]">{product.hero.title}</h1>
             <p className="text-lg text-pretty text-muted-foreground">{product.hero.description}</p>
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button
@@ -80,7 +78,7 @@ export function ProductPage({ product }: { product: Product }) {
         />
         <div className="grid gap-4 md:grid-cols-2">
           {product.problems.map((item) => (
-            <div key={item.problem} className="flex flex-col gap-4 rounded-2xl border bg-background p-6">
+            <div key={item.problem} className="flex flex-col gap-4 rounded-3xl border bg-background p-6">
               <p className="flex gap-3 text-sm text-muted-foreground">
                 <XIcon className="mt-0.5 size-4 shrink-0 text-rose-500" />
                 {item.problem}
@@ -131,7 +129,7 @@ export function ProductPage({ product }: { product: Product }) {
         <SectionHeading eyebrow="Fitur" title="Semua yang dibutuhkan, tanpa yang tidak perlu" />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {product.features.map((feature) => (
-            <div key={feature.title} className="flex flex-col gap-3 rounded-2xl border bg-card p-6">
+            <div key={feature.title} className="flex flex-col gap-3 rounded-3xl border bg-card p-6">
               <div className="flex size-10 items-center justify-center rounded-lg bg-product-soft text-product">
                 <feature.icon className="size-5" />
               </div>
@@ -147,7 +145,7 @@ export function ProductPage({ product }: { product: Product }) {
         <SectionHeading eyebrow="Alur kerja" title="Begini cara kerjanya" />
         <ol className="grid gap-4 sm:grid-cols-2 lg:grid-flow-col lg:auto-cols-fr lg:grid-cols-none">
           {product.steps.map((step, index) => (
-            <li key={step.title} className="relative flex flex-col gap-2 rounded-2xl border bg-background p-6">
+            <li key={step.title} className="relative flex flex-col gap-2 rounded-3xl border bg-background p-6">
               <span className="flex size-8 items-center justify-center rounded-full bg-product text-sm font-semibold text-product-foreground">
                 {index + 1}
               </span>
@@ -186,7 +184,7 @@ export function ProductPage({ product }: { product: Product }) {
               {product.addons.items.map((addon) => {
                 const price = product.pricing?.addons.find((item) => item.name === addon.name)?.pricePerUserMonth;
                 return (
-                  <div key={addon.name} className="flex flex-col gap-3 rounded-2xl border bg-card p-6">
+                  <div key={addon.name} className="flex flex-col gap-3 rounded-3xl border bg-card p-6">
                     <div className="flex items-start justify-between gap-3">
                       <p className="flex items-center gap-2 font-semibold">
                         <PlusIcon className="size-4 text-product" />

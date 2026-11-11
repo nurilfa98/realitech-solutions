@@ -1,20 +1,21 @@
-// Beranda realitech.id: siapa Realitech, masalah yang diselesaikan, dua
-// produk, keunggulan, cara mulai, dan FAQ umum.
+// Beranda realitech.id: siapa Realitech, produk (kartu yang otomatis bertambah
+// dari content/products.ts), keunggulan, cara mulai, dan FAQ umum. Teks sengaja
+// umum (tidak menyebut produk tertentu) agar tetap benar saat produk bertambah.
 
 import {
   ArrowRightIcon,
-  CloudIcon,
+  CheckIcon,
   HeadsetIcon,
   MessageCircleIcon,
   ShieldCheckIcon,
   SmartphoneIcon,
-  TagIcon,
   type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { ProductMockup } from "@/components/mockups/product-mockup";
 import { CtaBand } from "@/components/sections/cta-band";
 import { FaqList } from "@/components/sections/faq-list";
+import { HeroBackdrop } from "@/components/sections/hero-backdrop";
 import { Section, SectionHeading } from "@/components/sections/section";
 import { Button } from "@/components/ui/button";
 import { PRODUCTS } from "@/content/products";
@@ -25,40 +26,31 @@ const CONSULT_MESSAGE = "Halo Realitech, saya ingin konsultasi kebutuhan aplikas
 const STRENGTHS: { icon: LucideIcon; title: string; description: string }[] = [
   {
     icon: SmartphoneIcon,
-    title: "Nyaman di HP",
-    description: "Dibuka lewat browser di HP maupun laptop, tanpa memasang aplikasi.",
-  },
-  {
-    icon: CloudIcon,
-    title: "Data di cloud",
-    description: "Tidak perlu server sendiri. Data tersimpan online dan bisa dibuka dari mana saja.",
-  },
-  {
-    icon: ShieldCheckIcon,
-    title: "Hak akses per peran",
-    description: "Pemilik, admin, dan karyawan hanya melihat yang menjadi bagiannya.",
+    title: "Pasang di layar HP",
+    description:
+      "Berbentuk PWA: bisa dipasang di layar utama dan tampil layar penuh seperti aplikasi biasa, tanpa Play Store atau App Store. Di laptop cukup dibuka dari browser.",
   },
   {
     icon: MessageCircleIcon,
     title: "Terhubung WhatsApp",
-    description: "Pengingat dan notifikasi penting dikirim langsung ke WhatsApp.",
+    description: "Pengingat dan notifikasi penting langsung masuk ke WhatsApp.",
+  },
+  {
+    icon: ShieldCheckIcon,
+    title: "Data aman",
+    description: "Tersimpan di cloud, terpisah untuk tiap usaha, dengan hak akses sesuai peran.",
   },
   {
     icon: HeadsetIcon,
     title: "Dibantu sampai jalan",
     description: "Kami bantu menyiapkan akun dan pengguna, lalu siap menjawab lewat WhatsApp.",
   },
-  {
-    icon: TagIcon,
-    title: "Langganan jelas",
-    description: "Paket 1, 6, atau 12 bulan dengan masa coba gratis. Tanpa biaya tersembunyi.",
-  },
 ];
 
 const STEPS = [
   { title: "Konsultasi", description: "Ceritakan cara kerja usaha Anda lewat WhatsApp. Gratis." },
-  { title: "Kami siapkan akun", description: "Akun perusahaan atau toko dan pengguna pertama dibuatkan." },
-  { title: "Coba gratis", description: "Pakai semua fitur selama masa coba bersama tim Anda." },
+  { title: "Siapkan akun", description: "Kami buatkan akun usaha dan pengguna pertama." },
+  { title: "Coba gratis", description: "Pakai semua fitur bersama tim Anda selama masa coba." },
   { title: "Berlangganan", description: "Pilih paket 1, 6, atau 12 bulan bila sudah cocok." },
 ];
 
@@ -66,7 +58,12 @@ const FAQ = [
   {
     question: "Apakah data usaha saya aman?",
     answer:
-      "Koneksi selalu terenkripsi (HTTPS), password disimpan dalam bentuk acak (hash), dan setiap pengguna hanya bisa membuka data sesuai perannya.",
+      "Koneksi selalu terenkripsi (HTTPS), password disimpan dalam bentuk acak (hash), data tiap usaha dipisahkan, dan setiap pengguna hanya bisa membuka data sesuai perannya.",
+  },
+  {
+    question: "Apa itu PWA? Apakah harus lewat Play Store?",
+    answer:
+      "PWA (Progressive Web App) adalah aplikasi web yang bisa dipasang di layar utama HP dan dibuka seperti aplikasi biasa, lengkap dengan ikon sendiri dan tampilan layar penuh. Tidak perlu lewat Play Store atau App Store. Di Android pilih \"Install app\" di browser, di iPhone pilih \"Tambahkan ke Layar Utama\" lewat Safari. Di laptop cukup dibuka dari browser.",
   },
   {
     question: "Apakah perlu membeli perangkat khusus?",
@@ -90,23 +87,25 @@ export default function HomePage() {
 
       {/* Hero */}
       <section className="relative overflow-hidden">
-        <div
-          aria-hidden="true"
-          className="absolute inset-x-0 top-0 -z-10 h-[32rem] bg-linear-to-b from-brand-soft to-transparent"
-        />
-        <div className="mx-auto flex max-w-6xl flex-col items-center gap-8 px-4 pt-16 pb-12 text-center sm:pt-24">
-          <p className="flex items-center gap-2 rounded-full border bg-background px-3 py-1 text-xs font-medium text-muted-foreground">
+        <HeroBackdrop />
+        <div className="mx-auto flex max-w-6xl flex-col items-center gap-7 px-4 pt-16 pb-14 text-center animate-in fade-in slide-in-from-bottom-3 duration-700 sm:pt-24 sm:pb-20">
+          <p className="flex items-center gap-2 rounded-full border bg-background/80 px-3.5 py-1.5 text-xs font-medium text-muted-foreground shadow-sm backdrop-blur">
             <span aria-hidden="true" className="size-1.5 rounded-full bg-brand-accent" />
             Aplikasi bisnis buatan Indonesia
           </p>
-          <h1 className="max-w-3xl text-4xl font-semibold tracking-tight text-balance sm:text-6xl">
-            Rapikan uang dan operasional usaha Anda, mulai dari HP
+          <h1 className="max-w-3xl text-[2.5rem] leading-[1.1] font-semibold tracking-tight text-balance sm:text-6xl sm:leading-[1.08]">
+            Solusi teknologi{" "}
+            <span className="relative isolate inline-block">
+              <span className="relative z-10">nyata</span>
+              <span aria-hidden="true" className="absolute inset-x-[-0.08em] bottom-[0.06em] -z-0 h-[0.3em] rounded-full bg-brand-accent/60" />
+            </span>{" "}
+            untuk usaha Anda
           </h1>
-          <p className="max-w-2xl text-lg text-pretty text-muted-foreground">
-            {SITE.name} membuat aplikasi siap pakai untuk masalah yang paling sering membuat pemilik usaha pusing:
-            kasbon karyawan, nota yang tercecer, stok yang selisih, dan laba yang tidak jelas.
+          <p className="max-w-xl text-base text-pretty text-muted-foreground sm:text-lg">
+            {SITE.name} membuat aplikasi bisnis yang sederhana, siap pakai, dan dibuat untuk cara kerja usaha di
+            Indonesia.
           </p>
-          <div className="flex flex-col gap-3 sm:flex-row">
+          <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
             <Button
               size="xl"
               nativeButton={false}
@@ -120,63 +119,53 @@ export default function HomePage() {
               <ArrowRightIcon />
             </Button>
           </div>
+          <ul className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
+            {["Coba gratis", "Dibantu setup", "Berbentuk PWA, pasang di layar HP"].map((item) => (
+              <li key={item} className="flex items-center gap-1.5">
+                <CheckIcon className="size-4 text-brand" />
+                {item}
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
-      {/* Masalah */}
-      <Section className="pt-8 sm:pt-12">
-        <SectionHeading
-          title="Masalah yang kami bantu selesaikan"
-          description="Pilih yang paling mirip dengan kondisi usaha Anda."
-        />
-        <div className="grid gap-4 md:grid-cols-2">
-          {PRODUCTS.map((product) => (
-            <div key={product.slug} className={`product-${product.slug} flex flex-col gap-4 rounded-2xl border bg-card p-6`}>
-              <p className="text-sm font-semibold text-product">{product.audiences.slice(0, 3).join(" · ")}</p>
-              <ul className="flex flex-col gap-3">
-                {product.problems.map((item) => (
-                  <li key={item.problem} className="flex gap-3 text-sm">
-                    <span aria-hidden="true" className="mt-1.5 size-1.5 shrink-0 rounded-full bg-product" />
-                    {item.problem}
-                  </li>
-                ))}
-              </ul>
-              <Link
-                href={`/${product.slug}`}
-                className="mt-auto inline-flex items-center gap-1 text-sm font-medium text-product hover:underline"
-              >
-                Solusinya: {product.name}
-                <ArrowRightIcon className="size-4" />
-              </Link>
-            </div>
-          ))}
-        </div>
-      </Section>
-
       {/* Produk */}
-      <Section id="produk" className="bg-card">
-        <SectionHeading eyebrow="Produk" title="Dua aplikasi, satu tujuan: usaha yang lebih terkendali" />
-        <div className="flex flex-col gap-20">
-          {PRODUCTS.map((product, index) => (
+      <Section id="produk" className="pt-8 sm:pt-12">
+        <SectionHeading
+          eyebrow="Produk"
+          title="Aplikasi siap pakai untuk kebutuhan usaha Anda"
+          description="Setiap produk menyelesaikan satu masalah usaha dengan jelas, dan bisa dicoba gratis."
+        />
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          {PRODUCTS.map((product) => (
             <article
               key={product.slug}
-              className={`product-${product.slug} grid items-center gap-10 lg:grid-cols-2`}
+              className={`product-${product.slug} group flex flex-col overflow-hidden rounded-3xl border bg-card shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl`}
             >
-              <div className={`flex flex-col gap-5 ${index % 2 === 1 ? "lg:order-2" : ""}`}>
-                <div>
-                  <p className="text-sm font-semibold text-product">{product.tagline}</p>
-                  <h3 className="mt-1 text-3xl font-semibold tracking-tight">{product.name}</h3>
+              <div className="relative h-64 overflow-hidden bg-product-soft/70 px-5 pt-8 sm:px-8">
+                <ProductMockup slug={product.slug} className="mx-auto max-w-md" />
+                <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-20 bg-linear-to-t from-card to-transparent" />
+              </div>
+              <div className="flex flex-1 flex-col gap-4 p-6 sm:p-8">
+                <div className="flex items-center gap-3">
+                  <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-product-soft text-product">
+                    <product.icon className="size-5" />
+                  </span>
+                  <div>
+                    <h3 className="text-xl font-semibold tracking-tight">{product.name}</h3>
+                    <p className="text-sm text-muted-foreground">{product.tagline}</p>
+                  </div>
                 </div>
-                <p className="text-muted-foreground">{product.summary}</p>
-                <ul className="grid gap-2 text-sm sm:grid-cols-2">
-                  {product.features.slice(0, 6).map((feature) => (
-                    <li key={feature.title} className="flex items-center gap-2">
-                      <feature.icon className="size-4 shrink-0 text-product" />
-                      {feature.title}
+                <p className="text-sm leading-relaxed text-muted-foreground">{product.summary}</p>
+                <ul className="flex flex-wrap gap-2">
+                  {product.audiences.slice(0, 3).map((audience) => (
+                    <li key={audience} className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
+                      {audience}
                     </li>
                   ))}
                 </ul>
-                <div className="flex flex-wrap gap-3">
+                <div className="mt-auto flex flex-col gap-3 pt-2 sm:flex-row">
                   <Button size="lg" variant="product" nativeButton={false} render={<Link href={`/${product.slug}`} />}>
                     Pelajari {product.name}
                     <ArrowRightIcon />
@@ -186,60 +175,61 @@ export default function HomePage() {
                   </Button>
                 </div>
               </div>
-              <ProductMockup slug={product.slug} className="mx-2 mb-10 sm:mx-8" />
             </article>
           ))}
         </div>
       </Section>
 
       {/* Keunggulan */}
-      <Section>
+      <Section className="bg-card">
         <SectionHeading
           eyebrow={`Kenapa ${SITE.shortName}`}
           title="Dibuat untuk cara kerja usaha di Indonesia"
           description="Bahasa Indonesia, rupiah, WhatsApp, dan HP sebagai perangkat utama."
         />
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {STRENGTHS.map((item) => (
-            <div key={item.title} className="flex flex-col gap-3 rounded-2xl border bg-card p-6">
-              <div className="flex size-10 items-center justify-center rounded-lg bg-brand-soft text-brand">
+            <div key={item.title} className="flex flex-col gap-3 rounded-3xl border bg-background p-6 transition duration-300 hover:shadow-md">
+              <div className="flex size-11 items-center justify-center rounded-2xl bg-brand-soft text-brand">
                 <item.icon className="size-5" />
               </div>
               <p className="font-semibold">{item.title}</p>
-              <p className="text-sm text-muted-foreground">{item.description}</p>
+              <p className="text-sm leading-relaxed text-muted-foreground">{item.description}</p>
             </div>
           ))}
         </div>
       </Section>
 
       {/* Cara mulai */}
-      <Section id="cara-mulai" className="bg-card">
-        <SectionHeading title="Cara mulai" description="Dari konsultasi sampai dipakai tim Anda, tanpa ribet." />
-        <ol className="grid gap-4 md:grid-cols-4">
+      <Section id="cara-mulai">
+        <SectionHeading eyebrow="Cara mulai" title="Mulai dalam empat langkah" description="Dari konsultasi sampai dipakai tim Anda." />
+        <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {STEPS.map((step, index) => (
-            <li key={step.title} className="flex flex-col gap-2 rounded-2xl border bg-background p-6">
-              <span className="flex size-8 items-center justify-center rounded-full bg-brand text-sm font-semibold text-brand-foreground">
+            <li key={step.title} className="flex flex-col gap-3 rounded-3xl border bg-card p-6">
+              <span className="flex size-9 items-center justify-center rounded-full bg-brand text-sm font-semibold text-brand-foreground">
                 {index + 1}
               </span>
               <p className="font-semibold">{step.title}</p>
-              <p className="text-sm text-muted-foreground">{step.description}</p>
+              <p className="text-sm leading-relaxed text-muted-foreground">{step.description}</p>
             </li>
           ))}
         </ol>
       </Section>
 
       {/* FAQ */}
-      <Section>
-        <SectionHeading title="Pertanyaan yang sering diajukan" />
+      <Section className="bg-card">
+        <SectionHeading eyebrow="FAQ" title="Pertanyaan yang sering diajukan" />
         <FaqList items={FAQ} />
       </Section>
 
-      <CtaBand
-        title="Ceritakan masalah usaha Anda, kami bantu carikan solusinya"
-        description="Konsultasi gratis, tanpa kewajiban berlangganan."
-        whatsappMessage={CONSULT_MESSAGE}
-        emailSubject="Konsultasi aplikasi untuk usaha saya"
-      />
+      <div className="pt-16 sm:pt-24">
+        <CtaBand
+          title="Ceritakan masalah usaha Anda, kami bantu carikan solusinya"
+          description="Konsultasi gratis, tanpa kewajiban berlangganan."
+          whatsappMessage={CONSULT_MESSAGE}
+          emailSubject="Konsultasi aplikasi untuk usaha saya"
+        />
+      </div>
     </>
   );
 }
@@ -252,6 +242,7 @@ function JsonLd() {
     name: SITE.name,
     url: SITE.url,
     email: SITE.email,
+    description: SITE.description,
     logo: `${SITE.url}/icon.svg`,
   };
   return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }} />;

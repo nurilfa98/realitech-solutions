@@ -26,7 +26,7 @@ export function PricingTable({ product }: { product: Product }) {
             <div
               key={plan.months}
               className={cn(
-                "relative flex flex-col gap-5 rounded-2xl border bg-card p-6",
+                "relative flex flex-col gap-5 rounded-3xl border bg-card p-6",
                 highlighted && "border-product ring-1 ring-product",
               )}
             >

@@ -6,6 +6,7 @@
 
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { FloatingChat } from "@/components/layout/floating-chat";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { ThemeProvider } from "@/components/theme/theme-provider";
@@ -25,7 +26,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   // Dipakai untuk mengubah URL relatif (gambar OG, canonical) menjadi absolut.
   metadataBase: new URL(SITE.url),
-  title: { default: `${SITE.name} | Aplikasi bisnis untuk usaha Indonesia`, template: `%s | ${SITE.name}` },
+  title: { default: `${SITE.name} | ${SITE.tagline}`, template: `%s | ${SITE.name}` },
   description: SITE.description,
   applicationName: SITE.name,
   alternates: { canonical: "/" },
@@ -51,6 +52,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <SiteHeader />
           <main className="flex-1">{children}</main>
           <SiteFooter />
+          <FloatingChat />
         </ThemeProvider>
       </body>
     </html>

@@ -13,6 +13,8 @@ const NOTES = [
   { label: "Parkir lokasi klien", category: "Parkir & Tol", amount: 30_000, status: "rejected" },
 ] as const;
 
+// Angka ringkas ("Rp 340 jt") agar tidak terpotong di layar sempit.
+const juta = (value: number) => `Rp ${new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 }).format(value / 1_000_000)} jt`;
 const pct = (value: number) => `${(Math.round(value * 10) / 10).toString().replace(".", ",")}%`;
 
 export function ArchiPayMockup({ className }: { className?: string }) {
@@ -32,7 +34,7 @@ export function ArchiPayMockup({ className }: { className?: string }) {
               <p className="truncate font-semibold">Interior Showroom Kopi Senja</p>
               <p className="truncate text-xs text-muted-foreground">CV Kopi Senja Nusantara</p>
             </div>
-            <span className="ml-auto flex items-center gap-1.5">
+            <span className="ml-auto flex shrink-0 flex-col items-end gap-1 sm:flex-row sm:items-center sm:gap-1.5">
               <span className="flex items-center gap-1 rounded-md border px-2 py-0.5 text-xs font-medium">
                 <FileTextIcon className="size-3" />
                 PDF
@@ -44,9 +46,9 @@ export function ArchiPayMockup({ className }: { className?: string }) {
           </div>
 
           <div className="grid grid-cols-3 gap-2">
-            <Kpi label="Nilai kontrak" value={formatRupiah(contract)} />
-            <Kpi label="Pengeluaran" value={formatRupiah(expense)} />
-            <Kpi label="Untung (final)" value={formatRupiah(contract - expense)} accent />
+            <Kpi label="Nilai kontrak" value={juta(contract)} />
+            <Kpi label="Pengeluaran" value={juta(expense)} />
+            <Kpi label="Untung (final)" value={juta(contract - expense)} accent />
           </div>
 
           <div className="flex flex-col gap-1.5">
@@ -91,9 +93,9 @@ export function ArchiPayMockup({ className }: { className?: string }) {
 
 function Kpi({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
   return (
-    <div className="rounded-lg bg-muted/60 p-2.5">
-      <p className="text-[0.7rem] text-muted-foreground">{label}</p>
-      <p className={cn("truncate text-xs font-semibold tabular-nums sm:text-sm", accent && "text-product")}>{value}</p>
+    <div className="rounded-lg bg-muted/60 p-2 sm:p-2.5">
+      <p className="text-xs text-muted-foreground">{label}</p>
+      <p className={cn("text-[0.8rem] font-semibold whitespace-nowrap tabular-nums sm:text-sm", accent && "text-product")}>{value}</p>
     </div>
   );
 }

@@ -28,7 +28,7 @@ export function Logo() {
       <LogoMark className="size-9" />
       <span className="flex flex-col gap-1 leading-none">
         <span className="text-[1.15rem] font-semibold tracking-tight">{SITE.shortName}</span>
-        <span className="text-[0.5rem] font-medium tracking-[0.3em] text-muted-foreground uppercase">Solutions</span>
+        <span className="text-[0.5625rem] font-medium tracking-[0.26em] text-muted-foreground uppercase">Solutions</span>
       </span>
     </Link>
   );

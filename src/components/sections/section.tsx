@@ -32,7 +32,7 @@ export function SectionHeading({
 }) {
   return (
     <div className={cn("mb-10 flex max-w-2xl flex-col gap-3 sm:mb-14", align === "center" && "mx-auto text-center")}>
-      {eyebrow && <p className="text-sm font-semibold text-product">{eyebrow}</p>}
+      {eyebrow && <p className="text-xs font-semibold tracking-[0.18em] text-product uppercase">{eyebrow}</p>}
       <h2 className="text-3xl font-semibold tracking-tight text-balance sm:text-4xl">{title}</h2>
       {description && <p className="text-base text-pretty text-muted-foreground sm:text-lg">{description}</p>}
     </div>
