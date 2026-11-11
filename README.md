@@ -59,3 +59,7 @@ Mockup di `components/mockups/` bisa diganti screenshot asli: simpan gambar di
 2. Tambahkan domain `realitech.id` (dan `www.realitech.id` → redirect ke
    `realitech.id`) di **Settings → Domains**, lalu atur DNS sesuai petunjuk Vercel.
 3. Subdomain `archipay.` dan `sakudagang.` tetap mengarah ke proyek masing-masing.
+4. Tidak ada environment variable yang perlu diisi (semua halaman statis, tanpa database).
+5. Wilayah (region) diatur di `vercel.json` (`sin1` = Singapura, sama dengan ArchiPay dan SakuDagang).
+   Halaman statis tetap disajikan dari CDN global; region hanya menentukan lokasi fungsi server bila kelak
+   ada (mis. rute API). Setelah deploy, cek di **Settings → Functions** bahwa region-nya Singapore.
