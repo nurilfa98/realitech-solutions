@@ -28,7 +28,7 @@ export function ProductMenu() {
           <DropdownMenuItem
             key={product.slug}
             render={<Link href={`/${product.slug}`} />}
-            className={`product-${product.slug} items-start gap-3 rounded-xl p-3`}
+            className={`product-${product.slug} cursor-pointer items-start gap-3 rounded-xl p-3`}
           >
             <ProductLogo src={product.logo} className="size-10 rounded-xl" />
             <span className="flex flex-col gap-0.5">
@@ -38,7 +38,7 @@ export function ProductMenu() {
           </DropdownMenuItem>
         ))}
         <DropdownMenuSeparator />
-        <DropdownMenuItem render={<Link href="/#produk" />} className="gap-2 rounded-xl px-3 py-2.5 text-sm font-medium">
+        <DropdownMenuItem render={<Link href="/#produk" />} className="cursor-pointer gap-2 rounded-xl px-3 py-2.5 text-sm font-medium">
           Lihat semua produk
           <ArrowRightIcon className="ml-auto size-4" />
         </DropdownMenuItem>

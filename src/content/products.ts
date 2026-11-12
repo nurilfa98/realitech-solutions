@@ -285,7 +285,8 @@ export const ARCHIPAY: Product = {
     },
     {
       question: "Apakah data lama bisa dipindahkan?",
-      answer: "Bisa dibicarakan saat konsultasi. Kami bantu menyiapkan akun, project, dan pengguna sebelum mulai dipakai.",
+      answer:
+        "Daftar pengguna bisa diimpor sekaligus lewat Excel (nama, email, jabatan, rekening bank, dan role), jadi tidak perlu menambah karyawan satu per satu. Belum ada impor untuk project atau nota lama: kami bantu membuat akun dan project pertama sebelum mulai dipakai, lalu ArchiPay mencatat dari uang muka berikutnya. Nota dan pengeluaran sebelum memakai ArchiPay tidak ikut dihitung di keuntungan project. Impor Excel juga tersedia untuk daftar lokasi absensi (add-on Absensi).",
     },
   ],
 };
