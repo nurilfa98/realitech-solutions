@@ -28,6 +28,11 @@ import {
 
 export type ProductSlug = "archipay" | "sakudagang";
 
+// Seksi yang bisa diatur urutannya per produk (lihat `sectionOrder`).
+export type ProductSectionKey = "problems" | "report" | "features" | "steps" | "pricing" | "faq";
+
+export const DEFAULT_SECTION_ORDER: ProductSectionKey[] = ["problems", "report", "features", "steps", "pricing", "faq"];
+
 // Periode paket, sama dengan aplikasi (1, 6, 12 bulan).
 export type PlanMonths = 1 | 6 | 12;
 
@@ -78,6 +83,10 @@ export type Product = {
   // Lama masa coba gratis (hari). TODO: sesuaikan dengan aplikasi.
   trialDays: number;
   faq: { question: string; answer: string }[];
+  // Urutan seksi di halaman produk. Bila kosong, memakai DEFAULT_SECTION_ORDER.
+  sectionOrder?: ProductSectionKey[];
+  // Keunggulan tambahan yang ikut tampil di setiap kartu paket.
+  planBenefits?: string[];
 };
 
 // Model harga ArchiPay, sama dengan aplikasi (docs/BUSINESS-FLOW.md bagian 17.1 & 17.6):
@@ -107,39 +116,39 @@ export const ARCHIPAY: Product = {
   slug: "archipay",
   name: "ArchiPay",
   logo: "/brand/archipay-icon.png",
-  tagline: "Pengeluaran & keuntungan per project",
+  tagline: "Uang muka terkendali, untung proyek terlihat",
   summary:
-    "Catat uang muka dan nota karyawan per project, lihat keuntungan dan margin secara langsung, lalu unduh laporan PDF atau daftar nota Excel per project dalam satu klik.",
+    "Pantau uang muka karyawan dari saat diserahkan sampai nota dan sisa dananya lunas, lalu lihat untung proyek dari nota yang sudah disetujui.",
   appUrl: "https://archipay.realitech.id",
-  audiences: ["Kontraktor & developer", "Konsultan arsitek & interior", "Event organizer", "Bisnis berbasis project"],
+  audiences: ["Owner yang memberi uang muka ke tim lapangan", "Kontraktor & developer", "Event organizer", "Konsultan arsitek & interior"],
   hero: {
-    title: "Tahu untung-rugi setiap project, dari nota lapangan sampai laporan PDF",
+    title: "Kirim uang ke lapangan tanpa kehilangan jejaknya",
     description:
-      "ArchiPay mencatat setiap uang muka dan nota karyawan per project. Pengeluaran yang sudah diverifikasi langsung masuk ke perhitungan keuntungan, dan laporan PDF per project siap diunduh kapan saja.",
+      "ArchiPay mencatat setiap uang muka sejak diserahkan sampai nota terakhir diverifikasi. Ada batas waktu dan pengingat WhatsApp, sisa dana yang belum kembali terus ditagih sampai lunas, dan untung proyek ikut terlihat dari nota yang sudah disetujui.",
   },
   problems: [
     {
-      problem: "Pengeluaran project tersebar di chat WhatsApp, buku catatan, dan tumpukan nota.",
-      solution: "Setiap uang muka dan nota tercatat per project: siapa yang memegang, untuk apa, berapa, lengkap dengan foto bukti.",
+      problem: "Uang muka sudah diserahkan ke karyawan, tetapi nota dan sisa dananya tidak jelas.",
+      solution: "Setiap uang muka punya batas waktu nota dan pengembalian. Karyawan diingatkan lewat WhatsApp, sisa dan kekurangan dihitung otomatis, dan sisa yang lewat batas masuk daftar potong gaji.",
     },
     {
-      problem: "Untung atau rugi project baru ketahuan setelah project selesai.",
-      solution: "Beranda Owner menampilkan nilai kontrak, pengeluaran, keuntungan, dan margin tiap project, dengan tanda peringatan saat pengeluaran mencapai 80% nilai kontrak.",
+      problem: "Nota tercecer di chat, fotonya tidak lengkap, dan sulit dicari saat diperiksa.",
+      solution: "Karyawan memotret nota dari HP. Setiap nota tersimpan per proyek dan per karyawan, dengan jejak siapa mengubah apa.",
     },
     {
-      problem: "Nota terlambat dikumpulkan, sisa uang muka tidak kembali, kekurangan karyawan tidak terganti.",
-      solution: "Ada batas waktu dan pengingat WhatsApp otomatis. Selisih dihitung sistem, dan sisa yang lewat batas masuk daftar potong gaji.",
+      problem: "Owner baru tahu untung atau rugi proyek setelah proyek selesai.",
+      solution: "Nota yang sudah disetujui langsung masuk pengeluaran. Beranda menampilkan untung dan margin tiap proyek, dengan peringatan saat pengeluaran mendekati nilai kontrak.",
     },
     {
-      problem: "Laporan pengeluaran per project disusun manual di Excel setiap akhir project.",
-      solution: "Laporan PDF per project dibuat otomatis dari data nota yang sudah diverifikasi.",
+      problem: "Owner harus mengejar karyawan satu per satu soal nota dan pengembalian.",
+      solution: "Pengingat WhatsApp berjalan otomatis. Karyawan yang masih menunggak nota tidak bisa menerima uang muka baru.",
     },
   ],
   features: [
     {
       icon: FolderKanbanIcon,
-      title: "Uang muka per project",
-      description: "Owner mencairkan langsung, Finance mengusulkan, atau karyawan mengajukan dengan persetujuan Owner. Selalu terikat ke satu project.",
+      title: "Uang muka per proyek",
+      description: "Owner mencairkan langsung, Finance mengusulkan, atau karyawan mengajukan dengan persetujuan Owner. Selalu terikat ke satu proyek.",
     },
     {
       icon: ScanLineIcon,
@@ -153,12 +162,12 @@ export const ARCHIPAY: Product = {
     },
     {
       icon: ChartColumnIcon,
-      title: "Keuntungan & margin per project",
+      title: "Keuntungan & margin per proyek",
       description: "Nilai kontrak, pengeluaran per kategori dan per bulan, keuntungan, margin, serta dana uang muka yang masih beredar.",
     },
     {
       icon: FileTextIcon,
-      title: "Laporan PDF per project",
+      title: "Laporan PDF per proyek",
       description:
         "Ringkasan keuangan, rincian per kategori dan karyawan, serta daftar nota yang disetujui dalam satu dokumen. Daftar nota juga bisa diunduh sebagai Excel untuk diolah akuntan.",
     },
@@ -184,10 +193,10 @@ export const ARCHIPAY: Product = {
     },
   ],
   report: {
-    eyebrow: "Hasil akhirnya",
-    title: "Laporan PDF per project, siap dalam satu klik",
+    eyebrow: "Untuk arsip & rapat",
+    title: "Laporan PDF per proyek, kapan saja",
     description:
-      "Unduh kapan saja dengan data terbaru, tanpa rekap manual. Cocok untuk evaluasi project, arsip, dan rapat dengan tim.",
+      "Unduh kapan saja dengan data terbaru, tanpa rekap manual. Cocok untuk evaluasi proyek, arsip, dan rapat dengan tim.",
     contents: [
       {
         title: "Ringkasan keuangan",
@@ -208,15 +217,15 @@ export const ARCHIPAY: Product = {
     ],
     notes: [
       "Hanya Owner yang dapat mengunduh laporan.",
-      "Keuntungan berlabel sementara selama project aktif, dan final setelah project ditandai selesai.",
+      "Keuntungan berlabel sementara selama proyek aktif, dan final setelah proyek ditandai selesai.",
       "Foto nota tidak ikut dicetak di PDF.",
-      "Daftar nota juga bisa diunduh sebagai Excel (urut tanggal nota, nomor laporan, lalu nomor uang muka) beserta rekap per kategori dan ringkasan, siap diolah akuntan.",
+      "Daftar nota juga bisa diunduh sebagai Excel beserta rekap per kategori dan ringkasan, siap diolah akuntan.",
     ],
   },
   addons: {
     title: "Perlu absensi dan penggajian juga? Aktifkan sebagai add-on",
     description:
-      "Fitur utama ArchiPay tetap pengeluaran dan margin project. Absensi dan Penggajian bersifat opsional, jadi Anda hanya membayar yang dipakai. Keduanya ikut aktif selama masa coba gratis.",
+      "Fitur utama ArchiPay adalah kontrol uang muka dan pertanggungjawaban per proyek. Absensi dan Penggajian bersifat opsional, jadi Anda hanya membayar yang dipakai. Keduanya ikut aktif selama masa coba gratis.",
     items: [
       {
         name: "Absensi",
@@ -231,13 +240,16 @@ export const ARCHIPAY: Product = {
     ],
   },
   steps: [
-    { title: "Uang muka dicairkan", description: "Owner atau Finance mencatat pencairan untuk karyawan di sebuah project." },
-    { title: "Karyawan konfirmasi", description: "Karyawan menerima WhatsApp dan mengonfirmasi dana yang diterima." },
-    { title: "Nota diunggah", description: "Setiap belanja difoto dari HP, lalu laporan dikirim sebelum batas waktu." },
-    { title: "Nota diverifikasi", description: "Nota yang disetujui masuk ke pengeluaran project. Sisa dana dikembalikan atau kekurangan diganti." },
-    { title: "Unduh laporan PDF", description: "Keuntungan project terlihat, dan laporannya bisa diunduh kapan saja." },
+    { title: "Owner memberi uang muka", description: "Dicairkan langsung atau lewat persetujuan. Karyawan menerima WhatsApp dan mengonfirmasi dana yang diterima." },
+    { title: "Karyawan memotret nota", description: "Setiap belanja difoto dari HP dan dikirim sebelum batas waktu." },
+    { title: "Nota diverifikasi", description: "Finance atau Owner menyetujui tiap nota. Sisa dana ditagih, kekurangan diganti." },
+    { title: "Lihat untung proyek", description: "Pengeluaran yang disetujui langsung terlihat di keuntungan proyek." },
+    { title: "Unduh laporan PDF", description: "Untuk arsip atau rapat, kapan saja dengan data terbaru." },
   ],
   pricing: ARCHIPAY_PRICING,
+  // Masalah uang muka dulu, lalu fitur. Laporan PDF diletakkan setelah fitur agar tidak mendominasi.
+  sectionOrder: ["problems", "features", "report", "steps", "pricing", "faq"],
+  planBenefits: ["Proyek aktif tanpa batas"],
   plans: [
     { months: 1, price: archipayPlanPrice(1), normalPrice: archipayPlanPrice(1, ARCHIPAY_PRICING.normalBasePrice) },
     { months: 6, price: archipayPlanPrice(6), normalPrice: archipayPlanPrice(6, ARCHIPAY_PRICING.normalBasePrice) },
@@ -258,7 +270,7 @@ export const ARCHIPAY: Product = {
     {
       question: "Apakah ArchiPay pengganti software akuntansi? Bisa dipakai untuk akuntan?",
       answer:
-        "Bukan pengganti. ArchiPay mengurus uang project harian: uang muka, nota, pertanggungjawaban, dan keuntungan per project. Daftar nota yang disetujui bisa diunduh sebagai file Excel (lengkap dengan rekap per kategori) untuk diolah akuntan atau dimasukkan ke software akuntansi Anda. Belum ada sambungan otomatis ke software akuntansi.",
+        "Bukan pengganti. ArchiPay mengurus uang proyek harian: uang muka, nota, pertanggungjawaban, dan keuntungan per proyek. Daftar nota yang disetujui bisa diunduh sebagai file Excel (lengkap dengan rekap per kategori) untuk diolah akuntan atau dimasukkan ke software akuntansi Anda. Belum ada sambungan otomatis ke software akuntansi.",
     },
     {
       question: "Siapa yang bisa melihat nilai kontrak, keuntungan, dan laporan PDF?",
@@ -286,7 +298,7 @@ export const ARCHIPAY: Product = {
     {
       question: "Apakah data lama bisa dipindahkan?",
       answer:
-        "Daftar pengguna bisa diimpor sekaligus lewat Excel (nama, email, jabatan, rekening bank, dan role), jadi tidak perlu menambah karyawan satu per satu. Belum ada impor untuk project atau nota lama: kami bantu membuat akun dan project pertama sebelum mulai dipakai, lalu ArchiPay mencatat dari uang muka berikutnya. Nota dan pengeluaran sebelum memakai ArchiPay tidak ikut dihitung di keuntungan project. Impor Excel juga tersedia untuk daftar lokasi absensi (add-on Absensi).",
+        "Daftar pengguna bisa diimpor sekaligus lewat Excel (nama, email, jabatan, rekening bank, dan role), jadi tidak perlu menambah karyawan satu per satu. Belum ada impor untuk proyek atau nota lama: kami bantu membuat akun dan proyek pertama sebelum mulai dipakai, lalu ArchiPay mencatat dari uang muka berikutnya. Nota dan pengeluaran sebelum memakai ArchiPay tidak ikut dihitung di keuntungan proyek. Impor Excel juga tersedia untuk daftar lokasi absensi (add-on Absensi).",
     },
   ],
 };

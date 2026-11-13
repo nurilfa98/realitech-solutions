@@ -170,7 +170,7 @@ export default function HomePage() {
                 </div>
                 <p className="text-sm leading-relaxed text-muted-foreground">{product.summary}</p>
                 <ul className="flex flex-wrap gap-2">
-                  {product.audiences.slice(0, 3).map((audience) => (
+                  {product.audiences.map((audience) => (
                     <li key={audience} className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
                       {audience}
                     </li>

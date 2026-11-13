@@ -1,9 +1,11 @@
 // Template halaman produk (/archipay, /sakudagang): hero + mockup, untuk
-// siapa, masalah → solusi, fitur, alur kerja, harga, FAQ, ajakan bertindak.
+// siapa, lalu seksi-seksi (masalah → solusi, laporan, fitur, alur kerja,
+// harga, FAQ) yang urutannya bisa diatur per produk lewat `sectionOrder`.
 // Isi diambil dari content/products.ts.
 
 import { ArrowRightIcon, CheckIcon, LogInIcon, MessageCircleIcon, PlusIcon, XIcon } from "lucide-react";
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { ProductMockup } from "@/components/mockups/product-mockup";
 import { ReportMockup } from "@/components/mockups/report-mockup";
 import { CtaBand } from "@/components/sections/cta-band";
@@ -12,7 +14,7 @@ import { FaqList } from "@/components/sections/faq-list";
 import { PricingTable } from "@/components/sections/pricing-table";
 import { Section, SectionHeading } from "@/components/sections/section";
 import { Button } from "@/components/ui/button";
-import type { Product } from "@/content/products";
+import { DEFAULT_SECTION_ORDER, type Product, type ProductSectionKey } from "@/content/products";
 import { formatRupiah } from "@/lib/format";
 import { SITE, whatsappLink } from "@/lib/site";
 
@@ -28,54 +30,11 @@ export function productMetadata(product: Product): Metadata {
 export function ProductPage({ product }: { product: Product }) {
   const demoMessage = `Halo Realitech, saya ingin mencoba ${product.name} untuk usaha saya.`;
 
-  return (
-    <div className={`product-${product.slug}`}>
-      <JsonLd product={product} />
-
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <HeroBackdrop glow="bg-product/15" />
-        <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-4 pt-14 pb-16 animate-in fade-in slide-in-from-bottom-3 duration-700 sm:pt-20 lg:grid-cols-2">
-          <div className="flex flex-col gap-6">
-            <p className="w-fit rounded-full border bg-background/80 px-3.5 py-1.5 text-xs font-medium shadow-sm backdrop-blur">
-              <span className="text-product">{product.name}</span>
-              <span className="text-muted-foreground"> · {product.tagline}</span>
-            </p>
-            <h1 className="text-[2.1rem] leading-[1.12] font-semibold tracking-tight text-balance sm:text-5xl sm:leading-[1.1]">{product.hero.title}</h1>
-            <p className="text-lg text-pretty text-muted-foreground">{product.hero.description}</p>
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <Button
-                size="xl"
-                variant="product"
-                nativeButton={false}
-                render={<a href={whatsappLink(demoMessage)} target="_blank" rel="noopener noreferrer" />}
-              >
-                <MessageCircleIcon />
-                Coba gratis {product.trialDays} hari
-              </Button>
-              <Button size="xl" variant="outline" nativeButton={false} render={<a href={product.appUrl} target="_blank" rel="noopener noreferrer" />}>
-                <LogInIcon />
-                Masuk
-              </Button>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {product.audiences.map((audience) => (
-                <span key={audience} className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
-                  {audience}
-                </span>
-              ))}
-            </div>
-          </div>
-          <ProductMockup slug={product.slug} className="mx-2 mb-10 sm:mx-8" />
-        </div>
-      </section>
-
-      {/* Masalah → solusi */}
-      <Section className="bg-card">
-        <SectionHeading
-          eyebrow="Masalah & solusi"
-          title={`Yang berubah setelah memakai ${product.name}`}
-        />
+  const sections: Record<ProductSectionKey, ReactNode> = {
+    // Masalah → solusi
+    problems: (
+      <Section key="problems" className="bg-card">
+        <SectionHeading eyebrow="Masalah & solusi" title={`Yang berubah setelah memakai ${product.name}`} />
         <div className="grid gap-4 md:grid-cols-2">
           {product.problems.map((item) => (
             <div key={item.problem} className="flex flex-col gap-4 rounded-3xl border bg-background p-6">
@@ -91,41 +50,43 @@ export function ProductPage({ product }: { product: Product }) {
           ))}
         </div>
       </Section>
+    ),
 
-      {/* Hasil akhir (mis. laporan PDF) */}
-      {product.report && (
-        <section id="laporan" className="bg-product-soft/60 py-16 sm:py-24">
-          <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-4 lg:grid-cols-2">
-            <div className="flex flex-col gap-6">
-              <div className="flex flex-col gap-3">
-                <p className="text-sm font-semibold text-product">{product.report.eyebrow}</p>
-                <h2 className="text-3xl font-semibold tracking-tight text-balance sm:text-4xl">{product.report.title}</h2>
-                <p className="text-base text-pretty text-muted-foreground sm:text-lg">{product.report.description}</p>
-              </div>
-              <ul className="flex flex-col gap-4">
-                {product.report.contents.map((item) => (
-                  <li key={item.title} className="flex gap-3">
-                    <CheckIcon className="mt-1 size-4 shrink-0 text-product" />
-                    <p className="text-sm">
-                      <span className="font-semibold">{item.title}.</span>{" "}
-                      <span className="text-muted-foreground">{item.description}</span>
-                    </p>
-                  </li>
-                ))}
-              </ul>
-              <ul className="flex flex-col gap-1 text-sm text-muted-foreground">
-                {product.report.notes.map((note) => (
-                  <li key={note}>· {note}</li>
-                ))}
-              </ul>
+    // Laporan (mis. PDF)
+    report: product.report ? (
+      <section key="report" id="laporan" className="bg-product-soft/60 py-16 sm:py-24">
+        <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-4 lg:grid-cols-2">
+          <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-3">
+              <p className="text-sm font-semibold text-product">{product.report.eyebrow}</p>
+              <h2 className="text-3xl font-semibold tracking-tight text-balance sm:text-4xl">{product.report.title}</h2>
+              <p className="text-base text-pretty text-muted-foreground sm:text-lg">{product.report.description}</p>
             </div>
-            <ReportMockup className="mx-2 sm:mx-8" />
+            <ul className="flex flex-col gap-4">
+              {product.report.contents.map((item) => (
+                <li key={item.title} className="flex gap-3">
+                  <CheckIcon className="mt-1 size-4 shrink-0 text-product" />
+                  <p className="text-sm">
+                    <span className="font-semibold">{item.title}.</span>{" "}
+                    <span className="text-muted-foreground">{item.description}</span>
+                  </p>
+                </li>
+              ))}
+            </ul>
+            <ul className="flex flex-col gap-1 text-sm text-muted-foreground">
+              {product.report.notes.map((note) => (
+                <li key={note}>· {note}</li>
+              ))}
+            </ul>
           </div>
-        </section>
-      )}
+          <ReportMockup className="mx-2 sm:mx-8" />
+        </div>
+      </section>
+    ) : null,
 
-      {/* Fitur */}
-      <Section id="fitur">
+    // Fitur
+    features: (
+      <Section key="features" id="fitur">
         <SectionHeading eyebrow="Fitur" title="Hanya yang Anda butuhkan, langsung ke intinya" />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {product.features.map((feature) => (
@@ -139,9 +100,11 @@ export function ProductPage({ product }: { product: Product }) {
           ))}
         </div>
       </Section>
+    ),
 
-      {/* Alur kerja */}
-      <Section className="bg-card">
+    // Alur kerja
+    steps: (
+      <Section key="steps" className="bg-card">
         <SectionHeading eyebrow="Alur kerja" title="Begini cara kerjanya" />
         <ol className="grid gap-4 sm:grid-cols-2 lg:grid-flow-col lg:auto-cols-fr lg:grid-cols-none">
           {product.steps.map((step, index) => (
@@ -161,15 +124,17 @@ export function ProductPage({ product }: { product: Product }) {
           ))}
         </ol>
       </Section>
+    ),
 
-      {/* Harga */}
-      <Section id="harga">
+    // Harga
+    pricing: (
+      <Section key="pricing" id="harga">
         <SectionHeading
           eyebrow="Harga"
           title="Pilih paket langganan"
           description={
             product.pricing
-              ? `Gratis ${product.trialDays} hari dengan semua fitur. Setelah itu harga perkenalan ${formatRupiah(product.pricing.basePrice)}/bulan${product.pricing.normalBasePrice ? ` (normal ${formatRupiah(product.pricing.normalBasePrice)})` : ""} untuk ${product.pricing.includedUsers} pengguna, makin hemat untuk paket 6 bulan dan 1 tahun.`
+              ? `Gratis ${product.trialDays} hari dengan semua fitur. Setelah itu ${formatRupiah(product.pricing.basePrice)}/bulan untuk ${product.pricing.includedUsers} pengguna${product.pricing.normalBasePrice ? ` (harga normal ${formatRupiah(product.pricing.normalBasePrice)} berlaku untuk klien baru)` : ""}, makin hemat untuk paket 6 bulan dan 1 tahun.`
               : "Harga total per periode. Makin panjang periodenya, makin hemat."
           }
         />
@@ -212,12 +177,63 @@ export function ProductPage({ product }: { product: Product }) {
           </div>
         )}
       </Section>
+    ),
 
-      {/* FAQ */}
-      <Section className="bg-card">
+    // FAQ
+    faq: (
+      <Section key="faq" className="bg-card">
         <SectionHeading title={`Pertanyaan tentang ${product.name}`} />
         <FaqList items={product.faq} />
       </Section>
+    ),
+  };
+
+  const order = product.sectionOrder ?? DEFAULT_SECTION_ORDER;
+
+  return (
+    <div className={`product-${product.slug}`}>
+      <JsonLd product={product} />
+
+      {/* Hero (selalu paling atas) */}
+      <section className="relative overflow-hidden">
+        <HeroBackdrop glow="bg-product/15" />
+        <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-4 pt-14 pb-16 animate-in fade-in slide-in-from-bottom-3 duration-700 sm:pt-20 lg:grid-cols-2">
+          <div className="flex flex-col gap-6">
+            <p className="w-fit rounded-full border bg-background/80 px-3.5 py-1.5 text-xs font-medium shadow-sm backdrop-blur">
+              <span className="text-product">{product.name}</span>
+              <span className="text-muted-foreground"> · {product.tagline}</span>
+            </p>
+            <h1 className="text-[2.1rem] leading-[1.12] font-semibold tracking-tight text-balance sm:text-5xl sm:leading-[1.1]">{product.hero.title}</h1>
+            <p className="text-lg text-pretty text-muted-foreground">{product.hero.description}</p>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <Button
+                size="xl"
+                variant="product"
+                nativeButton={false}
+                render={<a href={whatsappLink(demoMessage)} target="_blank" rel="noopener noreferrer" />}
+              >
+                <MessageCircleIcon />
+                Coba gratis {product.trialDays} hari
+              </Button>
+              <Button size="xl" variant="outline" nativeButton={false} render={<a href={product.appUrl} target="_blank" rel="noopener noreferrer" />}>
+                <LogInIcon />
+                Masuk
+              </Button>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {product.audiences.map((audience) => (
+                <span key={audience} className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
+                  {audience}
+                </span>
+              ))}
+            </div>
+          </div>
+          <ProductMockup slug={product.slug} className="mx-2 mb-10 sm:mx-8" />
+        </div>
+      </section>
+
+      {/* Seksi sesuai urutan per produk */}
+      {order.map((key) => sections[key])}
 
       <div className="pt-16 sm:pt-24">
         <CtaBand

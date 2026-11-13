@@ -67,6 +67,7 @@ export function PricingTable({ product }: { product: Product }) {
               <ul className="flex flex-col gap-2 text-sm">
                 {[
                   product.pricing ? `Termasuk ${product.pricing.includedUsers} pengguna aktif` : "Semua fitur aplikasi",
+                  ...(product.planBenefits ?? []),
                   "Bantuan setup akun & pengguna",
                   "Dukungan via WhatsApp",
                 ].map(
@@ -95,8 +96,8 @@ export function PricingTable({ product }: { product: Product }) {
       <div className="flex flex-col gap-1 text-center text-sm text-muted-foreground">
         {product.pricing?.normalBasePrice && (
           <p>
-            Harga perkenalan untuk pendaftar awal. Harga normal {formatRupiah(product.pricing.normalBasePrice)}/bulan
-            berlaku setelah masa perkenalan berakhir.
+            Harga perkenalan khusus 10 klien pertama. Harga normal {formatRupiah(product.pricing.normalBasePrice)}/bulan
+            berlaku untuk klien setelahnya.
           </p>
         )}
         {product.pricing && (
@@ -106,7 +107,7 @@ export function PricingTable({ product }: { product: Product }) {
           </p>
         )}
         <p>
-          Gratis {product.trialDays} hari untuk mencoba. Harga belum termasuk PPN bila berlaku. Kebutuhan khusus?
+          Gratis {product.trialDays} hari untuk mencoba. Harga sudah final, tanpa biaya tersembunyi. Kebutuhan khusus?
           Hubungi kami untuk penawaran.
         </p>
       </div>

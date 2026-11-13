@@ -54,7 +54,7 @@ export default function PrivacyPage() {
           <li>Data akun: nama, email, nomor WhatsApp, jabatan, dan peran pengguna.</li>
           <li>Data rekening bank yang diisi untuk keperluan pencairan dana atau pembayaran (ArchiPay).</li>
           <li>
-            Data usaha yang dimasukkan ke Layanan, misalnya transaksi, uang muka, nota, project, barang, stok, dan
+            Data usaha yang dimasukkan ke Layanan, misalnya transaksi, uang muka, nota, proyek, barang, stok, dan
             laporan.
           </li>
           <li>File yang diunggah, seperti foto nota dan bukti transfer.</li>

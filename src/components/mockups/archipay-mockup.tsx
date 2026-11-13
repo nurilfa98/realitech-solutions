@@ -1,5 +1,5 @@
-// Ilustrasi ArchiPay: ringkasan keuangan satu project + daftar nota +
-// pengingat WhatsApp. Angka sama dengan data demo di aplikasi (scripts/seed-demo-project.mjs).
+// Ilustrasi ArchiPay: ringkasan keuangan satu proyek + daftar nota +
+// pengingat WhatsApp. Angka sama dengan data demo di aplikasi (scripts/seed-demo-proyek.mjs).
 
 import { BellRingIcon, Building2Icon, CheckIcon, ClockIcon, FileTextIcon, XIcon } from "lucide-react";
 import { formatRupiah } from "@/lib/format";
@@ -24,7 +24,7 @@ export function ArchiPayMockup({ className }: { className?: string }) {
 
   return (
     <div className={cn("product-archipay relative", className)}>
-      <AppFrame url="archipay.realitech.id/projects" label="Contoh tampilan ArchiPay: keuangan project dan daftar nota (data demo)">
+      <AppFrame url="archipay.realitech.id/projects" label="Contoh tampilan ArchiPay: keuangan proyek dan daftar nota (data demo)">
         <div className="flex flex-col gap-4 text-sm">
           <div className="flex items-center gap-3">
             <div className="flex size-10 items-center justify-center rounded-lg bg-product text-product-foreground">

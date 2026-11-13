@@ -1,4 +1,4 @@
-// Ilustrasi halaman pertama Laporan PDF per project ArchiPay. Angkanya sama dengan
+// Ilustrasi halaman pertama Laporan PDF per proyek ArchiPay. Angkanya sama dengan
 // laporan PDF asli dari data demo di aplikasi (Interior Showroom Kopi Senja, 55 nota, 3 halaman).
 
 import { FileTextIcon } from "lucide-react";
@@ -25,14 +25,14 @@ export function ReportMockup({ className }: { className?: string }) {
 
   return (
     <div className={cn("product-archipay", className)}>
-      <AppFrame url="laporan-proyek-interior-showroom-kopi-senja.pdf" label="Contoh laporan PDF per project ArchiPay">
+      <AppFrame url="laporan-proyek-interior-showroom-kopi-senja.pdf" label="Contoh laporan PDF per proyek ArchiPay">
         <div className="flex flex-col gap-4 text-sm">
           <div className="flex items-center gap-3 border-b pb-3">
             <div className="flex size-9 items-center justify-center rounded-lg bg-product text-product-foreground">
               <FileTextIcon className="size-4" />
             </div>
             <div className="min-w-0">
-              <p className="truncate font-semibold">Laporan Project: Interior Showroom Kopi Senja</p>
+              <p className="truncate font-semibold">Laporan Proyek: Interior Showroom Kopi Senja</p>
               <p className="truncate text-xs text-muted-foreground">CV Kopi Senja Nusantara · 55 nota · Keuntungan final</p>
             </div>
           </div>
