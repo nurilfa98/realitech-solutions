@@ -6,8 +6,9 @@
 
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { FloatingChat } from "@/components/layout/floating-chat";
 import { SiteFooter } from "@/components/layout/site-footer";
+import { ScrollReset } from "@/components/layout/scroll-reset";
+import { ScrollToTop } from "@/components/layout/scroll-to-top";
 import { SiteHeader } from "@/components/layout/site-header";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { SITE } from "@/lib/site";
@@ -52,7 +53,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <SiteHeader />
           <main className="flex-1">{children}</main>
           <SiteFooter />
-          <FloatingChat />
+          <ScrollToTop />
+          <ScrollReset />
         </ThemeProvider>
       </body>
     </html>

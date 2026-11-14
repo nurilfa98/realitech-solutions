@@ -37,7 +37,7 @@ export function ProductPage({ product }: { product: Product }) {
         <SectionHeading eyebrow="Masalah & solusi" title={`Yang berubah setelah memakai ${product.name}`} />
         <div className="grid gap-4 md:grid-cols-2">
           {product.problems.map((item) => (
-            <div key={item.problem} className="flex flex-col gap-4 rounded-3xl border bg-background p-6">
+            <div key={item.problem} className="flex flex-col gap-4 rounded-3xl border bg-background p-6 transition-transform duration-300 ease-out motion-safe:hover:scale-[1.03] hover:shadow-lg">
               <p className="flex gap-3 text-sm text-muted-foreground">
                 <XIcon className="mt-0.5 size-4 shrink-0 text-rose-500" />
                 {item.problem}
@@ -90,7 +90,7 @@ export function ProductPage({ product }: { product: Product }) {
         <SectionHeading eyebrow="Fitur" title="Hanya yang Anda butuhkan, langsung ke intinya" />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {product.features.map((feature) => (
-            <div key={feature.title} className="flex flex-col gap-3 rounded-3xl border bg-card p-6">
+            <div key={feature.title} className="flex flex-col gap-3 rounded-3xl border bg-card p-6 transition-transform duration-300 ease-out motion-safe:hover:scale-[1.03] hover:shadow-lg">
               <div className="flex size-10 items-center justify-center rounded-lg bg-product-soft text-product">
                 <feature.icon className="size-5" />
               </div>
@@ -108,7 +108,7 @@ export function ProductPage({ product }: { product: Product }) {
         <SectionHeading eyebrow="Alur kerja" title="Begini cara kerjanya" />
         <ol className="grid gap-4 sm:grid-cols-2 lg:grid-flow-col lg:auto-cols-fr lg:grid-cols-none">
           {product.steps.map((step, index) => (
-            <li key={step.title} className="relative flex flex-col gap-2 rounded-3xl border bg-background p-6">
+            <li key={step.title} className="relative flex flex-col gap-2 rounded-3xl border bg-background p-6 transition-transform duration-300 ease-out motion-safe:hover:scale-[1.03] hover:shadow-lg">
               <span className="flex size-8 items-center justify-center rounded-full bg-product text-sm font-semibold text-product-foreground">
                 {index + 1}
               </span>
