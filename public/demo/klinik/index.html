@@ -1,0 +1,1340 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Prototype Sistem Klinik</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap">
+<style>
+  /* Konsep: cerita per masalah. Kiri: masalah dan hasilnya dalam bahasa owner. Kanan: layar aplikasi yang bisa diklik. */
+  :root {
+    --bg: #f3f6f7;
+    --surface: #ffffff;
+    --surface-2: #edf2f4;
+    --ink: #0e1a21;
+    --ink-2: #44535c;
+    --muted: #78868e;
+    --line: #dbe2e6;
+    --accent: #2a78d6;
+    --accent-text: #1c5cab;
+    --accent-soft: #e2edfb;
+    --on-accent: #ffffff;
+    --good: #0ca30c;
+    --good-ink: #006300;
+    --good-soft: #e3f4e3;
+    --warn: #fab219;
+    --warn-ink: #7a5200;
+    --warn-soft: #fdf1d3;
+    --bad: #d03b3b;
+    --bad-ink: #a42525;
+    --bad-soft: #fbe5e5;
+    --series-1: #2a78d6;
+    --grid: #e3e8ea;
+    --axis: #c3cbd0;
+    --c-p: #e2edfb;
+    --c-s: #fdf1d3;
+    --c-m: #dcf1ec;
+    --c-long: #ece8fb;
+    --shadow: 0 1px 2px rgba(14, 26, 33, 0.06), 0 8px 24px rgba(14, 26, 33, 0.06);
+    --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-display: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0c1317;
+      --surface: #141c22;
+      --surface-2: #1b252c;
+      --ink: #eaf0f3;
+      --ink-2: #b4c1c8;
+      --muted: #8a979f;
+      --line: #27333b;
+      --accent: #3987e5;
+      --accent-text: #6da7ec;
+      --accent-soft: #162a43;
+      --on-accent: #ffffff;
+      --good-ink: #3ec43e;
+      --good-soft: #14301a;
+      --warn-ink: #fab219;
+      --warn-soft: #3a2d0c;
+      --bad-ink: #ee7a7a;
+      --bad-soft: #3a1717;
+      --series-1: #3987e5;
+      --grid: #232e35;
+      --axis: #38454e;
+      --c-p: #162a43;
+      --c-s: #3a2d0c;
+      --c-m: #12332d;
+      --c-long: #2a2447;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.35);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0c1317;
+    --surface: #141c22;
+    --surface-2: #1b252c;
+    --ink: #eaf0f3;
+    --ink-2: #b4c1c8;
+    --muted: #8a979f;
+    --line: #27333b;
+    --accent: #3987e5;
+    --accent-text: #6da7ec;
+    --accent-soft: #162a43;
+    --on-accent: #ffffff;
+    --good-ink: #3ec43e;
+    --good-soft: #14301a;
+    --warn-ink: #fab219;
+    --warn-soft: #3a2d0c;
+    --bad-ink: #ee7a7a;
+    --bad-soft: #3a1717;
+    --series-1: #3987e5;
+    --grid: #232e35;
+    --axis: #38454e;
+    --c-p: #162a43;
+    --c-s: #3a2d0c;
+    --c-m: #12332d;
+    --c-long: #2a2447;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.35);
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.5;
+    margin: 0;
+  }
+  h1, h2, h3 { font-family: var(--font-display); margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+  p { margin: 0; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+  .wrap {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 20px 56px;
+  }
+  .muted { color: var(--muted); }
+  .sub { color: var(--ink-2); }
+  .num { font-variant-numeric: tabular-nums; }
+  .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .grow { flex: 1 1 auto; min-width: 0; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  /* Banner & header */
+  .demo-bar {
+    display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+    background: var(--warn-soft); color: var(--warn-ink);
+    border: 1px solid color-mix(in srgb, var(--warn) 45%, transparent);
+    border-radius: 10px; padding: 8px 12px; font-size: 13px;
+  }
+  .demo-bar svg { width: 18px; height: 18px; flex: none; }
+  svg { max-width: 100%; }
+  .topbar { display: flex; gap: 12px; align-items: center; justify-content: space-between; margin: 18px 0 20px; flex-wrap: wrap; }
+  .brand { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 700; }
+  .logo { width: 28px; height: 28px; border-radius: 8px; background: var(--accent); display: grid; place-items: center; flex: none; }
+  .logo svg { width: 16px; height: 16px; stroke: var(--on-accent); }
+
+  /* Buttons & chips */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    min-height: 44px; padding: 8px 16px; border-radius: 10px;
+    border: 1px solid var(--line); background: var(--surface); font-weight: 500; text-decoration: none; color: var(--ink);
+  }
+  .btn:hover { background: var(--surface-2); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+  .btn.primary:hover { filter: brightness(1.08); background: var(--accent); }
+  .btn.sm { min-height: 36px; padding: 4px 12px; font-size: 13px; border-radius: 8px; }
+  .btn[disabled] { opacity: 0.5; cursor: not-allowed; }
+  .btn svg, .chip svg { width: 15px; height: 15px; flex: none; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 999px;
+    font-size: 12px; font-weight: 500; background: var(--surface-2); color: var(--ink-2); white-space: nowrap;
+  }
+  .chip.good { background: var(--good-soft); color: var(--good-ink); }
+  .chip.warn { background: var(--warn-soft); color: var(--warn-ink); }
+  .chip.bad { background: var(--bad-soft); color: var(--bad-ink); }
+  .chip.info { background: var(--accent-soft); color: var(--accent-text); }
+  .seg { display: inline-flex; background: var(--surface-2); border-radius: 10px; padding: 3px; gap: 2px; flex-wrap: wrap; }
+  .seg button {
+    border: 0; background: transparent; padding: 6px 12px; border-radius: 8px; min-height: 36px; font-weight: 500; color: var(--ink-2);
+  }
+  .seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,0.12); }
+
+  /* Index */
+  .hero h1 { font-size: clamp(28px, 5vw, 44px); line-height: 1.1; font-weight: 800; }
+  .hero p { margin-top: 12px; max-width: 62ch; color: var(--ink-2); font-size: 17px; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 14px; margin-top: 28px; }
+  .card-link {
+    display: flex; flex-direction: column; gap: 8px; text-align: left; padding: 16px; border-radius: 14px;
+    border: 1px solid var(--line); background: var(--surface); text-decoration: none; color: inherit; min-width: 0;
+  }
+  .card-link:hover { border-color: var(--accent); box-shadow: var(--shadow); }
+  .card-link .n { font-size: 12px; font-weight: 600; color: var(--accent-text); letter-spacing: 0.06em; text-transform: uppercase; }
+  .card-link h3 { font-size: 17px; line-height: 1.3; }
+  .card-link .a { font-size: 13px; color: var(--muted); }
+  .card-link .b { font-size: 13px; color: var(--ink-2); }
+
+  /* Scene */
+  .scene-nav { display: flex; gap: 8px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-bottom: 16px; }
+  .scene { display: grid; grid-template-columns: minmax(0, 330px) minmax(0, 1fr); gap: 28px; align-items: start; }
+  .story { display: flex; flex-direction: column; gap: 16px; }
+  .story h2 { font-size: clamp(22px, 3vw, 28px); line-height: 1.2; font-weight: 800; }
+  .story .tag { font-size: 12px; font-weight: 600; color: var(--accent-text); letter-spacing: 0.06em; text-transform: uppercase; }
+  .box { border-radius: 12px; padding: 12px 14px; background: var(--surface); border: 1px solid var(--line); }
+  .box small { display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 4px; }
+  .box.before small { color: var(--bad-ink); }
+  .box.after small { color: var(--good-ink); }
+  .stage { display: flex; justify-content: center; min-width: 0; }
+  .app {
+    width: 100%; max-width: 440px; background: var(--surface); border: 1px solid var(--line);
+    border-radius: 22px; box-shadow: var(--shadow); overflow: hidden; min-width: 0;
+  }
+  .app.wide { max-width: 100%; }
+  .app-bar { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--line); background: var(--surface); }
+  .app-bar b { font-family: var(--font-display); font-size: 15px; flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }
+  .app-body { padding: 16px; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+  .sec-title { font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: 0.07em; text-transform: uppercase; }
+  .panel { border: 1px solid var(--line); border-radius: 14px; padding: 14px; background: var(--surface); min-width: 0; }
+  .panel.soft { background: var(--surface-2); border-color: transparent; }
+  .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .tile { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; min-width: 0; }
+  .tile .l { font-size: 12px; color: var(--muted); }
+  .tile .v { font-family: var(--font-display); font-size: 21px; font-weight: 700; line-height: 1.2; white-space: nowrap; }
+  .hero-fig { font-family: var(--font-display); font-size: 56px; line-height: 1; font-weight: 800; letter-spacing: -0.02em; }
+  .list { display: flex; flex-direction: column; }
+  .li { display: flex; gap: 10px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); min-width: 0; }
+  .li:last-child { border-bottom: 0; }
+  .li .t { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }
+  .li .t small { display: block; color: var(--muted); font-size: 12px; }
+  .ava { width: 32px; height: 32px; border-radius: 50%; background: var(--accent-soft); color: var(--accent-text); display: grid; place-items: center; font-weight: 600; font-size: 13px; flex: none; }
+  .tablewrap { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  th, td { padding: 8px 10px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
+  th { font-size: 11px; font-weight: 600; color: var(--muted); letter-spacing: 0.05em; text-transform: uppercase; }
+  td.r, th.r { text-align: right; }
+  tr.total td { font-weight: 700; border-bottom: 0; }
+  .field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .field label, .lbl { font-size: 12px; color: var(--ink-2); font-weight: 500; }
+  input[type="text"], input[type="number"], input[type="time"], select, textarea {
+    width: 100%; min-height: 44px; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--line);
+    background: var(--surface); min-width: 0;
+  }
+  textarea { min-height: 88px; resize: vertical; }
+  .rp { position: relative; }
+  .rp > span { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 13px; pointer-events: none; }
+  .rp input { padding-left: 38px; }
+  .chk { display: flex; gap: 8px; align-items: center; min-height: 32px; font-size: 13px; color: var(--ink-2); }
+  .chk input { width: 18px; height: 18px; accent-color: var(--accent); }
+  .switch { display: inline-flex; align-items: center; gap: 10px; }
+  .switch button {
+    width: 46px; height: 28px; border-radius: 999px; border: 0; background: var(--axis); position: relative; padding: 0; flex: none;
+  }
+  .switch button::after {
+    content: ""; position: absolute; left: 3px; top: 3px; width: 22px; height: 22px; border-radius: 50%; background: #fff; transition: transform 0.15s;
+  }
+  .switch button[aria-checked="true"] { background: var(--accent); }
+  .switch button[aria-checked="true"]::after { transform: translateX(18px); }
+  .bar { height: 10px; background: var(--surface-2); border-radius: 999px; overflow: hidden; }
+  .bar > i { display: block; height: 100%; background: var(--series-1); border-radius: 999px; }
+  .hbar { display: grid; grid-template-columns: 96px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 5px 0; font-size: 13px; }
+  .hbar .trk { height: 14px; display: flex; }
+  .hbar .trk i { display: block; height: 100%; background: var(--series-1); border-radius: 0 4px 4px 0; }
+  .callout { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; border-radius: 10px; padding: 8px 10px; }
+  .callout svg { width: 16px; height: 16px; flex: none; margin-top: 2px; }
+  .callout.good { background: var(--good-soft); color: var(--good-ink); }
+  .callout.warn { background: var(--warn-soft); color: var(--warn-ink); }
+  .callout.bad { background: var(--bad-soft); color: var(--bad-ink); }
+  .callout.info { background: var(--accent-soft); color: var(--accent-text); }
+  .notes { font-size: 12px; color: var(--muted); }
+
+  /* Roster */
+  .roster td, .roster th { padding: 4px; text-align: center; }
+  .roster td.name { text-align: left; padding-left: 8px; white-space: nowrap; position: sticky; left: 0; background: var(--surface); z-index: 1; }
+  .roster th:first-child { position: sticky; left: 0; background: var(--surface); z-index: 1; }
+  .roster .grp td { background: var(--surface-2); font-size: 11px; font-weight: 600; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; text-align: left; padding: 6px 8px; }
+  .cell {
+    width: 100%; min-width: 46px; min-height: 36px; border-radius: 8px; border: 1px solid transparent; font-weight: 600; font-size: 13px; background: var(--surface-2); color: var(--muted);
+  }
+  .cell.P { background: var(--c-p); color: var(--accent-text); }
+  .cell.S { background: var(--c-s); color: var(--warn-ink); }
+  .cell.M { background: var(--c-m); color: var(--good-ink); }
+  .cell.PL, .cell.SL, .cell.L, .cell.F { background: var(--c-long); color: var(--ink); border-color: var(--line); }
+  .cell.CUTI { background: var(--bad-soft); color: var(--bad-ink); }
+  .checks { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; margin-top: 6px; }
+  .checks > div { text-align: center; font-size: 11px; border-radius: 8px; padding: 4px 2px; }
+  .checks .ok { background: var(--good-soft); color: var(--good-ink); }
+  .checks .no { background: var(--warn-soft); color: var(--warn-ink); }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 12px; color: var(--ink-2); }
+  .legend b { font-weight: 600; color: var(--ink); }
+
+  .selfie { width: 72px; height: 72px; border-radius: 12px; background: var(--surface-2); display: grid; place-items: center; color: var(--muted); flex: none; }
+  .selfie svg { width: 30px; height: 30px; }
+  .stepper { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; }
+  .stepper > div { font-size: 11px; text-align: center; padding: 6px 2px; border-radius: 8px; background: var(--surface-2); color: var(--muted); overflow-wrap: anywhere; }
+  .stepper > div.on { background: var(--accent-soft); color: var(--accent-text); font-weight: 600; }
+  .stepper > div.done { background: var(--good-soft); color: var(--good-ink); }
+
+  /* Tooltip, toast, modal */
+  .tip {
+    position: absolute; z-index: 5; pointer-events: none; background: var(--ink); color: var(--bg); padding: 6px 10px;
+    border-radius: 8px; font-size: 12px; line-height: 1.35; white-space: nowrap; transform: translate(-50%, -100%);
+  }
+  .chartbox { position: relative; }
+  .toast {
+    position: fixed; left: 50%; transform: translateX(-50%); bottom: max(20px, env(safe-area-inset-bottom, 0px)); z-index: 50;
+    background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: 14px; max-width: min(92vw, 420px); box-shadow: var(--shadow);
+  }
+  .overlay { position: fixed; inset: 0; z-index: 40; background: rgba(8, 14, 18, 0.55); display: grid; place-items: center; padding: 16px; }
+  .modal { background: var(--surface); border-radius: 16px; padding: 18px; width: min(100%, 440px); max-height: 90vh; overflow: auto; display: flex; flex-direction: column; gap: 12px; box-shadow: var(--shadow); }
+  .modal h3 { font-size: 18px; }
+
+  @media (max-width: 860px) {
+    .scene { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  }
+  @media (max-width: 460px) {
+    .hero-fig { font-size: 48px; }
+    .hbar { grid-template-columns: 92px minmax(0, 1fr) auto; font-size: 12.5px; }
+    .tile .v { font-size: 18px; }
+    .app-body { padding: 14px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .switch button::after { transition: none; }
+  }
+</style>
+
+<div class="wrap" id="root"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ---------- Util ---------- */
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  var esc = function (s) {
+    return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; });
+  };
+  var fmt = function (n) { return Math.round(n).toLocaleString('id-ID'); };
+  var rp = function (n) { return (n < 0 ? '-' : '') + 'Rp' + fmt(Math.abs(n)); };
+  var jt = function (n) { return (Math.round(n * 10) / 10).toString().replace('.', ',') + ' jt'; };
+  var pad2 = function (n) { return String(n).padStart(2, '0'); };
+  var hm = function (min) { return Math.floor(min / 60) + ':' + pad2(Math.round(min % 60)); };
+  var toMin = function (t) { var p = t.split(':'); return parseInt(p[0], 10) * 60 + parseInt(p[1], 10); };
+  var fromMin = function (m) { return pad2(Math.floor(m / 60)) + ':' + pad2(m % 60); };
+
+  var ICON = {
+    check: '<path d="M5 12.5l4.2 4.2L19 7"/>',
+    warn: '<path d="M12 3.5l9.5 16.5h-19z"/><path d="M12 10v4.5M12 17.6v.1"/>',
+    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5.2l3.2 2"/>',
+    x: '<path d="M6 6l12 12M18 6L6 18"/>',
+    plus: '<path d="M12 5v14M5 12h14"/>',
+    left: '<path d="M15 5l-7 7 7 7"/>',
+    right: '<path d="M9 5l7 7-7 7"/>',
+    copy: '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 012-2h9"/>',
+    repeat: '<path d="M17 3l4 4-4 4"/><path d="M3 11V9a3 3 0 013-3h15"/><path d="M7 21l-4-4 4-4"/><path d="M21 13v2a3 3 0 01-3 3H3"/>',
+    lock: '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/>',
+    pin: '<path d="M12 21s-7-6.2-7-11.2a7 7 0 0114 0C19 14.800 12 21 12 21z"/><circle cx="12" cy="10" r="2.5"/>',
+    camera: '<rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="12" cy="13.500" r="3.500"/><path d="M9 7l1.500-2.500h3L15 7"/>',
+    cross: '<path d="M12 5v14M5 12h14"/>'
+  };
+  var ic = function (name) {
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICON[name] + '</svg>';
+  };
+  var chip = function (kind, label, icon) {
+    return '<span class="chip ' + kind + '">' + (icon ? ic(icon) : '') + esc(label) + '</span>';
+  };
+  var callout = function (kind, icon, html) {
+    return '<div class="callout ' + kind + '">' + ic(icon) + '<div>' + html + '</div></div>';
+  };
+
+  /* ---------- Data contoh (semua fiktif) ---------- */
+  var DAYS = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+  var DAYS_FULL = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+  var SHIFTS = {
+    P: { n: 'Pagi', s: '07:30', e: '14:30' },
+    S: { n: 'Siang', s: '13:00', e: '20:00' },
+    M: { n: 'Middle', s: '09:30', e: '16:30' },
+    PL: { n: 'Pagi long', s: '07:30', e: '17:30' },
+    SL: { n: 'Siang long', s: '10:00', e: '20:00' },
+    L: { n: 'Long', s: '07:30', e: '19:30' },
+    F: { n: 'Pagi atau siang', s: '07:00', e: '15:00' }
+  };
+  var PEOPLE = [
+    { id: 'a', n: 'Anisa', role: 'T', g: 'f', st: 'Freelance', days: ['OFF', 'S', 'OFF', 'P', 'OFF', 'S', 'OFF'] },
+    { id: 'b', n: 'Bella', role: 'T', g: 'f', st: 'Tetap', days: ['S', 'P', 'S', 'P', 'S', 'OFF', 'OFF'] },
+    { id: 'c', n: 'Citra', role: 'T', g: 'f', st: 'Tetap', days: ['OFF', 'OFF', 'P', 'S', 'M', 'P', 'SL'] },
+    { id: 'd', n: 'Dina', role: 'T', g: 'f', st: 'Tetap', days: ['PL', 'S', 'P', 'S', 'P', 'OFF', 'OFF'] },
+    { id: 'e', n: 'Elsa', role: 'T', g: 'f', st: 'Kontrak', days: ['OFF', 'OFF', 'M', 'P', 'S', 'S', 'PL'] },
+    { id: 'f', n: 'Farah', role: 'T', g: 'f', st: 'Kontrak', days: ['SL', 'P', 'S', 'M', 'P', 'OFF', 'OFF'] },
+    { id: 'g', n: 'Galih', role: 'T', g: 'm', st: 'Tetap', days: ['OFF', 'OFF', 'P', 'P', 'S', 'S', 'PL'] },
+    { id: 'h', n: 'Hendra', role: 'T', g: 'm', st: 'Tetap', days: ['OFF', 'OFF', 'S', 'S', 'P', 'P', 'SL'] },
+    { id: 'i', n: 'Irfan', role: 'T', g: 'm', st: 'Kontrak', days: ['SL', 'S', 'S', 'P', 'P', 'OFF', 'OFF'] },
+    { id: 'j', n: 'Joko', role: 'T', g: 'm', st: 'Kontrak', days: ['PL', 'P', 'P', 'S', 'S', 'OFF', 'OFF'] },
+    { id: 'k', n: 'Kirana', role: 'F', g: 'f', st: 'Tetap', phase: 0, days: ['L', 'L', 'R', 'R', 'R', 'OFF', 'OFF'] },
+    { id: 'l', n: 'Laras', role: 'F', g: 'f', st: 'Tetap', phase: 1, days: ['OFF', 'OFF', 'R', 'R', 'R', 'L', 'L'] },
+    { id: 'm', n: 'Maman', role: 'S', g: 'm', st: 'Per jam', days: ['F', 'F', 'F', 'OFF', 'F', 'F', 'F'] }
+  ];
+  var OPTS = { T: ['OFF', 'P', 'S', 'M', 'PL', 'SL'], F: ['OFF', 'P', 'S', 'L', 'R'], S: ['OFF', 'F'] };
+  var ROLE_NAME = { T: 'Terapis', F: 'Front desk', S: 'Staf penunjang' };
+  var byId = function (id) { return PEOPLE.filter(function (p) { return p.id === id; })[0]; };
+  var ARRIVE = { c: '07:44', d: '07:28', j: '07:35', e: '09:26', k: '07:25', m: '07:02' };
+
+  var REV = [3.1, 7.2, 8.4, 8.0, 8.9, 7.6, 4.8, 3.4, 7.9, 8.7, 9.3, 8.1, 7.7, 5.1, 3.0, 7.5];
+  var REV_TODAY = 4.35;
+  var TODAY_IDX = 2; /* Selasa */
+  var VISITS_BASE = [8, 17, 19, 20, 19, 17, 12];
+
+  var S = {
+    week: 0,
+    lateCount: 3,
+    absen: { shift: 'P', time: '07:38' },
+    cuti: { who: 'e', day: 5, sub: '', stage: 0, orig: null },
+    claims: [{ day: 'Rab 11 Nov', txt: 'Pasien ke-7 belum tercatat.', status: 'Diterima', adj: 32000, by: 'Finance' }],
+    claimSeq: 0,
+    paket: {
+      used: 5,
+      people: ['Ibu Ratna', 'Putri', 'Bapak Hadi'],
+      hist: [
+        { d: '3 Nov', who: 'Ibu Ratna', th: 'Dina' },
+        { d: '6 Nov', who: 'Putri', th: 'Citra' },
+        { d: '9 Nov', who: 'Ibu Ratna', th: 'Dina' },
+        { d: '12 Nov', who: 'Bapak Hadi', th: 'Elsa' },
+        { d: '14 Nov', who: 'Ibu Ratna', th: 'Dina' }
+      ]
+    },
+    loy: { aktif: true, n: 10, count: 7, vouch: 0, paket: true },
+    remind: {},
+    booking: { day: 3, pref: 'all', taken: {}, last: '' },
+    kas: [
+      { d: '10 Nov', t: 'TOPUP', cat: 'Top-up dari owner', ket: 'Top-up kas kecil', amt: 1000000, by: 'Finance' },
+      { d: '11 Nov', t: 'EXPENSE', cat: 'Air minum & es batu', ket: 'Galon dan es batu', amt: -85000, by: 'Kirana' },
+      { d: '12 Nov', t: 'EXPENSE', cat: 'Transport & motor klinik', ket: 'Bensin motor klinik', amt: -50000, by: 'Laras' },
+      { d: '12 Nov', t: 'EXPENSE', cat: 'Transport & motor klinik', ket: 'Parkir home visit', amt: -12000, by: 'Laras' },
+      { d: '13 Nov', t: 'EXPENSE', cat: 'Konsumsi', ket: 'Konsumsi rapat leader', amt: -120000, by: 'Kirana' },
+      { d: '14 Nov', t: 'EXPENSE', cat: 'Keamanan & kebersihan', ket: 'Perlengkapan kebersihan', amt: -150000, by: 'Kirana' },
+      { d: '16 Nov', t: 'EXPENSE', cat: 'ATK', ket: 'Kertas dan tinta', amt: -35000, by: 'Laras' }
+    ],
+    kasOpen: 250000,
+    gaji: {
+      gp: 4325000, batas: 173, menit: 11010,
+      tunj: [
+        { n: 'Uang harian', rate: 40000, perHari: true, qty: 22, unit: 'hari hadir', src: 'absen' },
+        { n: 'Insentif pasien baru', rate: 15000, perHari: false, qty: 24, unit: 'pasien baru', src: 'kunjungan' },
+        { n: 'Insentif paket 3x', rate: 30000, perHari: false, qty: 6, unit: 'paket', src: 'penjualan' },
+        { n: 'Insentif paket 6x', rate: 50000, perHari: false, qty: 3, unit: 'paket', src: 'penjualan' },
+        { n: 'Insentif paket 12x', rate: 90000, perHari: false, qty: 1, unit: 'paket', src: 'penjualan' },
+        { n: 'Insentif tapping', rate: 10000, perHari: false, qty: 12, unit: 'unit', src: 'penjualan' },
+        { n: 'Tunjangan kost', rate: 300000, perHari: false, qty: 1, unit: 'tetap', src: 'tetap' },
+        { n: 'Tunjangan BPJS', rate: 150000, perHari: false, qty: 1, unit: 'tetap', src: 'tetap' }
+      ],
+      pot: [{ n: 'Cicilan koperasi', v: 100000 }],
+      stage: 0
+    }
+  };
+  var CATS = ['Air minum & es batu', 'Transport & motor klinik', 'Keamanan & kebersihan', 'Perlengkapan klinis', 'Konsumsi', 'Perawatan gedung & alat', 'ATK', 'Biaya admin bank', 'Lain-lain'];
+
+  /* ---------- Logika bersama ---------- */
+  function resolve(p, i) {
+    var c = p.days[i];
+    if (c === 'R') { return ((S.week + p.phase) % 2 === 0) ? 'P' : 'S'; }
+    return c;
+  }
+  function isWork(c) { return !!c && c !== 'OFF' && c !== 'CUTI'; }
+  function startMin(c) { return toMin(SHIFTS[c].s); }
+  function validateDay(i) {
+    var th = PEOPLE.filter(function (p) { return p.role === 'T' && isWork(resolve(p, i)); });
+    var f = th.filter(function (p) { return p.g === 'f'; }).length;
+    var m = th.filter(function (p) { return p.g === 'm'; }).length;
+    var fd = PEOPLE.filter(function (p) { return p.role === 'F'; }).map(function (p) { return resolve(p, i); }).filter(isWork);
+    var fdOk = fd.indexOf('L') > -1 || (fd.indexOf('P') > -1 && fd.indexOf('S') > -1);
+    var issues = [];
+    if (f < 1) { issues.push('tidak ada terapis perempuan'); }
+    if (m < 1) { issues.push('tidak ada terapis laki-laki'); }
+    if (!fdOk) { issues.push('front desk belum menutup 07:30-20:00'); }
+    return { f: f, m: m, fdOk: fdOk, issues: issues };
+  }
+  function tier(n) { return n <= 3 ? 20000 : 40000; }
+  function lateTotal(n) { var t = 0; for (var k = 1; k <= n; k++) { t += tier(k); } return t; }
+  function visitsOf(day) { return VISITS_BASE[(day - 1) % 7] + (day % 3) - 1; }
+
+  /* ---------- UI helpers ---------- */
+  function toast(msg) {
+    var old = $('.toast'); if (old) { old.remove(); }
+    var t = document.createElement('div');
+    t.className = 'toast'; t.setAttribute('role', 'status'); t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(function () { if (t.parentNode) { t.remove(); } }, 3200);
+  }
+  function modal(html, onMount) {
+    var o = document.createElement('div');
+    o.className = 'overlay';
+    o.innerHTML = '<div class="modal" role="dialog" aria-modal="true">' + html + '</div>';
+    document.body.appendChild(o);
+    var close = function () { o.remove(); };
+    o.addEventListener('click', function (e) { if (e.target === o || (e.target.closest && e.target.closest('[data-close]'))) { close(); } });
+    if (onMount) { onMount(o, close); }
+    var first = $('textarea, button', o); if (first && first.focus) { first.focus(); }
+    return close;
+  }
+  function frame(title, role, body, cls) {
+    return '<div class="app ' + (cls || '') + '"><div class="app-bar"><span class="logo">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.500" stroke-linecap="round" aria-hidden="true">' + ICON.cross + '</svg></span>' +
+      '<b>' + esc(title) + '</b>' + chip('info', role) + '</div><div class="app-body">' + body + '</div></div>';
+  }
+  function seg(name, items, val) {
+    return '<div class="seg" role="group" aria-label="' + esc(name) + '">' + items.map(function (it) {
+      return '<button type="button" data-seg="' + name + '" data-v="' + it[0] + '" aria-pressed="' + (it[0] === val) + '">' + esc(it[1]) + '</button>';
+    }).join('') + '</div>';
+  }
+  function money(id, val, extra) {
+    return '<div class="rp"><span>Rp</span><input type="number" inputmode="numeric" min="0" step="1000" id="' + id + '" value="' + val + '" ' + (extra || '') + '></div>';
+  }
+  function copyText(text) {
+    var done = function () { toast('Pesan disalin'); };
+    var fallback = function () {
+      var ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); done(); } catch (e) { toast('Pilih dan salin pesan secara manual'); }
+      ta.remove();
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).then(done, fallback); } else { fallback(); }
+  }
+
+  /* ---------- Grafik kolom ---------- */
+  function niceMax(v) { var steps = [2, 4, 5, 6, 8, 10, 12, 15, 20]; for (var i = 0; i < steps.length; i++) { if (v <= steps[i]) { return steps[i]; } } return Math.ceil(v / 5) * 5; }
+  function colChart(host, vals, labels, hiIdx, unit) {
+    var W = Math.max(280, host.clientWidth || 320), H = 220, mL = 30, mR = 6, mT = 20, mB = 24;
+    var max = niceMax(Math.max.apply(null, vals));
+    var iw = W - mL - mR, ih = H - mT - mB, n = vals.length, slot = iw / n, bw = Math.min(24, slot * 0.62);
+    var every = slot < 26 ? 2 : 1;
+    var base = mT + ih;
+    var out = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" role="img" aria-label="Pemasukan harian ' + esc(unit) + ' dalam juta rupiah">';
+    var ticks = 4;
+    for (var t = 0; t <= ticks; t++) {
+      var v = max / ticks * t, y = base - ih * (v / max);
+      out += '<line x1="' + mL + '" x2="' + (W - mR) + '" y1="' + y + '" y2="' + y + '" stroke="' + (t === 0 ? 'var(--axis)' : 'var(--grid)') + '" stroke-width="1"/>';
+      out += '<text x="' + (mL - 6) + '" y="' + (y + 4) + '" text-anchor="end" font-size="11" fill="var(--muted)">' + (Math.round(v * 10) / 10) + '</text>';
+    }
+    out += '<text x="' + mL + '" y="11" font-size="11" fill="var(--muted)">juta rupiah</text>';
+    var maxI = vals.indexOf(Math.max.apply(null, vals.slice(0, -1)));
+    for (var i = 0; i < n; i++) {
+      var h = ih * (vals[i] / max), x = mL + slot * i + (slot - bw) / 2, y2 = base - h, r = 4;
+      var isToday = i === hiIdx;
+      var fill = isToday ? 'var(--series-1)' : 'var(--series-1)';
+      var op = isToday ? 1 : 0.55;
+      if (h > r) {
+        out += '<path d="M' + x + ' ' + base + 'V' + (y2 + r) + 'a' + r + ' ' + r + ' 0 0 1 ' + r + ' -' + r + 'H' + (x + bw - r) + 'a' + r + ' ' + r + ' 0 0 1 ' + r + ' ' + r + 'V' + base + 'Z" fill="' + fill + '" fill-opacity="' + op + '"/>';
+      } else {
+        out += '<rect x="' + x + '" y="' + y2 + '" width="' + bw + '" height="' + h + '" fill="' + fill + '" fill-opacity="' + op + '"/>';
+      }
+      if (i === maxI || i === hiIdx) {
+        out += '<text x="' + (x + bw / 2) + '" y="' + (y2 - 5) + '" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">' + jt(vals[i]) + '</text>';
+      }
+      if (i % every === 0 || i === hiIdx) {
+        out += '<text x="' + (x + bw / 2) + '" y="' + (H - 7) + '" text-anchor="middle" font-size="11" fill="' + (isToday ? 'var(--ink)' : 'var(--muted)') + '" font-weight="' + (isToday ? 600 : 400) + '">' + labels[i] + '</text>';
+      }
+      out += '<rect class="hit" data-i="' + i + '" x="' + (mL + slot * i) + '" y="' + mT + '" width="' + slot + '" height="' + ih + '" fill="transparent" tabindex="0" role="button" aria-label="' + esc(labels[i] + ' November: ' + jt(vals[i])) + '"/>';
+    }
+    out += '</svg><div class="tip" hidden></div>';
+    host.innerHTML = out;
+    var tip = $('.tip', host);
+    var show = function (el) {
+      var i = parseInt(el.getAttribute('data-i'), 10);
+      var x = mL + slot * i + slot / 2, y = base - ih * (vals[i] / max);
+      tip.hidden = false; tip.style.left = x + 'px'; tip.style.top = (y - 6) + 'px';
+      tip.innerHTML = '<b>' + labels[i] + ' Nov</b> ' + (i === hiIdx ? '(berjalan)' : '') + '<br>' + rp(vals[i] * 1000000);
+    };
+    $$('.hit', host).forEach(function (el) {
+      el.addEventListener('mouseenter', function () { show(el); });
+      el.addEventListener('focus', function () { show(el); });
+      el.addEventListener('click', function () { show(el); });
+      el.addEventListener('mouseleave', function () { tip.hidden = true; });
+      el.addEventListener('blur', function () { tip.hidden = true; });
+    });
+  }
+
+  /* ---------- Layar ---------- */
+  var SCENES = [];
+  function add(def) { SCENES.push(def); }
+
+  /* M1: Dashboard owner */
+  add({
+    id: 'm1', title: 'Owner tidak perlu telepon front desk lagi',
+    now: 'Setiap hari owner bertanya ke front desk: siapa yang masuk, siapa yang terlambat, berapa pasien hari ini.',
+    with: 'Satu layar di HP menjawab semuanya, diperbarui otomatis dari absen dan kunjungan.',
+    who: ['Owner'],
+    build: function (el) {
+      var NOW = 11 * 60 + 20;
+      var rows = PEOPLE.map(function (p) { return { p: p, c: resolve(p, TODAY_IDX) }; }).filter(function (r) { return isWork(r.c); }).map(function (r) {
+        var st = startMin(r.c), arr = ARRIVE[r.p.id], status, late = 0;
+        if (arr) { late = toMin(arr) - st; status = late > 10 ? 'late' : 'ok'; } else { status = st <= NOW ? 'absent' : 'wait'; }
+        return { p: r.p, c: r.c, st: st, arr: arr, late: late, status: status };
+      });
+      var order = { absent: 0, late: 1, ok: 2, wait: 3 };
+      rows.sort(function (a, b) { return order[a.status] - order[b.status]; });
+      var cnt = function (s) { return rows.filter(function (r) { return r.status === s; }).length; };
+      var hadir = cnt('ok') + cnt('late');
+      var alerts = [];
+      rows.forEach(function (r) {
+        if (r.status === 'absent') { alerts.push(callout('bad', 'warn', '<b>' + esc(r.p.n) + '</b> belum absen. Shift ' + esc(SHIFTS[r.c].n) + ' mulai ' + SHIFTS[r.c].s + '.')); }
+        if (r.status === 'late') { alerts.push(callout('warn', 'clock', '<b>' + esc(r.p.n) + '</b> terlambat ' + r.late + ' menit (absen ' + r.arr + ').')); }
+      });
+      for (var d = 0; d < 7; d++) {
+        var v = validateDay(d);
+        if (v.issues.length) { alerts.push(callout('warn', 'warn', '<b>' + DAYS_FULL[d] + ':</b> ' + v.issues.join(', ') + '.')); }
+      }
+      if (!alerts.length) { alerts.push(callout('good', 'check', 'Tidak ada hal yang perlu perhatian.')); }
+      var statusChip = function (r) {
+        if (r.status === 'ok') { return chip('good', 'Hadir ' + r.arr, 'check'); }
+        if (r.status === 'late') { return chip('warn', 'Terlambat ' + r.late + ' mnt', 'clock'); }
+        if (r.status === 'absent') { return chip('bad', 'Belum masuk', 'warn'); }
+        return chip('', 'Mulai ' + SHIFTS[r.c].s, 'clock');
+      };
+      var body =
+        '<div><div class="sec-title">Selasa, 17 November 2026 · 11:20</div></div>' +
+        '<div class="panel"><div class="lbl">Pasien hari ini</div><div class="hero-fig num">18</div>' +
+        '<div class="sub" style="margin-top:6px">9 selesai atau sedang terapi, 9 jadwal tersisa</div>' +
+        '<div class="grid3" style="margin-top:12px">' +
+        '<div class="tile"><div class="l">Baru</div><div class="v num">3</div></div>' +
+        '<div class="tile"><div class="l">Lama</div><div class="v num">15</div></div>' +
+        '<div class="tile"><div class="l">Home visit</div><div class="v num">2</div></div></div></div>' +
+        '<div class="grid2"><div class="tile"><div class="l">Kas diterima hari ini</div><div class="v num">' + rp(REV_TODAY * 1000000) + '</div></div>' +
+        '<div class="tile"><div class="l">Bulan berjalan</div><div class="v num">' + rp((REV.reduce(function (a, b) { return a + b; }, 0) + REV_TODAY) * 1000000) + '</div></div></div>' +
+        '<div><div class="sec-title" style="margin-bottom:8px">Perlu perhatian</div><div class="list" style="gap:8px">' + alerts.join('') + '</div></div>' +
+        '<div><div class="sec-title">Kehadiran · ' + hadir + ' hadir, ' + cnt('late') + ' terlambat, ' + cnt('absent') + ' belum masuk</div><div class="list" id="att">' +
+        rows.map(function (r, i) {
+          return '<div><button type="button" class="li" data-att="' + i + '" style="width:100%;background:none;border:0;border-bottom:1px solid var(--line);text-align:left">' +
+            '<span class="ava">' + esc(r.p.n.charAt(0)) + '</span><span class="t">' + esc(r.p.n) + '<small>' + ROLE_NAME[r.p.role] + ' · ' + esc(SHIFTS[r.c].n) + '</small></span>' + statusChip(r) + '</button>' +
+            '<div class="att-d" id="att-' + i + '" hidden style="padding:10px 0;border-bottom:1px solid var(--line)"><div class="row" style="gap:12px;flex-wrap:nowrap">' +
+            '<span class="selfie">' + ic('camera') + '</span><div class="sub" style="font-size:13px">' +
+            (r.arr ? 'Absen masuk ' + r.arr + '<br>' + chip('good', 'Lokasi di klinik', 'pin') + ' ' + chip('good', 'Selfie tersimpan', 'camera') : 'Belum ada absen untuk shift ini.') +
+            '</div></div></div></div>';
+        }).join('') + '</div></div>' +
+        '<p class="notes">Contoh: ketuk nama untuk melihat bukti absen. Ubah jadwal di layar 2 dan daftar ini ikut berubah.</p>';
+      el.innerHTML = frame('Hari ini', 'Owner', body);
+      el.addEventListener('click', function (e) {
+        var b = e.target.closest ? e.target.closest('[data-att]') : null; if (!b) { return; }
+        var d = $('#att-' + b.getAttribute('data-att'), el); if (d) { d.hidden = !d.hidden; }
+      });
+    }
+  });
+
+  /* M2: Jadwal dan absen */
+  add({
+    id: 'm2', title: 'Jadwal shift dan absen jadi satu data',
+    now: 'Jadwal dibuat di Excel, diinput ulang ke Setmore, absen di tempat lain. Keterlambatan sulit dibuktikan.',
+    with: 'Leader menyusun jadwal sekali. Jadwal langsung menjadi absen, kalender booking, dan dasar uang harian. Keterlambatan dan potongannya dihitung otomatis.',
+    who: ['Leader', 'Front desk', 'Terapis'],
+    build: function (el) {
+      var tab = 'jadwal';
+      var cellLabel = function (p, i) {
+        var c = p.days[i];
+        if (c === 'R') { return resolve(p, i) + '↻'; }
+        if (c === 'F') { return 'P/S'; }
+        return c;
+      };
+      var rosterHtml = function () {
+        var groups = [['T', 'Terapis perempuan', 'f'], ['T', 'Terapis laki-laki', 'm'], ['F', 'Front desk', null], ['S', 'Staf penunjang (upah per jam)', null]];
+        var rows = '';
+        groups.forEach(function (g) {
+          rows += '<tr class="grp"><td colspan="8">' + g[1] + '</td></tr>';
+          PEOPLE.filter(function (p) { return p.role === g[0] && (g[2] === null || p.g === g[2]); }).forEach(function (p) {
+            rows += '<tr><td class="name"><b>' + esc(p.n) + '</b> <span class="muted" style="font-size:11px">' + p.st + '</span></td>';
+            for (var i = 0; i < 7; i++) {
+              var c = p.days[i];
+              var code = c === 'R' ? resolve(p, i) : c;
+              rows += '<td><button type="button" class="cell ' + code + '" data-cell="' + p.id + ':' + i + '" aria-label="' + esc(p.n + ', ' + DAYS_FULL[i] + ', ' + cellLabel(p, i)) + '">' + cellLabel(p, i) + '</button></td>';
+            }
+            rows += '</tr>';
+          });
+        });
+        var head = '<tr><th style="text-align:left;padding-left:8px">Nama</th>' + DAYS.map(function (d) { return '<th>' + d + '</th>'; }).join('') + '</tr>';
+        var checks = '';
+        for (var d = 0; d < 7; d++) {
+          var v = validateDay(d);
+          checks += '<div class="' + (v.issues.length ? 'no' : 'ok') + '" title="' + esc(v.issues.join(', ') || 'Aman') + '">' + DAYS[d] + '<br>' + (v.issues.length ? 'Cek' : 'Aman') + '</div>';
+        }
+        var issues = [];
+        for (var k = 0; k < 7; k++) { var vv = validateDay(k); if (vv.issues.length) { issues.push('<b>' + DAYS_FULL[k] + ':</b> ' + vv.issues.join(', ')); } }
+        return '<div class="tablewrap"><table class="roster"><thead>' + head + '</thead><tbody>' + rows + '</tbody></table></div>' +
+          '<div class="sec-title" style="margin-top:12px">Pemeriksaan otomatis per hari</div><div class="checks">' + checks + '</div>' +
+          '<div style="margin-top:8px">' + (issues.length ? callout('warn', 'warn', issues.join('<br>')) : callout('good', 'check', 'Setiap hari ada terapis perempuan dan laki-laki, dan front desk menutup 07:30-20:00.')) + '</div>';
+      };
+      var cutiOpts = function () {
+        var c = S.cuti, who = byId(c.who), code = resolve(who, c.day);
+        var cands = PEOPLE.filter(function (p) { return p.role === who.role && p.id !== who.id && (!isWork(resolve(p, c.day))); });
+        return { who: who, code: code, cands: cands };
+      };
+      var cutiHtml = function () {
+        var c = S.cuti, o = cutiOpts(), who = o.who;
+        var work = isWork(o.code);
+        var stages = ['Pengajuan', 'Pengganti setuju', 'Owner setuju', 'Jadwal berubah'];
+        var st = '<div class="stepper">' + stages.map(function (s, i) { return '<div class="' + (i < c.stage ? 'done' : (i === c.stage ? 'on' : '')) + '">' + s + '</div>'; }).join('') + '</div>';
+        var body = '';
+        if (c.stage === 0) {
+          body = '<div class="grid2"><div class="field"><label for="cuti-who">Yang cuti</label><select id="cuti-who">' +
+            PEOPLE.filter(function (p) { return p.role === 'T' || p.role === 'F'; }).map(function (p) { return '<option value="' + p.id + '"' + (p.id === c.who ? ' selected' : '') + '>' + p.n + '</option>'; }).join('') +
+            '</select></div><div class="field"><label for="cuti-day">Hari</label><select id="cuti-day">' +
+            DAYS_FULL.map(function (d, i) { return '<option value="' + i + '"' + (i === c.day ? ' selected' : '') + '>' + d + '</option>'; }).join('') +
+            '</select></div></div>' +
+            (work ? '<div class="field" style="margin-top:10px"><label for="cuti-sub">Calon pengganti (' + ROLE_NAME[who.role] + ' yang sedang libur)</label><select id="cuti-sub"><option value="">Pilih pengganti</option>' +
+              o.cands.map(function (p) { return '<option value="' + p.id + '"' + (p.id === c.sub ? ' selected' : '') + '>' + p.n + ' (libur hari itu)</option>'; }).join('') + '</select></div>' +
+              '<div class="row" style="margin-top:10px"><button type="button" class="btn primary" data-act="cuti-send"' + (c.sub ? '' : ' disabled') + '>Kirim permintaan cuti</button><span class="chip">Sisa kuota cuti: 9 dari 12 hari</span></div>' +
+              '<p class="notes" style="margin-top:8px">Cuti tidak bisa diajukan tanpa pengganti, dan pengganti harus setuju lebih dulu.</p>'
+              : '<div style="margin-top:10px">' + callout('info', 'check', esc(who.n) + ' sudah libur pada hari itu. Pilih hari kerja untuk mencoba pengajuan cuti.') + '</div>');
+        } else if (c.stage === 1) {
+          body = callout('info', 'clock', 'Permintaan cuti <b>' + esc(who.n) + '</b> (' + DAYS_FULL[c.day] + ') menunggu persetujuan <b>' + esc(byId(c.sub).n) + '</b>, yang harus masuk di shift ' + esc(SHIFTS[o.code === 'R' ? 'P' : o.code] ? SHIFTS[o.code === 'R' ? 'P' : o.code].n : '') + '.') +
+            '<div class="row" style="margin-top:10px"><button type="button" class="btn primary" data-act="cuti-sub-ok">Simulasikan: pengganti setuju</button></div>';
+        } else if (c.stage === 2) {
+          body = callout('info', 'clock', esc(byId(c.sub).n) + ' sudah setuju. Menunggu persetujuan owner.') +
+            '<div class="row" style="margin-top:10px"><button type="button" class="btn primary" data-act="cuti-owner-ok">Simulasikan: owner setuju</button></div>';
+        } else {
+          body = callout('good', 'check', 'Jadwal sudah berubah. <b>' + esc(who.n) + '</b> cuti, <b>' + esc(byId(c.sub).n) + '</b> menggantikan di ' + DAYS_FULL[c.day] + '. Uang harian shift itu pindah ke pengganti.') +
+            '<div class="row" style="margin-top:10px"><button type="button" class="btn" data-act="cuti-reset">Coba lagi</button></div>';
+        }
+        return st + '<div style="margin-top:10px">' + body + '</div>';
+      };
+      var absenHtml = function () {
+        var a = S.absen, sh = SHIFTS[a.shift], st = toMin(sh.s), t = toMin(a.time), late = t - st;
+        var isLate = late > 10;
+        var nth = S.lateCount + 1;
+        var res;
+        if (!isLate) {
+          res = callout('good', 'check', 'Tepat waktu. Toleransi sampai ' + fromMin(st + 10) + '. Tidak ada potongan.');
+        } else {
+          res = callout('warn', 'clock', 'Terlambat <b>' + late + ' menit</b>. Ini kejadian terlambat ke-<b>' + nth + '</b> pada periode ini, potongan <b>' + rp(tier(nth)) + '</b>. ' + (nth <= 3 ? 'Kejadian ke-1 sampai ke-3 Rp20.000, ke-4 dan seterusnya Rp40.000.' : 'Mulai kejadian ke-4 potongan Rp40.000.'));
+        }
+        return '<div class="grid2"><div class="field"><label for="ab-shift">Shift hari ini</label><select id="ab-shift">' +
+          ['P', 'S', 'M'].map(function (k) { return '<option value="' + k + '"' + (k === a.shift ? ' selected' : '') + '>' + SHIFTS[k].n + ' (' + SHIFTS[k].s + '-' + SHIFTS[k].e + ')</option>'; }).join('') +
+          '</select></div><div class="field"><label for="ab-time">Jam absen</label><input type="time" id="ab-time" value="' + a.time + '"></div></div>' +
+          '<div class="row" style="margin-top:10px">' + chip('good', 'Lokasi di klinik (12 m)', 'pin') + chip('good', 'Selfie diambil', 'camera') + '</div>' +
+          '<div style="margin-top:10px">' + res + '</div>' +
+          '<div class="row" style="margin-top:10px"><span class="muted" style="font-size:12px">Coba jam:</span><button type="button" class="btn sm" data-time="' + fromMin(st + 8) + '">' + fromMin(st + 8) + ' tepat waktu</button><button type="button" class="btn sm" data-time="' + fromMin(st + 22) + '">' + fromMin(st + 22) + ' terlambat</button></div>' +
+          '<div class="row" style="margin-top:10px"><button type="button" class="btn primary" data-act="absen-go">Absen sekarang</button><button type="button" class="btn" data-act="absen-reset">Kembalikan ke 3 kejadian</button></div>' +
+          '<p class="notes" style="margin-top:8px">Terlambat tercatat sekarang: ' + S.lateCount + ' kejadian, potongan ' + rp(lateTotal(S.lateCount)) + '. Angka ini dipakai di layar penggajian (layar 5).</p>';
+      };
+      var render = function () {
+        var body =
+          '<div class="row" style="justify-content:space-between"><div>' + seg('tab', [['jadwal', 'Jadwal periode'], ['cuti', 'Cuti'], ['absen', 'Absen']], tab) + '</div></div>';
+        if (tab === 'jadwal') {
+          body += '<div class="row" style="justify-content:space-between"><div class="sec-title">Periode 3-30 November 2026 · disusun leader</div>' +
+            seg('week', [['0', 'Minggu 1'], ['1', 'Minggu 2']], String(S.week)) + '</div>' +
+            '<div id="roster">' + rosterHtml() + '</div>' +
+            '<div class="legend"><span><b>P</b> pagi 07:30-14:30</span><span><b>S</b> siang 13:00-20:00</span><span><b>M</b> middle 09:30-16:30</span><span><b>PL/SL</b> pagi/siang long (10 jam)</span><span><b>L</b> long (12 jam)</span><span><b>↻</b> berputar tiap minggu</span></div>' +
+            '<p class="notes">Ketuk sel untuk mengganti shift, lalu lihat pemeriksaan otomatis di bawahnya. Jam shift long hanya contoh.</p>' +
+            '<div class="row"><button type="button" class="btn primary" data-act="publish">Terbitkan jadwal</button></div>';
+        } else if (tab === 'cuti') {
+          body += '<div class="sec-title">Ajukan cuti dengan pengganti</div><div id="cuti">' + cutiHtml() + '</div>';
+        } else {
+          body += '<div class="sec-title">Absen masuk (tampilan terapis atau front desk)</div><div id="absen">' + absenHtml() + '</div>';
+        }
+        el.innerHTML = frame('Jadwal dan absen', 'Leader', body, 'wide');
+      };
+      render();
+      el.addEventListener('click', function (e) {
+        var t = e.target.closest ? e.target.closest('button') : null; if (!t) { return; }
+        if (t.hasAttribute('data-seg')) {
+          var k = t.getAttribute('data-seg'), v = t.getAttribute('data-v');
+          if (k === 'tab') { tab = v; render(); }
+          if (k === 'week') { S.week = parseInt(v, 10); render(); }
+          return;
+        }
+        var tm = t.getAttribute('data-time');
+        if (tm) { S.absen.time = tm; $('#absen', el).innerHTML = absenHtml(); return; }
+        var cell = t.getAttribute('data-cell');
+        if (cell) {
+          var parts = cell.split(':'), p = byId(parts[0]), i = parseInt(parts[1], 10), opts = OPTS[p.role];
+          var idx = opts.indexOf(p.days[i]); p.days[i] = opts[(idx + 1) % opts.length];
+          var rs = $('#roster', el); if (rs) { rs.innerHTML = rosterHtml(); }
+          return;
+        }
+        var act = t.getAttribute('data-act');
+        if (act === 'publish') { toast('Jadwal terbit. Terapis dan front desk menerima notifikasi, kalender booking ikut diperbarui.'); }
+        if (act === 'cuti-send') { if (S.cuti.sub) { S.cuti.stage = 1; $('#cuti', el).innerHTML = cutiHtml(); } }
+        if (act === 'cuti-sub-ok') { S.cuti.stage = 2; $('#cuti', el).innerHTML = cutiHtml(); }
+        if (act === 'cuti-owner-ok') {
+          var c = S.cuti, who = byId(c.who), sub = byId(c.sub), code = resolve(who, c.day);
+          c.orig = { who: who.days[c.day], sub: sub.days[c.day] };
+          who.days[c.day] = 'CUTI';
+          sub.days[c.day] = code;
+          S.cuti.stage = 3; $('#cuti', el).innerHTML = cutiHtml();
+        }
+        if (act === 'cuti-reset') {
+          var c2 = S.cuti, who2 = byId(c2.who), sub2 = c2.sub ? byId(c2.sub) : null;
+          if (c2.orig) { who2.days[c2.day] = c2.orig.who; if (sub2) { sub2.days[c2.day] = c2.orig.sub; } }
+          S.cuti = { who: c2.who, day: c2.day, sub: '', stage: 0, orig: null }; $('#cuti', el).innerHTML = cutiHtml();
+        }
+        if (act === 'absen-go') {
+          var a = S.absen, late = toMin(a.time) - toMin(SHIFTS[a.shift].s);
+          if (late > 10) { S.lateCount += 1; toast('Absen tercatat. Terlambat, potongan ' + rp(tier(S.lateCount)) + ' (kejadian ke-' + S.lateCount + ').'); } else { toast('Absen tercatat. Tepat waktu.'); }
+          $('#absen', el).innerHTML = absenHtml();
+        }
+        if (act === 'absen-reset') { S.lateCount = 3; $('#absen', el).innerHTML = absenHtml(); }
+      });
+      el.addEventListener('change', function (e) {
+        var id = e.target.id;
+        if (id === 'cuti-who') { S.cuti.who = e.target.value; S.cuti.sub = ''; $('#cuti', el).innerHTML = cutiHtml(); }
+        if (id === 'cuti-day') { S.cuti.day = parseInt(e.target.value, 10); S.cuti.sub = ''; $('#cuti', el).innerHTML = cutiHtml(); }
+        if (id === 'cuti-sub') { S.cuti.sub = e.target.value; $('#cuti', el).innerHTML = cutiHtml(); }
+        if (id === 'ab-shift') { S.absen.shift = e.target.value; S.absen.time = fromMin(toMin(SHIFTS[e.target.value].s) + 8); $('#absen', el).innerHTML = absenHtml(); }
+        if (id === 'ab-time') { S.absen.time = e.target.value || S.absen.time; $('#absen', el).innerHTML = absenHtml(); }
+      });
+    }
+  });
+
+  /* M3: Pemasukan */
+  add({
+    id: 'm3', title: 'Pemasukan terlihat hari ini, bukan akhir bulan',
+    now: 'Pendapatan baru diketahui setelah rekap bulanan selesai.',
+    with: 'Pemasukan harian dan bulan berjalan bisa dibuka kapan saja, dipecah per metode bayar.',
+    who: ['Owner', 'Finance'],
+    build: function (el) {
+      var mode = 'kas', table = false;
+      var series = function () {
+        var base = REV.concat([REV_TODAY]);
+        if (mode === 'kas') { return base; }
+        return base.map(function (v, i) { return Math.round(v * (0.9 + 0.025 * (i % 4)) * 100) / 100; });
+      };
+      var labels = []; for (var i = 1; i <= 17; i++) { labels.push(String(i)); }
+      var draw = function () {
+        var vals = series(), total = vals.reduce(function (a, b) { return a + b; }, 0) * 1000000;
+        $('#tot', el).textContent = rp(total);
+        $('#avg', el).textContent = rp(total / 17);
+        $('#ttl', el).textContent = mode === 'kas' ? 'Kas diterima per hari' : 'Layanan terlaksana per hari';
+        colChart($('#chart', el), vals, labels, 16, mode);
+        var pm = [['Kartu BCA', 0.30], ['Kartu Mandiri', 0.17], ['Transfer', 0.16], ['QRIS', 0.12], ['Kartu BNI', 0.10], ['Tunai', 0.09], ['LOAN', 0.06]];
+        $('#pay', el).innerHTML = pm.map(function (r) {
+          return '<div class="hbar"><span>' + r[0] + '</span><span class="trk"><i style="width:' + (r[1] / 0.30 * 100) + '%"></i></span><span class="num">' + rp(total * r[1]) + '</span></div>';
+        }).join('');
+        var tb = $('#tb', el);
+        tb.hidden = !table;
+        tb.innerHTML = '<div class="tablewrap"><table><thead><tr><th>Tanggal</th><th class="r">Rupiah</th></tr></thead><tbody>' +
+          vals.map(function (v, k) { return '<tr><td>' + (k + 1) + ' Nov' + (k === 16 ? ' (berjalan)' : '') + '</td><td class="r num">' + rp(v * 1000000) + '</td></tr>'; }).join('') + '</tbody></table></div>';
+        $('[data-act="tbl"]', el).textContent = table ? 'Sembunyikan tabel' : 'Tampilkan tabel';
+      };
+      var body =
+        '<div class="row" style="justify-content:space-between">' + seg('mode', [['kas', 'Kas diterima'], ['svc', 'Layanan terlaksana']], mode) + '</div>' +
+        '<div class="grid2"><div class="tile"><div class="l">Total 1-17 November</div><div class="v num" id="tot"></div></div><div class="tile"><div class="l">Rata-rata per hari</div><div class="v num" id="avg"></div></div></div>' +
+        '<div><div class="sec-title" id="ttl" style="margin-bottom:6px"></div><div class="chartbox" id="chart"></div></div>' +
+        '<div class="row"><button type="button" class="btn sm" data-act="tbl">Tampilkan tabel</button></div><div id="tb" hidden></div>' +
+        '<div><div class="sec-title" style="margin-bottom:6px">Per metode bayar, bulan berjalan</div><div id="pay"></div></div>' +
+        '<p class="notes">Kas diterima menghitung pembayaran. Layanan terlaksana menghitung nilai kunjungan selesai, termasuk pemakaian paket.</p>';
+      el.innerHTML = frame('Pemasukan', 'Owner', body);
+      draw();
+      el.addEventListener('click', function (e) {
+        var t = e.target.closest ? e.target.closest('button') : null; if (!t) { return; }
+        if (t.getAttribute('data-seg') === 'mode') { mode = t.getAttribute('data-v'); $$('[data-seg="mode"]', el).forEach(function (b) { b.setAttribute('aria-pressed', String(b === t)); }); draw(); }
+        if (t.getAttribute('data-act') === 'tbl') { table = !table; draw(); }
+      });
+      if ('ResizeObserver' in window) { var ro = new ResizeObserver(function () { draw(); }); ro.observe($('#chart', el)); }
+    }
+  });
+
+  /* M4: Pendapatan saya + keberatan */
+  add({
+    id: 'm4', title: 'Tidak ada lagi debat angka insentif',
+    now: 'Terapis menghitung pasiennya sendiri, finance menghitung dari rekap. Angkanya berbeda.',
+    with: 'Pendapatan tercatat otomatis tiap hari. Terapis melihat angkanya sendiri dan mengajukan keberatan langsung di aplikasi.',
+    who: ['Terapis', 'Finance'],
+    build: function (el) {
+      var view = 'terapis';
+      var R = { uh: 75000, pasien: 32000, hv: 60000 };
+      var DAYS_DATA = [
+        { d: 'Sel 10 Nov', uh: 1, p: 5, hv: 0 }, { d: 'Rab 11 Nov', uh: 1, p: 6, hv: 1 }, { d: 'Kam 12 Nov', uh: 1, p: 7, hv: 0 },
+        { d: 'Jum 13 Nov', uh: 1, p: 6, hv: 0 }, { d: 'Sab 14 Nov', uh: 1, p: 4, hv: 0 }, { d: 'Sel 17 Nov', uh: 1, p: 3, hv: 0 }
+      ];
+      var PRIOR = 3120000;
+      var adjSum = function () { return S.claims.filter(function (c) { return c.status === 'Diterima'; }).reduce(function (a, c) { return a + c.adj; }, 0); };
+      var dayTotal = function (x) { return x.uh * R.uh + x.p * R.pasien + x.hv * R.hv; };
+      var total = function () { return PRIOR + DAYS_DATA.reduce(function (a, x) { return a + dayTotal(x); }, 0) + adjSum(); };
+      var claimFor = function (d) { return S.claims.filter(function (c) { return c.day === d; })[0]; };
+      var stChip = function (c) { return c.status === 'Diterima' ? chip('good', 'Diterima', 'check') : (c.status === 'Ditolak' ? chip('bad', 'Ditolak', 'x') : chip('warn', 'Menunggu finance', 'clock')); };
+      var terapisHtml = function () {
+        return '<div class="panel"><div class="lbl">Pendapatan periode 26 Okt-25 Nov (berjalan)</div><div class="hero-fig num" style="font-size:40px">' + rp(total()) + '</div>' +
+          '<div class="sub" style="margin-top:4px;font-size:13px">Tarif Citra: uang harian ' + rp(R.uh) + ', per pasien ' + rp(R.pasien) + ', home visit ' + rp(R.hv) + '</div></div>' +
+          '<div><div class="sec-title">Rincian harian</div><div class="list">' + DAYS_DATA.map(function (x) {
+            var c = claimFor(x.d);
+            return '<div class="li" style="align-items:flex-start"><div class="t"><b>' + x.d + '</b><small>Uang harian ' + x.uh + '× · ' + x.p + ' pasien' + (x.hv ? ' · ' + x.hv + ' home visit' : '') + '</small>' +
+              (c ? '<small>Keberatan: ' + esc(c.txt) + (c.status === 'Diterima' ? ' Koreksi +' + rp(c.adj) + '.' : '') + '</small>' : '') + '</div>' +
+              '<div style="text-align:right"><div class="num"><b>' + rp(dayTotal(x) + (c && c.status === 'Diterima' ? c.adj : 0)) + '</b></div>' +
+              (c ? stChip(c) : '<button type="button" class="btn sm" data-claim="' + x.d + '">Ajukan keberatan</button>') + '</div></div>';
+          }).join('') + '</div></div>' +
+          '<p class="notes">Coba ajukan keberatan pada salah satu hari, lalu pindah ke tampilan Finance untuk memutuskan.</p>';
+      };
+      var financeHtml = function () {
+        var pending = S.claims.filter(function (c) { return c.status === 'Menunggu'; });
+        return '<div class="sec-title">Keberatan masuk (' + pending.length + ' menunggu)</div>' +
+          (pending.length ? '<div class="list">' + pending.map(function (c, i) {
+            return '<div class="li" style="align-items:flex-start"><div class="t"><b>Citra · ' + c.day + '</b><small>' + esc(c.txt) + '</small><small>Bukti: daftar kunjungan hari itu dan absen.</small></div>' +
+              '<div class="row" style="flex-direction:column;align-items:stretch"><button type="button" class="btn sm primary" data-decide="ok" data-day="' + c.day + '">Terima, +1 pasien</button><button type="button" class="btn sm" data-decide="no" data-day="' + c.day + '">Tolak</button></div></div>';
+          }).join('') + '</div>' : callout('good', 'check', 'Tidak ada keberatan yang menunggu.')) +
+          '<div class="sec-title" style="margin-top:6px">Riwayat keputusan</div><div class="list">' +
+          S.claims.filter(function (c) { return c.status !== 'Menunggu'; }).map(function (c) {
+            return '<div class="li"><div class="t"><b>Citra · ' + c.day + '</b><small>' + esc(c.txt) + ' Diputuskan ' + esc(c.by) + '.</small></div>' + stChip(c) + '</div>';
+          }).join('') + '</div>' +
+          '<p class="notes">Keputusan menambah entri koreksi. Angka lama tidak ditimpa, dan semuanya masuk audit log.</p>';
+      };
+      var render = function () {
+        var body = '<div>' + seg('view', [['terapis', 'Tampilan terapis'], ['finance', 'Tampilan finance']], view) + '</div>' +
+          (view === 'terapis' ? terapisHtml() : financeHtml());
+        el.innerHTML = frame('Pendapatan saya', view === 'terapis' ? 'Terapis' : 'Finance', body);
+      };
+      render();
+      el.addEventListener('click', function (e) {
+        var t = e.target.closest ? e.target.closest('button') : null; if (!t) { return; }
+        if (t.getAttribute('data-seg') === 'view') { view = t.getAttribute('data-v'); render(); return; }
+        var cl = t.getAttribute('data-claim');
+        if (cl) {
+          modal('<h3>Keberatan untuk ' + esc(cl) + '</h3><p class="sub">Jelaskan bagian yang menurut Anda tidak sesuai. Finance akan memeriksa kunjungan dan absen hari itu.</p>' +
+            '<div class="field"><label for="claim-txt">Alasan</label><textarea id="claim-txt">Pasien ke-7 hari itu belum tercatat.</textarea></div>' +
+            '<div class="row" style="justify-content:flex-end"><button type="button" class="btn" data-close>Batal</button><button type="button" class="btn primary" id="claim-go">Kirim keberatan</button></div>',
+            function (o, close) {
+              $('#claim-go', o).addEventListener('click', function () {
+                var txt = ($('#claim-txt', o).value || '').trim() || 'Ada yang tidak sesuai.';
+                S.claims.push({ day: cl, txt: txt, status: 'Menunggu', adj: 0, by: '' });
+                close(); render(); toast('Keberatan terkirim ke finance.');
+              });
+            });
+          return;
+        }
+        var dec = t.getAttribute('data-decide');
+        if (dec) {
+          var day = t.getAttribute('data-day');
+          S.claims.forEach(function (c) { if (c.day === day && c.status === 'Menunggu') { c.status = dec === 'ok' ? 'Diterima' : 'Ditolak'; c.adj = dec === 'ok' ? R.pasien : 0; c.by = 'Finance'; } });
+          render(); toast(dec === 'ok' ? 'Koreksi dicatat. Pendapatan terapis bertambah ' + rp(R.pasien) + '.' : 'Keberatan ditolak, alasan tercatat.');
+        }
+      });
+    }
+  });
+
+  /* M5: Penggajian */
+  add({
+    id: 'm5', title: 'Gaji siap dalam hitungan menit, dengan jejak',
+    now: 'Finance menghitung ulang dari rekap Excel front desk, komponen demi komponen.',
+    with: 'Finance mengisi Data gaji sekali. Tiap hari sistem mencatat, jadi di akhir periode draf gaji sudah jadi. Tinggal diperiksa dan disetujui owner.',
+    who: ['Finance', 'Owner'],
+    build: function (el) {
+      var G = S.gaji;
+      var calc = function () {
+        var rate = G.gp / 173;
+        var over = Math.max(0, G.menit - G.batas * 60);
+        var lembur = Math.floor(over / 60 * rate / 1000) * 1000;
+        var earn = [{ n: 'Gaji pokok', det: 'Data gaji', amt: G.gp }];
+        earn.push({ n: 'Lembur', det: hm(G.menit) + ' jam kerja, batas ' + G.batas + ' jam, lebih ' + hm(over) + ' × ' + rp(rate) + '/jam (dibulatkan ke bawah ke ribuan)', amt: lembur });
+        G.tunj.forEach(function (t) {
+          var amt = t.perHari || t.src !== 'tetap' ? t.rate * t.qty : t.rate;
+          var det = t.src === 'tetap' ? 'Tetap bulanan' : rp(t.rate) + ' × ' + t.qty + ' ' + t.unit + ' (otomatis dari ' + t.src + ')';
+          if (t.src === 'absen' && !t.perHari) { amt = t.rate; det = 'Tetap bulanan (tanpa pengali hari hadir)'; }
+          earn.push({ n: t.n, det: det, amt: amt });
+        });
+        var ded = [];
+        var N = S.lateCount;
+        ded.push({ n: 'Potongan keterlambatan', det: N + ' kejadian: ' + Math.min(N, 3) + '× Rp20.000' + (N > 3 ? ' + ' + (N - 3) + '× Rp40.000' : ''), amt: lateTotal(N) });
+        G.pot.forEach(function (p) { ded.push({ n: p.n || '(tanpa nama)', det: 'Potongan tetap', amt: p.v }); });
+        var te = earn.reduce(function (a, x) { return a + x.amt; }, 0), td = ded.reduce(function (a, x) { return a + x.amt; }, 0);
+        return { earn: earn, ded: ded, te: te, td: td, net: te - td };
+      };
+      var outHtml = function () {
+        var c = calc();
+        var row = function (x, minus) {
+          return '<tr><td style="white-space:normal;min-width:120px"><b>' + esc(x.n) + '</b><div class="muted" style="font-size:11px">' + esc(x.det) + '</div></td><td class="r num">' + (minus ? '-' : '') + rp(x.amt) + '</td></tr>';
+        };
+        return '<div class="tablewrap"><table><thead><tr><th>Pendapatan</th><th class="r">Jumlah</th></tr></thead><tbody>' + c.earn.map(function (x) { return row(x, false); }).join('') + '</tbody>' +
+          '<thead><tr><th>Potongan</th><th class="r"></th></tr></thead><tbody>' + c.ded.map(function (x) { return row(x, true); }).join('') +
+          '<tr class="total"><td>Total diterima</td><td class="r num">' + rp(c.net) + '</td></tr></tbody></table></div>';
+      };
+      var stageHtml = function () {
+        var names = ['Draf', 'Diperiksa finance', 'Disetujui owner', 'Dibayar'];
+        var s = '<div class="stepper">' + names.map(function (n, i) { return '<div class="' + (i < G.stage ? 'done' : (i === G.stage ? 'on' : '')) + '">' + n + '</div>'; }).join('') + '</div>';
+        var btn = ['Finance: tandai sudah diperiksa', 'Owner: setujui penggajian', 'Finance: tandai sudah dibayar'][G.stage];
+        var note = G.stage >= 2 ? callout('info', 'lock', 'Data kunjungan, absen, dan pendapatan periode ini terkunci. Koreksi dilakukan di periode berikutnya.') : '';
+        return s + '<div class="row" style="margin-top:10px">' + (btn ? '<button type="button" class="btn primary" data-act="stage">' + btn + '</button>' : chip('good', 'Slip gaji terbit untuk karyawan', 'check')) +
+          (G.stage > 0 ? '<button type="button" class="btn" data-act="stage-reset">Ulangi</button>' : '') + '</div>' + (note ? '<div style="margin-top:10px">' + note + '</div>' : '');
+      };
+      var tunjHtml = function () {
+        return G.tunj.map(function (t, i) {
+          var auto = t.src !== 'tetap';
+          return '<div class="panel soft" style="padding:10px"><div class="row" style="justify-content:space-between"><b style="font-size:13px">' + esc(t.n) + '</b>' + (auto ? chip('info', 'Jumlah otomatis: ' + t.qty + ' ' + t.unit) : chip('', 'Tetap bulanan')) + '</div>' +
+            '<div class="field" style="margin-top:6px"><label for="t-' + i + '">' + (t.perHari ? 'Nominal per hari' : (auto ? 'Tarif per ' + t.unit : 'Nominal per bulan')) + '</label>' + money('t-' + i, t.rate) + '</div>' +
+            (t.src === 'absen' ? '<label class="chk"><input type="checkbox" data-perhari="' + i + '"' + (t.perHari ? ' checked' : '') + '> Per hari hadir (Rp' + fmt(t.rate) + ' × hari hadir)</label>' : '') + '</div>';
+        }).join('');
+      };
+      var potHtml = function () {
+        return G.pot.map(function (p, i) {
+          return '<div class="row" style="align-items:flex-end"><div class="field" style="flex:1 1 150px"><label for="pn-' + i + '">Nama</label><input type="text" id="pn-' + i + '" value="' + esc(p.n) + '"></div>' +
+            '<div class="field" style="flex:1 1 150px"><label for="pv-' + i + '">Per bulan</label>' + money('pv-' + i, p.v) + '</div>' +
+            '<button type="button" class="btn sm" data-delpot="' + i + '" aria-label="Hapus potongan">' + ic('x') + '</button></div>';
+        }).join('') || '<p class="muted" style="font-size:13px">Belum ada potongan tetap.</p>';
+      };
+      var form =
+        '<div class="panel"><div class="row" style="justify-content:space-between"><div><h3 style="font-size:17px">Kirana</h3><div class="muted" style="font-size:12px">Front desk · Tetap · Rekening BRI ****-**-0456</div></div>' + chip('info', 'Data gaji') + '</div>' +
+        '<div class="field" style="margin-top:12px"><label for="gp">Gaji pokok per bulan</label>' + money('gp', G.gp) + '</div>' +
+        '<div class="field" style="margin-top:10px"><label for="batas">Batas jam kerja per bulan (diisi finance)</label><input type="number" id="batas" min="0" step="1" value="' + G.batas + '"></div></div>' +
+        '<div class="panel"><div class="sec-title" style="margin-bottom:8px">Tunjangan dan insentif</div><div class="list" style="gap:8px" id="tunj">' + tunjHtml() + '</div></div>' +
+        '<div class="panel"><div class="sec-title" style="margin-bottom:8px">Potongan tetap</div><div class="list" style="gap:8px" id="pot">' + potHtml() + '</div>' +
+        '<div style="margin-top:10px"><button type="button" class="btn sm" data-act="addpot">' + ic('plus') + ' Tambah potongan tetap</button></div>' +
+        '<p class="notes" style="margin-top:8px">Keterlambatan dipotong otomatis dari absen. Potongan lain diisi manual di sini.</p></div>' +
+        '<div class="panel soft"><div class="sec-title" style="margin-bottom:6px">Dari data harian (otomatis)</div><div class="grid2">' +
+        '<div class="tile"><div class="l">Jam kerja periode</div><div class="v num">' + hm(G.menit) + '</div></div>' +
+        '<div class="tile"><div class="l">Terlambat</div><div class="v num" id="late">' + S.lateCount + ' kali</div></div></div>' +
+        '<p class="notes" style="margin-top:8px">Tambah keterlambatan di layar 2 (tab Absen), lalu kembali ke sini.</p></div>';
+      var right =
+        '<div class="panel"><div class="sec-title" style="margin-bottom:6px">Draf gaji · periode 26 Okt-25 Nov 2026</div><div id="out">' + outHtml() + '</div></div>' +
+        '<div class="panel"><div class="sec-title" style="margin-bottom:8px">Persetujuan</div><div id="stage">' + stageHtml() + '</div></div>';
+      el.innerHTML = frame('Penggajian', 'Finance', '<div class="payroll-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:16px;align-items:start"><div style="display:flex;flex-direction:column;gap:16px;min-width:0">' + form + '</div><div style="display:flex;flex-direction:column;gap:16px;min-width:0">' + right + '</div></div>', 'wide');
+      var refresh = function () { $('#out', el).innerHTML = outHtml(); };
+      el.addEventListener('input', function (e) {
+        var id = e.target.id || '', v = parseFloat(e.target.value); if (isNaN(v)) { v = 0; }
+        if (id === 'gp') { G.gp = v; refresh(); }
+        else if (id === 'batas') { G.batas = v; refresh(); }
+        else if (id.indexOf('t-') === 0) { G.tunj[parseInt(id.slice(2), 10)].rate = v; refresh(); }
+        else if (id.indexOf('pv-') === 0) { G.pot[parseInt(id.slice(3), 10)].v = v; refresh(); }
+        else if (id.indexOf('pn-') === 0) { G.pot[parseInt(id.slice(3), 10)].n = e.target.value; refresh(); }
+      });
+      el.addEventListener('change', function (e) {
+        var pi = e.target.getAttribute && e.target.getAttribute('data-perhari');
+        if (pi !== null && pi !== undefined) { G.tunj[parseInt(pi, 10)].perHari = e.target.checked; refresh(); }
+      });
+      el.addEventListener('click', function (e) {
+        var t = e.target.closest ? e.target.closest('button') : null; if (!t) { return; }
+        var act = t.getAttribute('data-act'), dp = t.getAttribute('data-delpot');
+        if (act === 'addpot') { G.pot.push({ n: '', v: 0 }); $('#pot', el).innerHTML = potHtml(); refresh(); }
+        if (dp !== null) { G.pot.splice(parseInt(dp, 10), 1); $('#pot', el).innerHTML = potHtml(); refresh(); }
+        if (act === 'stage') { G.stage += 1; $('#stage', el).innerHTML = stageHtml(); if (G.stage === 3) { toast('Slip gaji terbit. Karyawan melihat slipnya sendiri di aplikasi.'); } }
+        if (act === 'stage-reset') { G.stage = 0; $('#stage', el).innerHTML = stageHtml(); }
+      });
+    }
+  });
+
+  /* M6: PWA pasien dan front desk */
+  add({
+    id: 'm6', title: 'Front desk dan pasien melihat sisa paket yang sama',
+    now: 'Pasien ingat sisa 3, catatan front desk sisa 2. Tidak ada yang bisa membuktikan.',
+    with: 'Sisa paket dihitung dari buku mutasi. Pasien melihat sisa dan riwayatnya di HP, front desk melihat angka yang sama.',
+    who: ['Pasien', 'Front desk'],
+    build: function (el) {
+      var view = 'pasien';
+      var P = S.paket, TOTAL = 12;
+      var sisa = function () { return TOTAL - P.used; };
+      var histHtml = function () {
+        return '<div class="list">' + P.hist.slice().reverse().map(function (h) {
+          return '<div class="li"><div class="t"><b>Terpakai 1</b><small>' + h.d + ' · ' + esc(h.who) + ' · Terapis ' + esc(h.th) + '</small></div>' + chip('', '-1') + '</div>';
+        }).join('') + '<div class="li"><div class="t"><b>Pembelian paket 12x</b><small>1 Nov · Front desk Kirana</small></div>' + chip('good', '+12') + '</div></div>';
+      };
+      var pasienHtml = function () {
+        var s = sisa();
+        return '<div class="panel"><div class="lbl">Sisa paket 12x</div><div class="hero-fig num">' + s + '<span class="muted" style="font-size:22px;font-weight:600"> dari ' + TOTAL + '</span></div>' +
+          '<div class="bar" style="margin-top:12px" role="img" aria-label="Terpakai ' + P.used + ' dari ' + TOTAL + '"><i style="width:' + (P.used / TOTAL * 100) + '%"></i></div>' +
+          '<div class="row" style="margin-top:10px;justify-content:space-between"><span class="sub" style="font-size:13px">Berlaku sampai 1 Mei 2027</span>' + chip('info', 'Dibagi 3 orang') + '</div></div>' +
+          '<div><div class="sec-title" style="margin-bottom:6px">Pemakai paket</div><div class="row">' + P.people.map(function (n) {
+            var u = P.hist.filter(function (h) { return h.who === n; }).length;
+            return chip('', n + ' · ' + u + '×');
+          }).join('') + '</div></div>' +
+          '<div><div class="sec-title" style="margin-bottom:6px">Riwayat pemakaian</div>' + histHtml() + '</div>';
+      };
+      var fdHtml = function () {
+        var s = sisa();
+        return '<div class="panel"><div class="row" style="justify-content:space-between"><div><b>Ibu Ratna</b><div class="muted" style="font-size:12px">Paket 12x · dibagi 3 orang</div></div><div class="tile" style="min-width:90px;text-align:center"><div class="l">Sisa</div><div class="v num">' + s + '/' + TOTAL + '</div></div></div>' +
+          '<div class="grid2" style="margin-top:12px"><div class="field"><label for="fd-who">Pemakai sesi</label><select id="fd-who">' + P.people.map(function (n) { return '<option>' + n + '</option>'; }).join('') + '</select></div>' +
+          '<div class="field"><label for="fd-th">Terapis</label><select id="fd-th"><option>Dina</option><option>Citra</option><option>Elsa</option><option>Hendra</option></select></div></div>' +
+          '<div class="row" style="margin-top:10px"><button type="button" class="btn primary" data-act="use"' + (s <= 0 ? ' disabled' : '') + '>Tandai sesi selesai (-1)</button><button type="button" class="btn" data-act="share4">Tambah peserta ke-4</button></div></div>' +
+          '<div><div class="sec-title" style="margin-bottom:6px">Buku mutasi</div>' + histHtml() + '</div>' +
+          '<p class="notes">Aturan: sharing hanya untuk paket 12x, paling banyak 3 orang. Paket 3x dan 6x tidak bisa dibagi.</p>';
+      };
+      var render = function () {
+        var body = '<div>' + seg('view', [['pasien', 'HP pasien'], ['fd', 'Front desk']], view) + '</div>' + (view === 'pasien' ? pasienHtml() : fdHtml());
+        el.innerHTML = frame(view === 'pasien' ? 'Paket saya' : 'Paket pasien', view === 'pasien' ? 'Pasien' : 'Front desk', body);
+      };
+      render();
+      el.addEventListener('click', function (e) {
+        var t = e.target.closest ? e.target.closest('button') : null; if (!t) { return; }
+        if (t.getAttribute('data-seg') === 'view') { view = t.getAttribute('data-v'); render(); return; }
+        var act = t.getAttribute('data-act');
+        if (act === 'use' && sisa() > 0) {
+          P.used += 1; P.hist.push({ d: '17 Nov', who: $('#fd-who', el).value, th: $('#fd-th', el).value });
+          render(); toast('Sesi tercatat. Sisa paket sekarang ' + sisa() + ', dan pasien langsung melihatnya di HP.');
+        }
+        if (act === 'share4') { toast('Ditolak: paket 12x hanya boleh dibagi hingga 3 orang.'); }
+      });
+    }
+  });
+
+  /* M7: Loyalitas */
+  add({
+    id: 'm7', title: 'Bonus loyalitas jalan sendiri, owner yang mengatur',
+    now: 'Bonus 10x terapi gratis 1x bergantung pada ingatan front desk atau pasien.',
+    with: 'Owner mengatur aturannya. Progres dan voucher terbit otomatis, dan voucher hanya bisa dipakai sekali.',
+    who: ['Owner', 'Pasien'],
+    build: function (el) {
+      var L = S.loy;
+      var draw = function () {
+        $('#loy', el).innerHTML =
+          '<div class="panel"><div class="lbl">Progres bonus pasien</div><div class="hero-fig num">' + L.count + '<span class="muted" style="font-size:22px;font-weight:600">/' + L.n + '</span></div>' +
+          '<div class="bar" style="margin-top:12px"><i style="width:' + Math.min(100, L.count / L.n * 100) + '%"></i></div>' +
+          '<div class="sub" style="margin-top:8px;font-size:13px">' + (L.aktif ? 'Tinggal ' + (L.n - L.count) + ' kunjungan lagi untuk 1 sesi gratis.' : 'Program bonus sedang tidak aktif.') + '</div></div>' +
+          (L.vouch > 0 ? callout('good', 'check', 'Voucher <b>1 sesi gratis</b> tersedia (' + L.vouch + '). Terapis tetap menerima komponen per pasien penuh.') : '') +
+          '<div class="row"><button type="button" class="btn primary" data-act="visit"' + (L.aktif ? '' : ' disabled') + '>Simulasikan kunjungan selesai</button>' +
+          '<button type="button" class="btn" data-act="voucher"' + (L.vouch > 0 ? '' : ' disabled') + '>Pakai voucher</button></div>';
+      };
+      var set =
+        '<div class="panel"><div class="sec-title" style="margin-bottom:8px">Pengaturan owner</div>' +
+        '<div class="row" style="justify-content:space-between"><span>Program bonus aktif</span><span class="switch"><button type="button" role="switch" aria-checked="' + L.aktif + '" aria-label="Program bonus aktif" data-act="toggle"></button></span></div>' +
+        '<div class="field" style="margin-top:12px"><label for="loy-n">Setiap berapa kunjungan dapat 1 sesi gratis</label><input type="number" id="loy-n" min="2" max="30" value="' + L.n + '"></div>' +
+        '<label class="chk" style="margin-top:8px"><input type="checkbox" id="loy-p"' + (L.paket ? ' checked' : '') + '> Kunjungan yang memakai paket ikut dihitung</label></div>';
+      el.innerHTML = frame('Bonus loyalitas', 'Owner dan pasien', set + '<div id="loy" style="display:flex;flex-direction:column;gap:16px"></div>' +
+        '<p class="notes">Coba ubah aturan di atas, lalu simulasikan kunjungan sampai voucher terbit.</p>');
+      draw();
+      el.addEventListener('click', function (e) {
+        var t = e.target.closest ? e.target.closest('button') : null; if (!t) { return; }
+        var act = t.getAttribute('data-act');
+        if (act === 'toggle') { L.aktif = !L.aktif; t.setAttribute('aria-checked', String(L.aktif)); draw(); }
+        if (act === 'visit' && L.aktif) {
+          L.count += 1;
+          if (L.count >= L.n) { L.count = 0; L.vouch += 1; toast('Target tercapai. Voucher 1 sesi gratis terbit otomatis.'); } else { toast('Kunjungan tercatat: ' + L.count + '/' + L.n + '.'); }
+          draw();
+        }
+        if (act === 'voucher' && L.vouch > 0) { L.vouch -= 1; draw(); toast('Voucher dipakai sekali dan tidak bisa dipakai lagi.'); }
+      });
+      el.addEventListener('input', function (e) {
+        if (e.target.id === 'loy-n') { var v = parseInt(e.target.value, 10); if (v >= 2 && v <= 30) { L.n = v; if (L.count >= L.n) { L.count = L.n - 1; } draw(); } }
+      });
+      el.addEventListener('change', function (e) { if (e.target.id === 'loy-p') { L.paket = e.target.checked; } });
+    }
+  });
+
+  /* M8: Reminder */
+  add({
+    id: 'm8', title: 'Reminder pasien tinggal klik',
+    now: 'Front desk mengetik pesan WhatsApp satu per satu. Ada yang terlewat, pasien lupa, slot kosong.',
+    with: 'Daftar yang perlu diingatkan tersusun otomatis. Satu klik, pesan siap dikirim, dan tercatat siapa serta kapan.',
+    who: ['Front desk'],
+    build: function (el) {
+      var APPTS = [
+        { t: '08:30', p: 'Ibu R.', th: 'Dina', sv: 'Physio reguler' },
+        { t: '09:30', p: 'Bpk. T.', th: 'Joko', sv: 'Paket 6x, sesi 4' },
+        { t: '10:30', p: 'Ibu S.', th: 'Citra', sv: 'Home visit' },
+        { t: '13:30', p: 'Bpk. A.', th: 'Hendra', sv: 'Physio reguler' },
+        { t: '15:00', p: 'Ibu W.', th: 'Elsa', sv: 'Paket 12x, sesi 9' },
+        { t: '16:00', p: 'Bpk. D.', th: 'Galih', sv: 'ESWT' }
+      ];
+      var msg = function (a) {
+        return 'Halo ' + a.p + ', kami mengingatkan jadwal terapi Anda besok, Rabu 18 November 2026 pukul ' + a.t + ' bersama terapis ' + a.th + ' (' + a.sv + '). Balas OK untuk konfirmasi. Terima kasih.';
+      };
+      var render = function () {
+        var done = Object.keys(S.remind).length;
+        var body = '<div class="row" style="justify-content:space-between"><div><div class="sec-title">Jadwal besok · Rabu 18 November</div></div>' + chip(done === APPTS.length ? 'good' : 'warn', done + ' dari ' + APPTS.length + ' sudah diingatkan', done === APPTS.length ? 'check' : 'clock') + '</div>' +
+          '<div class="list">' + APPTS.map(function (a, i) {
+            var r = S.remind[i];
+            return '<div class="li"><span class="ava">' + esc(a.p.charAt(a.p.length - 2)) + '</span><div class="t"><b>' + a.t + ' · ' + esc(a.p) + '</b><small>' + esc(a.sv) + ' · Terapis ' + esc(a.th) + '</small></div>' +
+              (r ? chip('good', r, 'check') : '<button type="button" class="btn sm primary" data-rem="' + i + '">Kirim WA</button>') + '</div>';
+          }).join('') + '</div>' +
+          '<p class="notes">Di sistem sungguhan, tombol membuka WhatsApp dengan pesan terisi. Di prototype ini pesan ditampilkan dan bisa disalin.</p>';
+        el.innerHTML = frame('Reminder pasien', 'Front desk', body);
+      };
+      render();
+      el.addEventListener('click', function (e) {
+        var t = e.target.closest ? e.target.closest('button') : null; if (!t) { return; }
+        var ri = t.getAttribute('data-rem');
+        if (ri !== null) {
+          var a = APPTS[parseInt(ri, 10)], text = msg(a);
+          modal('<h3>Pesan untuk ' + esc(a.p) + '</h3><p class="sub">Pesan sudah terisi. Periksa lalu kirim.</p><div class="panel soft" id="msgtxt" style="user-select:all">' + esc(text) + '</div>' +
+            '<div class="row" style="justify-content:flex-end"><button type="button" class="btn" id="cp">' + ic('copy') + ' Salin pesan</button><button type="button" class="btn primary" id="sent">Tandai terkirim</button></div>',
+            function (o, close) {
+              $('#cp', o).addEventListener('click', function () { copyText(text); });
+              $('#sent', o).addEventListener('click', function () { S.remind[ri] = 'Diingatkan 15:42 oleh Kirana'; close(); render(); toast('Tercatat: siapa dan kapan pengingat dikirim.'); });
+            });
+        }
+      });
+    }
+  });
+
+  /* M9: Laporan */
+  add({
+    id: 'm9', title: 'Rekap akhir bulan selesai sendiri',
+    now: 'Front desk menggabungkan beberapa file Excel berhari-hari untuk finance dan owner.',
+    with: 'Laporan harian dan bulanan dibuat otomatis dari data harian, siap diunduh.',
+    who: ['Owner', 'Finance', 'Front desk'],
+    build: function (el) {
+      var rows = [], tb = 0, tl = 0, th = 0, tk = 0;
+      for (var d = 1; d <= 17; d++) {
+        var wd = (d - 1) % 7, v = d === 17 ? 9 : visitsOf(d);
+        var baru = Math.max(1, Math.round(v * 0.16)), hv = d % 4 === 0 ? 2 : (d % 3 === 0 ? 1 : 0), kas = (d === 17 ? REV_TODAY : REV[d - 1]) * 1000000;
+        rows.push({ d: d, wd: DAYS[wd], v: v, baru: baru, lama: v - baru, hv: hv, kas: kas });
+        tb += baru; tl += v - baru; th += hv; tk += kas;
+      }
+      var body = '<div class="row" style="justify-content:space-between"><div class="sec-title">Laporan harian · 1-17 November 2026</div></div>' +
+        '<div class="grid3"><div class="tile"><div class="l">Kunjungan</div><div class="v num">' + (tb + tl) + '</div></div><div class="tile"><div class="l">Pasien baru</div><div class="v num">' + tb + '</div></div><div class="tile"><div class="l">Kas diterima</div><div class="v num" style="font-size:18px">' + jt(tk / 1000000) + '</div></div></div>' +
+        '<div class="tablewrap"><table><thead><tr><th>Tgl</th><th class="r">Baru</th><th class="r">Lama</th><th class="r">Home visit</th><th class="r">Kas diterima</th></tr></thead><tbody>' +
+        rows.map(function (r) { return '<tr><td>' + r.wd + ' ' + r.d + (r.d === 17 ? ' (berjalan)' : '') + '</td><td class="r num">' + r.baru + '</td><td class="r num">' + r.lama + '</td><td class="r num">' + r.hv + '</td><td class="r num">' + rp(r.kas) + '</td></tr>'; }).join('') +
+        '<tr class="total"><td>Total</td><td class="r num">' + tb + '</td><td class="r num">' + tl + '</td><td class="r num">' + th + '</td><td class="r num">' + rp(tk) + '</td></tr></tbody></table></div>' +
+        '<div class="row"><button type="button" class="btn primary" data-dl="Excel">Unduh Excel</button><button type="button" class="btn" data-dl="PDF">Unduh PDF</button></div>' +
+        '<p class="notes">Tombol unduh hanya contoh di prototype. Di sistem sungguhan file langsung terunduh. Angka diambil dari data layar lain, dan lembar nyata klinik tidak dipakai.</p>';
+      el.innerHTML = frame('Laporan', 'Owner', body, 'wide');
+      el.addEventListener('click', function (e) {
+        var t = e.target.closest ? e.target.closest('button') : null; if (!t) { return; }
+        var f = t.getAttribute('data-dl'); if (f) { toast('Di sistem sungguhan, file ' + f + ' terunduh dalam satu klik.'); }
+      });
+    }
+  });
+
+  /* M10: Booking */
+  add({
+    id: 'm10', title: 'Permintaan terapis perempuan atau laki-laki terpenuhi',
+    now: 'Pasien kadang meminta terapis dengan jenis kelamin tertentu, dan jadwal dicek manual satu per satu.',
+    with: 'Booking menyaring terapis dari jadwal shift yang sebenarnya, jadi permintaan pasien langsung terlihat tersedia atau tidak.',
+    who: ['Front desk', 'Pasien'],
+    build: function (el) {
+      var B = S.booking;
+      var hash = function (s) { var h = 0; for (var i = 0; i < s.length; i++) { h = (h * 31 + s.charCodeAt(i)) % 9973; } return h; };
+      var cardsHtml = function () {
+        var ths = PEOPLE.filter(function (p) { return p.role === 'T' && isWork(resolve(p, B.day)) && (B.pref === 'all' || p.g === B.pref); });
+        if (!ths.length) { return callout('warn', 'warn', 'Tidak ada terapis ' + (B.pref === 'f' ? 'perempuan' : 'laki-laki') + ' yang bertugas pada hari ' + DAYS_FULL[B.day] + '. Coba hari lain.'); }
+        return ths.map(function (p) {
+          var c = resolve(p, B.day), sh = SHIFTS[c], s = toMin(sh.s), e = toMin(sh.e), slots = '';
+          for (var m = s; m + 60 <= e; m += 60) {
+            var key = p.id + B.day + m, taken = B.taken[key] || hash(key) % 4 === 0;
+            slots += '<button type="button" class="btn sm" data-slot="' + key + '" data-t="' + fromMin(m) + '" data-p="' + p.id + '"' + (taken ? ' disabled' : '') + '>' + fromMin(m) + '</button>';
+          }
+          return '<div class="panel"><div class="row" style="justify-content:space-between"><div class="row"><span class="ava">' + p.n.charAt(0) + '</span><div><b>' + p.n + '</b><div class="muted" style="font-size:12px">' + (p.g === 'f' ? 'Perempuan' : 'Laki-laki') + ' · ' + sh.n + ' ' + sh.s + '-' + sh.e + '</div></div></div>' + (p.st === 'Freelance' ? chip('', 'Freelance') : '') + '</div>' +
+            '<div class="row" style="margin-top:10px">' + slots + '</div></div>';
+        }).join('');
+      };
+      var body =
+        '<div class="grid2"><div class="field"><label for="bk-day">Hari</label><select id="bk-day">' + [1, 2, 3, 4, 5, 6, 0].map(function (i) { return '<option value="' + i + '"' + (i === B.day ? ' selected' : '') + '>' + DAYS_FULL[i] + '</option>'; }).join('') + '</select></div>' +
+        '<div class="field"><label for="bk-sv">Layanan</label><select id="bk-sv"><option>Physio reguler (60 menit)</option><option>Paket 12x, sesi berikutnya</option></select></div></div>' +
+        '<div><div class="lbl" style="margin-bottom:6px">Pasien meminta terapis</div>' + seg('pref', [['all', 'Siapa saja'], ['f', 'Perempuan'], ['m', 'Laki-laki']], B.pref) + '</div>' +
+        '<div id="bk-msg">' + (B.last ? callout('good', 'check', B.last) : '') + '</div>' +
+        '<div style="display:flex;flex-direction:column;gap:10px" id="cards">' + cardsHtml() + '</div>' +
+        '<p class="notes">Jadwal terapis mengikuti layar 2. Ubah jadwal di sana dan pilihan di sini ikut berubah. Jam yang pudar sudah terisi.</p>';
+      el.innerHTML = frame('Booking', 'Front desk', body);
+      el.addEventListener('change', function (e) { if (e.target.id === 'bk-day') { B.day = parseInt(e.target.value, 10); B.last = ''; $('#bk-msg', el).innerHTML = ''; $('#cards', el).innerHTML = cardsHtml(); } });
+      el.addEventListener('click', function (e) {
+        var t = e.target.closest ? e.target.closest('button') : null; if (!t) { return; }
+        if (t.getAttribute('data-seg') === 'pref') { B.pref = t.getAttribute('data-v'); $$('[data-seg="pref"]', el).forEach(function (b) { b.setAttribute('aria-pressed', String(b === t)); }); $('#cards', el).innerHTML = cardsHtml(); return; }
+        var key = t.getAttribute('data-slot');
+        if (key) {
+          B.taken[key] = true; var p = byId(t.getAttribute('data-p'));
+          B.last = 'Booking dibuat: ' + DAYS_FULL[B.day] + ' ' + t.getAttribute('data-t') + ' bersama ' + p.n + '. Pengingat WhatsApp masuk ke daftar reminder.';
+          $('#bk-msg', el).innerHTML = callout('good', 'check', B.last); $('#cards', el).innerHTML = cardsHtml();
+        }
+      });
+    }
+  });
+
+  /* M11: Kas kecil */
+  add({
+    id: 'm11', title: 'Kas kecil rapi, tidak lagi di Excel',
+    now: 'Kas kecil dicatat di Excel tanpa kategori, bukti, atau hitung fisik. Saldo bisa negatif tanpa penjelasan.',
+    with: 'Setiap pengeluaran punya kategori, pencatat, dan bukti. Saldo dihitung otomatis, dan hitung fisik mencatat selisihnya.',
+    who: ['Front desk', 'Finance', 'Owner'],
+    build: function (el) {
+      var saldo = function () { return S.kasOpen + S.kas.reduce(function (a, x) { return a + x.amt; }, 0); };
+      var ledger = function () {
+        var run = S.kasOpen;
+        var rows = S.kas.map(function (x) {
+          run += x.amt;
+          return '<tr><td>' + x.d + '</td><td style="white-space:normal;min-width:130px"><b>' + esc(x.ket) + '</b><div class="muted" style="font-size:11px">' + esc(x.cat) + ' · ' + esc(x.by) + (x.talang ? ' · ditalangi ' + esc(x.talang) : '') + '</div></td><td class="r num">' + (x.amt >= 0 ? '+' : '') + fmt(x.amt) + '<div class="muted" style="font-size:11px">saldo ' + fmt(run) + '</div></td></tr>';
+        });
+        return '<div class="tablewrap"><table><thead><tr><th>Tgl</th><th>Keterangan</th><th class="r">Jumlah dan saldo</th></tr></thead><tbody><tr><td colspan="2" class="muted">Saldo awal</td><td class="r num">' + fmt(S.kasOpen) + '</td></tr>' + rows.reverse().join('') + '</tbody></table></div>';
+      };
+      var bycat = function () {
+        var m = {}; S.kas.forEach(function (x) { if (x.amt < 0) { m[x.cat] = (m[x.cat] || 0) - x.amt; } });
+        var arr = Object.keys(m).map(function (k) { return [k, m[k]]; }).sort(function (a, b) { return b[1] - a[1]; });
+        var mx = arr.length ? arr[0][1] : 1;
+        return arr.map(function (r) { return '<div class="hbar"><span style="overflow-wrap:anywhere">' + esc(r[0]) + '</span><span class="trk"><i style="width:' + (r[1] / mx * 100) + '%"></i></span><span class="num">' + rp(r[1]) + '</span></div>'; }).join('');
+      };
+      var head = function () {
+        var s = saldo();
+        return '<div class="panel"><div class="lbl">Saldo kas kecil</div><div class="hero-fig num" style="font-size:40px">' + rp(s) + '</div>' +
+          (s < 0 ? '<div style="margin-top:8px">' + callout('warn', 'warn', 'Saldo negatif karena belanja dulu. Pengeluaran ditandai ditalangi sampai top-up masuk.') + '</div>' : '') + '</div>';
+      };
+      var form =
+        '<div class="panel"><div class="sec-title" style="margin-bottom:8px">Catat pengeluaran</div><div class="grid2">' +
+        '<div class="field"><label for="k-cat">Kategori</label><select id="k-cat">' + CATS.map(function (c) { return '<option>' + c + '</option>'; }).join('') + '</select></div>' +
+        '<div class="field"><label for="k-amt">Jumlah</label>' + money('k-amt', 65000) + '</div></div>' +
+        '<div class="field" style="margin-top:10px"><label for="k-ket">Keterangan</label><input type="text" id="k-ket" value="Galon dan es batu"></div>' +
+        '<label class="chk"><input type="checkbox" id="k-tal"> Ditalangi (belanja dulu, uang diganti nanti)</label>' +
+        '<div class="row" style="margin-top:8px">' + chip('', 'Foto bukti', 'camera') + chip('', 'Dicatat oleh Kirana') + '</div>' +
+        '<div class="row" style="margin-top:10px"><button type="button" class="btn primary" data-act="exp">Simpan pengeluaran</button><button type="button" class="btn" data-act="top">Top-up Rp1.000.000 (finance)</button></div></div>' +
+        '<div class="panel"><div class="sec-title" style="margin-bottom:8px">Hitung fisik (finance)</div><div class="field"><label for="k-fis">Uang fisik di laci</label>' + money('k-fis', 0) + '</div>' +
+        '<div id="fis-res" style="margin-top:8px"></div><div class="row" style="margin-top:8px"><button type="button" class="btn" data-act="fis">Bandingkan dan catat selisih</button></div></div>';
+      var render = function () {
+        $('#kas-head', el).innerHTML = head();
+        $('#kas-led', el).innerHTML = ledger();
+        $('#kas-cat', el).innerHTML = bycat();
+      };
+      el.innerHTML = frame('Kas kecil', 'Front desk', '<div id="kas-head"></div>' + form +
+        '<div><div class="sec-title" style="margin-bottom:6px">Buku kas</div><div id="kas-led"></div></div>' +
+        '<div><div class="sec-title" style="margin-bottom:6px">Pengeluaran per kategori</div><div id="kas-cat"></div></div>' +
+        '<p class="notes">Pengeluaran dan top-up yang salah dibatalkan dengan alasan, tidak dihapus.</p>', 'wide');
+      render();
+      var fisInput = $('#k-fis', el); if (fisInput) { fisInput.value = String(saldo()); }
+      el.addEventListener('click', function (e) {
+        var t = e.target.closest ? e.target.closest('button') : null; if (!t) { return; }
+        var act = t.getAttribute('data-act');
+        if (act === 'exp') {
+          var amt = parseFloat($('#k-amt', el).value) || 0; if (amt <= 0) { toast('Isi jumlah pengeluaran.'); return; }
+          var ent = { d: '17 Nov', t: 'EXPENSE', cat: $('#k-cat', el).value, ket: $('#k-ket', el).value || '(tanpa keterangan)', amt: -amt, by: 'Kirana' };
+          if ($('#k-tal', el).checked) { ent.talang = 'Kirana'; }
+          S.kas.push(ent); render(); toast('Pengeluaran tercatat. Saldo ' + rp(saldo()) + '.');
+        }
+        if (act === 'top') { S.kas.push({ d: '17 Nov', t: 'TOPUP', cat: 'Top-up dari owner', ket: 'Top-up kas kecil', amt: 1000000, by: 'Finance' }); render(); toast('Top-up tercatat oleh finance.'); }
+        if (act === 'fis') {
+          var phys = parseFloat($('#k-fis', el).value) || 0, diff = phys - saldo(), box = $('#fis-res', el);
+          if (diff === 0) { box.innerHTML = callout('good', 'check', 'Uang fisik cocok dengan saldo sistem.'); return; }
+          S.kas.push({ d: '17 Nov', t: 'ADJUSTMENT', cat: 'Lain-lain', ket: 'Selisih hitung fisik: ' + (diff > 0 ? 'lebih' : 'kurang'), amt: diff, by: 'Finance' });
+          box.innerHTML = callout('warn', 'warn', 'Selisih ' + rp(diff) + ' dicatat sebagai koreksi beserta pencatatnya.'); render();
+        }
+      });
+    }
+  });
+
+  /* ---------- Router & halaman daftar ---------- */
+  var root = $('#root');
+  var header = function () {
+    return '<div class="demo-bar">' + ic('warn') + '<span>Prototype dengan data contoh. Nama, angka, dan tarif di sini fiktif, dan ini belum sistem yang sebenarnya.</span></div>' +
+      '<div class="topbar"><div class="brand"><span class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.500" stroke-linecap="round" aria-hidden="true">' + ICON.cross + '</svg></span><span>Sistem Klinik</span></div>' +
+      '<a class="btn sm" href="#daftar">Daftar masalah</a></div>';
+  };
+  function listPage() {
+    root.innerHTML = header() +
+      '<div class="hero"><h1>Dari masalah sehari-hari ke layar yang menyelesaikannya</h1>' +
+      '<p>Sebelas masalah nyata di klinik, masing-masing dengan layar yang bisa dicoba. Mulai dari yang paling sering ditanyakan owner setiap hari.</p>' +
+      '<div class="row" style="margin-top:20px"><a class="btn primary" href="#m1">Mulai dari masalah 1</a></div></div>' +
+      '<div class="cards">' + SCENES.map(function (s, i) {
+        return '<a class="card-link" href="#' + s.id + '"><span class="n">Masalah ' + (i + 1) + '</span><h3>' + esc(s.title) + '</h3><span class="a">Sekarang: ' + esc(s.now) + '</span><span class="b">Dengan sistem: ' + esc(s.with) + '</span></a>';
+      }).join('') + '</div>';
+  }
+  function scenePage(i) {
+    var s = SCENES[i], prev = SCENES[i - 1], next = SCENES[i + 1];
+    var nav = '<div class="scene-nav"><a class="btn sm" href="#daftar">' + ic('left') + ' Semua masalah</a><div class="row">' +
+      (prev ? '<a class="btn sm" href="#' + prev.id + '">' + ic('left') + ' Sebelumnya</a>' : '') +
+      '<span class="muted" style="font-size:13px">' + (i + 1) + ' dari ' + SCENES.length + '</span>' +
+      (next ? '<a class="btn sm primary" href="#' + next.id + '">Berikutnya ' + ic('right') + '</a>' : '') + '</div></div>';
+    root.innerHTML = header() + nav +
+      '<div class="scene"><div class="story"><span class="tag">Masalah ' + (i + 1) + '</span><h2>' + esc(s.title) + '</h2>' +
+      '<div class="box before"><small>Sekarang</small>' + esc(s.now) + '</div>' +
+      '<div class="box after"><small>Dengan sistem</small>' + esc(s.with) + '</div>' +
+      '<div class="row">' + s.who.map(function (w) { return chip('info', w); }).join('') + '<span class="muted" style="font-size:12px">yang melihat layar ini</span></div></div>' +
+      '<div class="stage" id="stage-host"></div></div>';
+    s.build($('#stage-host'));
+  }
+  function route() {
+    var h = (location.hash || '').replace('#', '') || 'daftar';
+    var idx = -1; SCENES.forEach(function (s, i) { if (s.id === h) { idx = i; } });
+    if (idx < 0) { listPage(); } else { scenePage(idx); }
+    window.scrollTo(0, 0);
+  }
+  window.addEventListener('hashchange', route);
+  route();
+})();
+</script>
+
+</body></html>

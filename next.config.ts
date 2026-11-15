@@ -11,6 +11,19 @@ const nextConfig: NextConfig = {
       },
     },
   },
+  // Demo prototype klien (berkas statis di public/demo). Tidak ditautkan di menu
+  // dan sitemap, dan ditandai noindex agar tidak muncul di mesin pencari.
+  async headers() {
+    return [
+      {
+        source: "/demo/:path*",
+        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
+      },
+    ];
+  },
+  async rewrites() {
+    return [{ source: "/demo/klinik", destination: "/demo/klinik/index.html" }];
+  },
 };
 
 export default nextConfig;
