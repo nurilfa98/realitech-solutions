@@ -169,6 +169,10 @@
   /* Index */
   .hero h1 { font-size: clamp(28px, 5vw, 44px); line-height: 1.1; font-weight: 800; }
   .hero p { margin-top: 12px; max-width: 62ch; color: var(--ink-2); font-size: 17px; }
+  .bab { margin-top: 32px; }
+  .bab h2 { font-size: 20px; line-height: 1.25; }
+  .bab > p { margin-top: 4px; max-width: 70ch; color: var(--ink-2); font-size: 14px; }
+  .bab .cards { margin-top: 14px; }
   .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 14px; margin-top: 28px; }
   .card-link {
     display: flex; flex-direction: column; gap: 8px; text-align: left; padding: 16px; border-radius: 14px;
@@ -211,6 +215,11 @@
   .list { display: flex; flex-direction: column; }
   .li { display: flex; gap: 10px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); min-width: 0; }
   .li:last-child { border-bottom: 0; }
+  .rowbtn { display: flex; width: 100%; align-items: center; gap: 10px; text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; font: inherit; color: inherit; cursor: pointer; min-width: 0; }
+  .rowbtn:hover { border-color: var(--series-1); }
+  .rowbtn .rb-main { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .rowbtn .rb-main small { color: var(--muted); font-size: 12px; }
+  .rowbtn > svg { width: 16px; height: 16px; flex: none; color: var(--muted); }
   .li .t { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }
   .li .t small { display: block; color: var(--muted); font-size: 12px; }
   .ava { width: 32px; height: 32px; border-radius: 50%; background: var(--accent-soft); color: var(--accent-text); display: grid; place-items: center; font-weight: 600; font-size: 13px; flex: none; }
@@ -342,6 +351,7 @@
     lock: '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/>',
     pin: '<path d="M12 21s-7-6.2-7-11.2a7 7 0 0114 0C19 14.800 12 21 12 21z"/><circle cx="12" cy="10" r="2.5"/>',
     camera: '<rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="12" cy="13.500" r="3.500"/><path d="M9 7l1.500-2.500h3L15 7"/>',
+    bell: '<path d="M6 16v-5a6 6 0 0112 0v5l1.500 2h-15z"/><path d="M10 20a2 2 0 004 0"/>',
     cross: '<path d="M12 5v14M5 12h14"/>'
   };
   var ic = function (name) {
@@ -387,16 +397,34 @@
   var ARRIVE = { c: '07:44', d: '07:28', j: '07:35', e: '09:26', k: '07:25', m: '07:02' };
 
   var REV = [3.1, 7.2, 8.4, 8.0, 8.9, 7.6, 4.8, 3.4, 7.9, 8.7, 9.3, 8.1, 7.7, 5.1, 3.0, 7.5];
-  var REV_TODAY = 4.35;
+  var REV_TODAY = 4.35; /* kas diterima sepanjang hari ini (juta rupiah) */
+  var KAS_PAGI = 1.9; /* kas diterima sampai pukul 11:20, saat owner membuka dasbor */
+  /* Rincian kas per hari (juta rupiah, tanggal 1-17): penjualan paket di dalam kas, dan nilai sesi yang dipakai dari paket lama. */
+  var PKG_SALE = [0.9, 1.8, 3.6, 2.4, 1.2, 2.3, 0, 1.0, 2.4, 2.9, 2.9, 1.0, 1.9, 0, 0.9, 2.2, 1.0];
+  var PKG_USE = [1.2, 1.5, 0.9, 1.8, 1.5, 1.2, 0.6, 0.6, 1.5, 1.2, 1.8, 1.2, 1.5, 0.9, 0.6, 1.8, 0.9];
   var TODAY_IDX = 2; /* Selasa */
   var VISITS_BASE = [8, 17, 19, 20, 19, 17, 12];
+
+  /* Data awal contoh masalah 4: keberatan dan laporan harian front desk. */
+  function seedClaims() { return [{ day: 'Rab 11 Nov', txt: 'Pasien ke-7 belum tercatat.', status: 'Diterima', adj: 32000, by: 'front desk Kirana' }]; }
+  function seedRep() {
+    return {
+      'Sel 10 Nov': { sent: true, at: 'Sel 10 Nov 20:05', by: 'Kirana', revs: [] },
+      'Rab 11 Nov': { sent: true, at: 'Rab 11 Nov 20:10', by: 'Laras', revs: [{ at: 'Kam 12 Nov 09:40', by: 'Laras', delta: 1, reason: 'Pasien ke-7 belum tercatat.' }] },
+      'Kam 12 Nov': { sent: true, at: 'Kam 12 Nov 20:02', by: 'Kirana', revs: [] },
+      'Jum 13 Nov': { sent: true, at: 'Jum 13 Nov 20:08', by: 'Laras', revs: [] },
+      'Sab 14 Nov': { sent: true, at: 'Sab 14 Nov 20:15', by: 'Laras', revs: [] },
+      'Sel 17 Nov': { sent: false, at: '', by: 'Laras', revs: [] }
+    };
+  }
 
   var S = {
     week: 0,
     lateCount: 3,
     absen: { shift: 'P', time: '07:38' },
     cuti: { who: 'e', day: 5, sub: '', stage: 0, orig: null },
-    claims: [{ day: 'Rab 11 Nov', txt: 'Pasien ke-7 belum tercatat.', status: 'Diterima', adj: 32000, by: 'Finance' }],
+    claims: seedClaims(),
+    rep: seedRep(),
     claimSeq: 0,
     paket: {
       used: 5,
@@ -409,6 +437,7 @@
         { d: '14 Nov', who: 'Ibu Ratna', th: 'Dina' }
       ]
     },
+    jual: { pkg: '12', promo: '', done: null, log: [{ d: '14 Nov', who: 'Kirana', paket: 'Paket 6x', promo: 'Promo awal bulan', normal: 1900000, paid: 1800000 }] },
     loy: { aktif: true, n: 10, count: 7, vouch: 0, paket: true },
     remind: {},
     booking: { day: 3, pref: 'all', taken: {}, last: '' },
@@ -605,8 +634,8 @@
         '<div class="tile"><div class="l">Baru</div><div class="v num">3</div></div>' +
         '<div class="tile"><div class="l">Lama</div><div class="v num">15</div></div>' +
         '<div class="tile"><div class="l">Home visit</div><div class="v num">2</div></div></div></div>' +
-        '<div class="grid2"><div class="tile"><div class="l">Kas diterima hari ini</div><div class="v num">' + rp(REV_TODAY * 1000000) + '</div></div>' +
-        '<div class="tile"><div class="l">Bulan berjalan</div><div class="v num">' + rp((REV.reduce(function (a, b) { return a + b; }, 0) + REV_TODAY) * 1000000) + '</div></div></div>' +
+        '<div class="grid2"><div class="tile"><div class="l">Kas diterima hari ini</div><div class="v num">' + rp(KAS_PAGI * 1000000) + '</div></div>' +
+        '<div class="tile"><div class="l">Bulan berjalan</div><div class="v num">' + rp((REV.reduce(function (a, b) { return a + b; }, 0) + KAS_PAGI) * 1000000) + '</div></div></div>' +
         '<div><div class="sec-title" style="margin-bottom:8px">Perlu perhatian</div><div class="list" style="gap:8px">' + alerts.join('') + '</div></div>' +
         '<div><div class="sec-title">Kehadiran · ' + hadir + ' hadir, ' + cnt('late') + ' terlambat, ' + cnt('absent') + ' belum masuk</div><div class="list" id="att">' +
         rows.map(function (r, i) {
@@ -617,7 +646,7 @@
             (r.arr ? 'Absen masuk ' + r.arr + '<br>' + chip('good', 'Lokasi di klinik', 'pin') + ' ' + chip('good', 'Selfie tersimpan', 'camera') : 'Belum ada absen untuk shift ini.') +
             '</div></div></div></div>';
         }).join('') + '</div></div>' +
-        '<p class="notes">Contoh: ketuk nama untuk melihat bukti absen. Ubah jadwal di layar 2 dan daftar ini ikut berubah.</p>';
+        '<p class="notes">Contoh: ketuk nama untuk melihat bukti absen. Ubah jadwal di adegan Jadwal periode dan daftar ini ikut berubah.</p>';
       el.innerHTML = frame('Hari ini', 'Owner', body);
       el.addEventListener('click', function (e) {
         var b = e.target.closest ? e.target.closest('[data-att]') : null; if (!b) { return; }
@@ -626,14 +655,10 @@
     }
   });
 
-  /* M2: Jadwal dan absen */
-  add({
-    id: 'm2', title: 'Jadwal shift dan absen jadi satu data',
-    now: 'Jadwal dibuat di Excel, diinput ulang ke Setmore, absen di tempat lain. Keterlambatan sulit dibuktikan.',
-    with: 'Leader menyusun jadwal sekali. Jadwal langsung menjadi absen, kalender booking, dan dasar uang harian. Keterlambatan dan potongannya dihitung otomatis.',
-    who: ['Leader', 'Front desk', 'Terapis'],
-    build: function (el) {
-      var tab = 'jadwal';
+  /* M2: Jadwal periode, cuti, dan absen. Dua adegan memakai kode yang sama. */
+  var buildSchedule = function (startTab, tabs, title, role) {
+    return function (el) {
+      var tab = startTab;
       var cellLabel = function (p, i) {
         var c = p.days[i];
         if (c === 'R') { return resolve(p, i) + '↻'; }
@@ -718,11 +743,11 @@
           '<div style="margin-top:10px">' + res + '</div>' +
           '<div class="row" style="margin-top:10px"><span class="muted" style="font-size:12px">Coba jam:</span><button type="button" class="btn sm" data-time="' + fromMin(st + 8) + '">' + fromMin(st + 8) + ' tepat waktu</button><button type="button" class="btn sm" data-time="' + fromMin(st + 22) + '">' + fromMin(st + 22) + ' terlambat</button></div>' +
           '<div class="row" style="margin-top:10px"><button type="button" class="btn primary" data-act="absen-go">Absen sekarang</button><button type="button" class="btn" data-act="absen-reset">Kembalikan ke 3 kejadian</button></div>' +
-          '<p class="notes" style="margin-top:8px">Terlambat tercatat sekarang: ' + S.lateCount + ' kejadian, potongan ' + rp(lateTotal(S.lateCount)) + '. Angka ini dipakai di layar penggajian (layar 5).</p>';
+          '<p class="notes" style="margin-top:8px">Terlambat tercatat sekarang: ' + S.lateCount + ' kejadian, potongan ' + rp(lateTotal(S.lateCount)) + '. Angka ini dipakai di adegan Penggajian.</p>';
       };
       var render = function () {
         var body =
-          '<div class="row" style="justify-content:space-between"><div>' + seg('tab', [['jadwal', 'Jadwal periode'], ['cuti', 'Cuti'], ['absen', 'Absen']], tab) + '</div></div>';
+          '<div class="row" style="justify-content:space-between"><div>' + (tabs.length > 1 ? seg('tab', tabs, tab) : '') + '</div></div>';
         if (tab === 'jadwal') {
           body += '<div class="row" style="justify-content:space-between"><div class="sec-title">Periode 3-30 November 2026 · disusun leader</div>' +
             seg('week', [['0', 'Minggu 1'], ['1', 'Minggu 2']], String(S.week)) + '</div>' +
@@ -735,7 +760,7 @@
         } else {
           body += '<div class="sec-title">Absen masuk (tampilan terapis atau front desk)</div><div id="absen">' + absenHtml() + '</div>';
         }
-        el.innerHTML = frame('Jadwal dan absen', 'Leader', body, 'wide');
+        el.innerHTML = frame(title, role, body, 'wide');
       };
       render();
       el.addEventListener('click', function (e) {
@@ -786,7 +811,21 @@
         if (id === 'ab-shift') { S.absen.shift = e.target.value; S.absen.time = fromMin(toMin(SHIFTS[e.target.value].s) + 8); $('#absen', el).innerHTML = absenHtml(); }
         if (id === 'ab-time') { S.absen.time = e.target.value || S.absen.time; $('#absen', el).innerHTML = absenHtml(); }
       });
-    }
+    };
+  };
+  add({
+    id: 'm2', title: 'Jadwal shift disusun sekali, jadi kalender booking',
+    now: 'Jadwal dibuat di Excel, lalu diinput ulang ke Setmore.',
+    with: 'Leader menyusun jadwal sekali. Jadwal langsung menjadi kalender booking dan dasar uang harian. Cuti wajib punya pengganti yang sudah setuju.',
+    who: ['Leader', 'Front desk', 'Terapis'],
+    build: buildSchedule('jadwal', [['jadwal', 'Jadwal periode'], ['cuti', 'Cuti']], 'Jadwal periode', 'Leader')
+  });
+  add({
+    id: 'm2b', title: 'Absen lewat HP, terlambat dihitung otomatis',
+    now: 'Absen memakai mesin yang tidak terhubung ke jadwal. Keterlambatan sulit dibuktikan.',
+    with: 'Absen lewat HP dengan lokasi dan foto selfie. Terlambat dan potongannya dihitung otomatis dari jadwal, tanpa rekap manual.',
+    who: ['Terapis', 'Front desk', 'Owner'],
+    build: buildSchedule('absen', [['absen', 'Absen']], 'Absen', 'Terapis atau front desk')
   });
 
   /* M3: Pemasukan */
@@ -797,26 +836,47 @@
     who: ['Owner', 'Finance'],
     build: function (el) {
       var mode = 'kas', table = false;
-      var series = function () {
-        var base = REV.concat([REV_TODAY]);
-        if (mode === 'kas') { return base; }
-        return base.map(function (v, i) { return Math.round(v * (0.9 + 0.025 * (i % 4)) * 100) / 100; });
-      };
+      var r2 = function (v) { return Math.round(v * 100) / 100; };
+      var sum = function (a) { return a.reduce(function (x, y) { return x + y; }, 0); };
+      var kasV = REV.concat([REV_TODAY]);
+      /* Layanan terlaksana = sesi yang dibayar di hari itu (kas dikurangi penjualan paket) + sesi yang dipotong dari paket lama. */
+      var direct = kasV.map(function (v, i) { return r2(v - PKG_SALE[i]); });
+      var svcV = direct.map(function (v, i) { return r2(v + PKG_USE[i]); });
       var labels = []; for (var i = 1; i <= 17; i++) { labels.push(String(i)); }
       var draw = function () {
-        var vals = series(), total = vals.reduce(function (a, b) { return a + b; }, 0) * 1000000;
+        var vals = mode === 'kas' ? kasV : svcV, total = sum(vals) * 1000000;
         $('#tot', el).textContent = rp(total);
         $('#avg', el).textContent = rp(total / 17);
         $('#ttl', el).textContent = mode === 'kas' ? 'Kas diterima per hari' : 'Layanan terlaksana per hari';
-        colChart($('#chart', el), vals, labels, 16, mode);
-        var pm = [['Kartu BCA', 0.30], ['Kartu Mandiri', 0.17], ['Transfer', 0.16], ['QRIS', 0.12], ['Kartu BNI', 0.10], ['Tunai', 0.09], ['LOAN', 0.06]];
-        $('#pay', el).innerHTML = pm.map(function (r) {
-          return '<div class="hbar"><span>' + r[0] + '</span><span class="trk"><i style="width:' + (r[1] / 0.30 * 100) + '%"></i></span><span class="num">' + rp(total * r[1]) + '</span></div>';
-        }).join('');
+        colChart($('#chart', el), vals, labels, 16, mode === 'kas' ? 'kas diterima' : 'layanan terlaksana');
+        var payTtl = $('#pay-ttl', el), pay = $('#pay', el);
+        if (mode === 'kas') {
+          payTtl.textContent = 'Per metode bayar, bulan berjalan';
+          var pm = [['Kartu BCA', 0.30], ['Kartu Mandiri', 0.17], ['Transfer', 0.16], ['QRIS', 0.12], ['Kartu BNI', 0.10], ['Tunai', 0.09], ['LOAN', 0.06]];
+          pay.innerHTML = pm.map(function (r) {
+            return '<div class="hbar"><span>' + r[0] + '</span><span class="trk"><i style="width:' + (r[1] / 0.30 * 100) + '%"></i></span><span class="num">' + rp(total * r[1]) + '</span></div>';
+          }).join('');
+        } else {
+          payTtl.textContent = 'Asal layanan terlaksana, bulan berjalan';
+          var dSum = sum(direct) * 1000000, pSum = sum(PKG_USE) * 1000000, kSum = sum(kasV) * 1000000, sSum = sum(PKG_SALE) * 1000000, mx = Math.max(dSum, pSum);
+          var bar = function (label, v) { return '<div class="hbar"><span>' + label + '</span><span class="trk"><i style="width:' + (v / mx * 100) + '%"></i></span><span class="num">' + rp(v) + '</span></div>'; };
+          pay.innerHTML = bar('Bayar hari itu', dSum) + bar('Dari paket', pSum) +
+            '<div class="tablewrap" style="margin-top:8px"><table><tbody>' +
+            '<tr><td>Kas diterima</td><td class="r num">' + rp(kSum) + '</td></tr>' +
+            '<tr><td>Dikurangi penjualan paket</td><td class="r num">' + rp(-sSum) + '</td></tr>' +
+            '<tr><td>Ditambah sesi dari paket yang dipakai</td><td class="r num">' + rp(pSum) + '</td></tr>' +
+            '<tr><td><b>Layanan terlaksana</b></td><td class="r num"><b>' + rp(total) + '</b></td></tr></tbody></table></div>';
+        }
+        $('#note', el).textContent = mode === 'kas'
+          ? 'Kas diterima menghitung uang yang masuk di hari itu, termasuk penjualan paket. Angkanya cocok dengan mutasi rekening dan laci kas.'
+          : 'Layanan terlaksana menghitung nilai kunjungan yang selesai di hari itu. Sesi dari paket dihitung saat dipakai, bukan saat paket dibeli. Ini yang menjadi dasar insentif terapis.';
         var tb = $('#tb', el);
         tb.hidden = !table;
-        tb.innerHTML = '<div class="tablewrap"><table><thead><tr><th>Tanggal</th><th class="r">Rupiah</th></tr></thead><tbody>' +
-          vals.map(function (v, k) { return '<tr><td>' + (k + 1) + ' Nov' + (k === 16 ? ' (berjalan)' : '') + '</td><td class="r num">' + rp(v * 1000000) + '</td></tr>'; }).join('') + '</tbody></table></div>';
+        tb.innerHTML = mode === 'kas'
+          ? '<div class="tablewrap"><table><thead><tr><th>Tanggal</th><th class="r">Rupiah</th></tr></thead><tbody>' +
+            vals.map(function (v, k) { return '<tr><td>' + (k + 1) + ' Nov' + (k === 16 ? ' (berjalan)' : '') + '</td><td class="r num">' + rp(v * 1000000) + '</td></tr>'; }).join('') + '</tbody></table></div>'
+          : '<div class="tablewrap"><table><thead><tr><th>Tanggal</th><th class="r">Bayar hari itu</th><th class="r">Dari paket</th><th class="r">Total</th></tr></thead><tbody>' +
+            vals.map(function (v, k) { return '<tr><td>' + (k + 1) + ' Nov' + (k === 16 ? ' (berjalan)' : '') + '</td><td class="r num">' + rp(direct[k] * 1000000) + '</td><td class="r num">' + rp(PKG_USE[k] * 1000000) + '</td><td class="r num">' + rp(v * 1000000) + '</td></tr>'; }).join('') + '</tbody></table></div>';
         $('[data-act="tbl"]', el).textContent = table ? 'Sembunyikan tabel' : 'Tampilkan tabel';
       };
       var body =
@@ -824,8 +884,11 @@
         '<div class="grid2"><div class="tile"><div class="l">Total 1-17 November</div><div class="v num" id="tot"></div></div><div class="tile"><div class="l">Rata-rata per hari</div><div class="v num" id="avg"></div></div></div>' +
         '<div><div class="sec-title" id="ttl" style="margin-bottom:6px"></div><div class="chartbox" id="chart"></div></div>' +
         '<div class="row"><button type="button" class="btn sm" data-act="tbl">Tampilkan tabel</button></div><div id="tb" hidden></div>' +
-        '<div><div class="sec-title" style="margin-bottom:6px">Per metode bayar, bulan berjalan</div><div id="pay"></div></div>' +
-        '<p class="notes">Kas diterima menghitung pembayaran. Layanan terlaksana menghitung nilai kunjungan selesai, termasuk pemakaian paket.</p>';
+        '<div><div class="sec-title" id="pay-ttl" style="margin-bottom:6px"></div><div id="pay"></div></div>' +
+        '<p class="notes" id="note"></p>' +
+        '<div class="panel"><div class="lbl">Contoh: satu paket, dua tanggal</div>' +
+        '<div class="li"><div class="t"><b>3 Nov, Ibu Ratna membeli paket 12x seharga Rp3.600.000</b><small>Kas diterima +Rp3.600.000. Layanan terlaksana belum bertambah.</small></div></div>' +
+        '<div class="li"><div class="t"><b>8 Nov, ia memakai sesi pertama</b><small>Kas diterima +Rp0. Layanan terlaksana +Rp300.000 (Rp3.600.000 ÷ 12 sesi).</small></div></div></div>';
       el.innerHTML = frame('Pemasukan', 'Owner', body);
       draw();
       el.addEventListener('click', function (e) {
@@ -837,78 +900,273 @@
     }
   });
 
-  /* M4: Pendapatan saya + keberatan */
+  /* M4: Pendapatan saya, laporan harian, dan keberatan */
   add({
     id: 'm4', title: 'Tidak ada lagi debat angka insentif',
-    now: 'Terapis menghitung pasiennya sendiri, finance menghitung dari rekap. Angkanya berbeda.',
-    with: 'Pendapatan tercatat otomatis tiap hari. Terapis melihat angkanya sendiri dan mengajukan keberatan langsung di aplikasi.',
-    who: ['Terapis', 'Finance'],
+    now: 'Front desk mengirim laporan Excel harian, finance merekapnya sebulan penuh. Finance kadang salah hitung, dan terapis komplain.',
+    with: 'Front desk tetap mengirim laporan harian, tetapi dari sistem: otomatis, dikunci, dan masuk ke finance dan owner. Keberatan terapis diselesaikan dengan front desk di hari yang sama, sebelum laporan dikirim. Finance hanya menerima laporan final.',
+    who: ['Terapis', 'Front desk', 'Finance', 'Owner'],
     build: function (el) {
-      var view = 'terapis';
+      var view = 'terapis', detail = '';
       var R = { uh: 75000, pasien: 32000, hv: 60000 };
+      var TODAY = 'Sel 17 Nov';
+      /* n = tanggal, wd = hari dalam pekan (0 = Minggu) untuk membaca pola shift di PEOPLE. fd = front desk yang mencatat pasien Citra. */
       var DAYS_DATA = [
-        { d: 'Sel 10 Nov', uh: 1, p: 5, hv: 0 }, { d: 'Rab 11 Nov', uh: 1, p: 6, hv: 1 }, { d: 'Kam 12 Nov', uh: 1, p: 7, hv: 0 },
-        { d: 'Jum 13 Nov', uh: 1, p: 6, hv: 0 }, { d: 'Sab 14 Nov', uh: 1, p: 4, hv: 0 }, { d: 'Sel 17 Nov', uh: 1, p: 3, hv: 0 }
+        { d: 'Sel 10 Nov', n: 10, wd: 2, uh: 1, p: 5, hv: 0, fd: 'Laras' }, { d: 'Rab 11 Nov', n: 11, wd: 3, uh: 1, p: 6, hv: 1, fd: 'Laras' }, { d: 'Kam 12 Nov', n: 12, wd: 4, uh: 1, p: 7, hv: 0, fd: 'Kirana' },
+        { d: 'Jum 13 Nov', n: 13, wd: 5, uh: 1, p: 6, hv: 0, fd: 'Laras' }, { d: 'Sab 14 Nov', n: 14, wd: 6, uh: 1, p: 4, hv: 0, fd: 'Laras' }, { d: 'Sel 17 Nov', n: 17, wd: 2, uh: 1, p: 3, hv: 0, fd: 'Kirana' }
       ];
+      /* Front desk per hari: [nama, shift]. Shift long hanya dijaga satu orang. */
+      var FD_DAY = {
+        'Sel 10 Nov': [['Laras', 'P'], ['Kirana', 'S']], 'Rab 11 Nov': [['Kirana', 'P'], ['Laras', 'S']], 'Kam 12 Nov': [['Laras', 'P'], ['Kirana', 'S']],
+        'Jum 13 Nov': [['Laras', 'L']], 'Sab 14 Nov': [['Laras', 'L']], 'Sel 17 Nov': [['Kirana', 'P'], ['Laras', 'S']]
+      };
       var PRIOR = 3120000;
+      var locked = function () { return S.gaji.stage >= 2; };
       var adjSum = function () { return S.claims.filter(function (c) { return c.status === 'Diterima'; }).reduce(function (a, c) { return a + c.adj; }, 0); };
       var dayTotal = function (x) { return x.uh * R.uh + x.p * R.pasien + x.hv * R.hv; };
       var total = function () { return PRIOR + DAYS_DATA.reduce(function (a, x) { return a + dayTotal(x); }, 0) + adjSum(); };
       var claimFor = function (d) { return S.claims.filter(function (c) { return c.day === d; })[0]; };
-      var stChip = function (c) { return c.status === 'Diterima' ? chip('good', 'Diterima', 'check') : (c.status === 'Ditolak' ? chip('bad', 'Ditolak', 'x') : chip('warn', 'Menunggu finance', 'clock')); };
+      var pendingFor = function (d) { return S.claims.filter(function (c) { return c.day === d && c.status === 'Menunggu'; }); };
+      var repOf = function (d) { return S.rep[d]; };
+      var dayOf = function (d) { return DAYS_DATA.filter(function (x) { return x.d === d; })[0]; };
+      var stChip = function (c) { return c.status === 'Diterima' ? chip('good', 'Diterima', 'check') : (c.status === 'Ditolak' ? chip('bad', 'Ditolak', 'x') : chip('warn', 'Menunggu front desk', 'clock')); };
+      var repChip = function (d) {
+        var r = repOf(d);
+        if (!r.sent) { return chip('info', 'Laporan belum dikirim', 'clock'); }
+        return r.revs.length ? chip('warn', 'Laporan revisi ' + (r.revs.length + 1), 'clock') : chip('good', 'Laporan terkirim', 'check');
+      };
+      var lockNote = function () {
+        return locked() ? callout('info', 'lock', 'Periode terkunci setelah penggajian disetujui owner. Keberatan tidak bisa diajukan lagi, dan koreksi dilakukan sebagai penyesuaian di periode berikutnya.') : '';
+      };
+
+      /* ---- Data contoh isi laporan harian (fiktif): kehadiran, pasien, dan penjualan per orang ---- */
+      var IN_OFF = [-6, -3, 0, 4, 8, -2, 14, 3, -5, 22];
+      var OUT_OFF = [0, 2, 5, -3, 12, 0, -20, 4, 0, -12];
+      var pick = function (arr, a, b) { return arr[(a * 7 + b * 3) % arr.length]; };
+      var dur = function (m) { return Math.floor(m / 60) + ' j ' + pad2(m % 60) + ' mnt'; };
+      var attend = function (code, di, pi) {
+        var sh = SHIFTS[code], inM = toMin(sh.s) + pick(IN_OFF, di, pi), outM = toMin(sh.e) + pick(OUT_OFF, di, pi);
+        var lateM = inM - toMin(sh.s), earlyM = toMin(sh.e) - outM, note = [];
+        if (lateM > 10) { note.push('Terlambat ' + lateM + ' mnt'); }
+        if (earlyM >= 10) { note.push('Pulang lebih awal ' + earlyM + ' mnt'); }
+        return { code: code, inT: fromMin(inM), outT: fromMin(outM), mins: outM - inM, note: note };
+      };
+      var packCount = function (sale) {
+        if (!sale) { return 0; }
+        var best = null;
+        for (var a = 0; a <= 3; a++) { for (var b = 0; b <= 3; b++) { for (var c = 0; c <= 3; c++) {
+          var diff = Math.abs(3.6 * a + 1.9 * b + 1.0 * c - sale), cnt = a + b + c;
+          if (!best || diff < best.diff - 0.001 || (Math.abs(diff - best.diff) <= 0.001 && cnt < best.cnt)) { best = { diff: diff, cnt: cnt }; }
+        } } }
+        return best.cnt;
+      };
+      var reportOf = function (x) {
+        var di = DAYS_DATA.indexOf(x), cl = claimFor(x.d);
+        var cit = x.p + (cl && cl.status === 'Diterima' ? 1 : 0);
+        var th = PEOPLE.filter(function (p) { return p.role === 'T' && p.days[x.wd] !== 'OFF'; });
+        var others = th.filter(function (p) { return p.n !== 'Citra'; });
+        var rest = Math.max(0, visitsOf(x.n) - x.p), base = Math.floor(rest / others.length), extra = rest % others.length;
+        var tRows = th.map(function (p, pi) {
+          var isC = p.n === 'Citra', oi = others.indexOf(p);
+          return { n: p.n, a: attend(p.days[x.wd], di, pi), p: isC ? cit : base + (((oi - di) % others.length + others.length) % others.length < extra ? 1 : 0), hv: isC ? x.hv : ((x.n + oi) % 7 === 0 ? 1 : 0) };
+        });
+        var fds = FD_DAY[x.d];
+        var sale = PKG_SALE[x.n - 1], baru = Math.max(1, Math.round(visitsOf(x.n) * 0.16)), pk = packCount(sale), tp = x.n % 3 === 0 ? 2 : x.n % 2;
+        var kas = (x.d === TODAY ? REV_TODAY : REV[x.n - 1]) * 1000000, tunai = Math.round(kas * 0.09 / 1000) * 1000;
+        var fRows = fds.map(function (f, fi) {
+          var share = function (t) { return fds.length === 1 ? t : (fi === 0 ? Math.ceil(t / 2) : Math.floor(t / 2)); };
+          var part = fds.length === 1 ? 1 : (fi === 0 ? 0.4 : 0.6), cash = Math.round(tunai * part / 1000) * 1000;
+          return { n: f[0], a: attend(f[1], di, 20 + fi), baru: share(baru), paket: share(pk), tap: share(tp), cash: cash, diff: x.n === 12 && f[0] === 'Kirana' ? -10000 : 0 };
+        });
+        var sum = function (arr, k) { return arr.reduce(function (a, r) { return a + r[k]; }, 0); };
+        return { t: tRows, f: fRows, kun: sum(tRows, 'p'), hv: sum(tRows, 'hv'), baru: sum(fRows, 'baru'), paket: pk, tap: sum(fRows, 'tap'), sale: sale * 1000000, kas: kas, tunai: tunai };
+      };
+
       var terapisHtml = function () {
         return '<div class="panel"><div class="lbl">Pendapatan periode 26 Okt-25 Nov (berjalan)</div><div class="hero-fig num" style="font-size:40px">' + rp(total()) + '</div>' +
-          '<div class="sub" style="margin-top:4px;font-size:13px">Tarif Citra: uang harian ' + rp(R.uh) + ', per pasien ' + rp(R.pasien) + ', home visit ' + rp(R.hv) + '</div></div>' +
+          '<div class="sub" style="margin-top:4px;font-size:13px">Tarif Citra: uang harian ' + rp(R.uh) + ', per pasien ' + rp(R.pasien) + ', home visit ' + rp(R.hv) + '</div></div>' + lockNote() +
           '<div><div class="sec-title">Rincian harian</div><div class="list">' + DAYS_DATA.map(function (x) {
             var c = claimFor(x.d);
             return '<div class="li" style="align-items:flex-start"><div class="t"><b>' + x.d + '</b><small>Uang harian ' + x.uh + '× · ' + x.p + ' pasien' + (x.hv ? ' · ' + x.hv + ' home visit' : '') + '</small>' +
-              (c ? '<small>Keberatan: ' + esc(c.txt) + (c.status === 'Diterima' ? ' Koreksi +' + rp(c.adj) + '.' : '') + '</small>' : '') + '</div>' +
+              '<small>Pasien dicatat front desk ' + x.fd + '</small>' +
+              (c ? '<small>Keberatan: ' + esc(c.txt) + (c.status === 'Diterima' ? ' Koreksi +' + rp(c.adj) + '.' : '') + '</small>' : '') +
+              '<div style="margin-top:4px">' + repChip(x.d) + '</div></div>' +
               '<div style="text-align:right"><div class="num"><b>' + rp(dayTotal(x) + (c && c.status === 'Diterima' ? c.adj : 0)) + '</b></div>' +
-              (c ? stChip(c) : '<button type="button" class="btn sm" data-claim="' + x.d + '">Ajukan keberatan</button>') + '</div></div>';
+              (c ? stChip(c) : (locked() ? '<small class="muted">Terkunci</small>' : '<button type="button" class="btn sm" data-claim="' + x.d + '">Ajukan keberatan</button>')) + '</div></div>';
           }).join('') + '</div></div>' +
-          '<p class="notes">Coba ajukan keberatan pada salah satu hari, lalu pindah ke tampilan Finance untuk memutuskan.</p>';
+          '<div class="panel soft"><div class="lbl">Kalau angkanya berbeda dari hitungan Anda, biasanya karena</div>' +
+          '<ul class="notes" style="margin:6px 0 0;padding-left:18px">' +
+          '<li>Pasien datang tetapi belum atau terlambat dicatat front desk saat ramai.</li>' +
+          '<li>Pasien dicatat atas nama terapis lain.</li>' +
+          '<li>Kunjungan belum Anda tandai selesai. Pasien baru dihitung dari kunjungan yang sudah selesai.</li>' +
+          '<li>Home visit tidak dipilih sebagai jenis kunjungan.</li>' +
+          '<li>Absen hari itu masih "perlu koreksi", jadi uang harian belum masuk.</li></ul></div>' +
+          '<p class="notes">Ajukan keberatan ke front desk pada hari itu juga, sebelum laporan hari itu dikirim. Kalau laporan sudah terkirim, front desk akan membukanya, menyesuaikan, dan mengirim ulang. Coba ajukan pada hari yang belum dikirim (17 Nov) dan pada hari yang sudah dikirim, lalu pindah ke tampilan front desk.</p>';
       };
-      var financeHtml = function () {
+
+      var fdHtml = function () {
+        var td = repOf(TODAY), pend = pendingFor(TODAY).length, lk = locked();
+        var warn = lk ? lockNote() : (pend ? callout('warn', 'warn', 'Ada ' + pend + ' keberatan hari ini. Selesaikan dulu supaya finance dan owner hanya menerima laporan final.') : '');
+        var report = '<div class="panel"><div class="row" style="justify-content:space-between"><div><div class="lbl">Laporan harian ' + TODAY + '</div>' +
+          '<div class="num" style="font-size:20px;font-weight:700">' + rp(REV_TODAY * 1000000) + '</div><div class="muted" style="font-size:12px">Kas diterima hari ini</div></div>' + repChip(TODAY) + '</div>' +
+          (td.sent ? '<p class="notes" style="margin-top:8px">Dikunci dan dikirim ' + esc(td.at) + ' ke finance dan owner.</p>'
+            : '<div class="row" style="margin-top:10px"><button type="button" class="btn primary" data-act="send"' + (pend || lk ? ' disabled' : '') + '>Kunci dan kirim ke finance dan owner</button></div>') + '</div>';
+        var remind = '<div class="panel soft"><div class="lbl">Pengingat otomatis</div>' +
+          '<p class="notes" style="margin:4px 0 0">Setiap pukul 20:00 sistem memeriksa apakah laporan hari ini sudah dikirim. Bila belum, front desk yang bertugas menerima notifikasi WhatsApp (lewat Fonnte; di demo ini hanya keterangan). Bila sudah dikirim, tidak ada pengingat apa pun. Finance dan owner tidak diberi notifikasi, hanya melihat status "belum dikirim".</p></div>';
         var pending = S.claims.filter(function (c) { return c.status === 'Menunggu'; });
-        return '<div class="sec-title">Keberatan masuk (' + pending.length + ' menunggu)</div>' +
-          (pending.length ? '<div class="list">' + pending.map(function (c, i) {
-            return '<div class="li" style="align-items:flex-start"><div class="t"><b>Citra · ' + c.day + '</b><small>' + esc(c.txt) + '</small><small>Bukti: daftar kunjungan hari itu dan absen.</small></div>' +
-              '<div class="row" style="flex-direction:column;align-items:stretch"><button type="button" class="btn sm primary" data-decide="ok" data-day="' + c.day + '">Terima, +1 pasien</button><button type="button" class="btn sm" data-decide="no" data-day="' + c.day + '">Tolak</button></div></div>';
-          }).join('') + '</div>' : callout('good', 'check', 'Tidak ada keberatan yang menunggu.')) +
-          '<div class="sec-title" style="margin-top:6px">Riwayat keputusan</div><div class="list">' +
+        var items = pending.map(function (c) {
+          var sent = repOf(c.day).sent;
+          var acts = lk ? '<small class="muted">Terkunci</small>'
+            : '<div class="row" style="flex-direction:column;align-items:stretch">' +
+              (sent ? '<button type="button" class="btn sm primary" data-reopen="' + c.day + '">Buka laporan dan sesuaikan</button>' : '<button type="button" class="btn sm primary" data-decide="ok" data-day="' + c.day + '">Terima, +1 pasien</button>') +
+              '<button type="button" class="btn sm" data-decide="no" data-day="' + c.day + '">Tolak</button></div>';
+          return '<div class="li" style="align-items:flex-start"><div class="t"><b>Citra · ' + c.day + '</b><small>' + esc(c.txt) + '</small>' +
+            '<small>Bukti: catatan kunjungan, jadwal booking, catatan terapi, dan absen hari itu.</small>' +
+            '<div style="margin-top:4px">' + repChip(c.day) + '</div></div>' + acts + '</div>';
+        }).join('');
+        return warn + report + remind +
+          '<div><div class="sec-title" style="margin-bottom:6px">Keberatan terapis (' + pending.length + ' menunggu)</div>' +
+          (pending.length ? '<div class="list">' + items + '</div>' : callout('good', 'check', 'Tidak ada keberatan yang menunggu.')) + '</div>' +
+          '<div><div class="sec-title" style="margin-bottom:6px">Riwayat keputusan</div><div class="list">' +
           S.claims.filter(function (c) { return c.status !== 'Menunggu'; }).map(function (c) {
             return '<div class="li"><div class="t"><b>Citra · ' + c.day + '</b><small>' + esc(c.txt) + ' Diputuskan ' + esc(c.by) + '.</small></div>' + stChip(c) + '</div>';
-          }).join('') + '</div>' +
-          '<p class="notes">Keputusan menambah entri koreksi. Angka lama tidak ditimpa, dan semuanya masuk audit log.</p>';
+          }).join('') + '</div></div>' +
+          '<p class="notes">Sebelum laporan dikirim, keberatan diputuskan langsung. Setelah dikirim, front desk membuka laporan hari itu, menyesuaikan data terapis yang bersangkutan, lalu mengirim ulang. Semuanya masuk audit log, dan owner menerima notifikasi lonceng tiap revisi.</p>' +
+          '<div class="row"><button type="button" class="btn" data-act="reset">Ulangi contoh dari awal</button></div>';
+      };
+
+      var traceHtml = function (d) {
+        var x = dayOf(d), r = repOf(d), n = x.p, out = '';
+        var line = function (label, sub, strong) { return '<small' + (strong ? ' style="color:var(--ink)"' : '') + '>' + (strong ? '<b>' + label + '</b>' : label) + ' ' + sub + '</small>'; };
+        var last = r.revs.length;
+        out += line('Versi 1' + (last ? ' (lama)' : ''), 'dikirim ' + esc(r.at) + ' oleh ' + esc(r.by) + ': Citra ' + n + ' pasien.', !last);
+        r.revs.forEach(function (rv, i) {
+          n += rv.delta;
+          out += line('Versi ' + (i + 2) + (i + 1 === last ? ' (berlaku)' : ' (lama)'), 'dikirim ulang ' + esc(rv.at) + ' oleh ' + esc(rv.by) + ': Citra ' + n + ' pasien. Penyesuaian +' + rv.delta + ' pasien Citra. Alasan: ' + esc(rv.reason), i + 1 === last);
+        });
+        return out;
+      };
+      var notifHtml = function () {
+        var items = [];
+        DAYS_DATA.forEach(function (x) { repOf(x.d).revs.forEach(function (rv) { items.push({ at: rv.at, txt: 'Laporan ' + x.d + ' direvisi oleh ' + rv.by + ': +' + rv.delta + ' pasien Citra.' }); }); });
+        return '<div><div class="sec-title" style="margin-bottom:6px">' + ic('bell') + ' Lonceng owner (' + items.length + ' revisi)</div>' +
+          (items.length ? '<div class="list">' + items.reverse().map(function (it) { return '<div class="li"><div class="t"><b>' + esc(it.txt) + '</b><small>' + esc(it.at) + '</small></div></div>'; }).join('') + '</div>'
+            : '<p class="notes">Belum ada revisi laporan.</p>') + '</div>';
+      };
+      var shiftName = function (code) { return SHIFTS[code].n + ' (' + code + ')'; };
+      var flagCell = function (a) {
+        return esc(a.inT) + '-' + esc(a.outT) + '<div>' + (a.note.length ? a.note.map(function (n) { return chip('warn', n); }).join(' ') : '<small class="muted">Tepat waktu</small>') + '</div>';
+      };
+      var detailHtml = function (d) {
+        var x = dayOf(d), r = repOf(d), rp0 = reportOf(x);
+        var tRows = rp0.t.map(function (t) {
+          return '<tr><td>' + esc(t.n) + '</td><td>' + shiftName(t.a.code) + '</td><td>' + flagCell(t.a) + '</td><td class="r num">' + dur(t.a.mins) + '</td><td class="r num">' + t.p + '</td><td class="r num">' + t.hv + '</td></tr>';
+        }).join('');
+        var fRows = rp0.f.map(function (f) {
+          return '<tr><td>' + esc(f.n) + '</td><td>' + shiftName(f.a.code) + '</td><td>' + flagCell(f.a) + '</td><td class="r num">' + dur(f.a.mins) + '</td><td class="r num">' + f.baru + '</td><td class="r num">' + f.paket + '</td><td class="r num">' + f.tap + '</td></tr>';
+        }).join('');
+        var dd = d.slice(4);
+        var kecil = S.kas.filter(function (k) { return k.d === dd && k.t === 'EXPENSE'; });
+        var promo = S.jual.log.filter(function (k) { return k.d === dd && k.paid < k.normal; });
+        var cashRows = rp0.f.map(function (f) {
+          return '<div class="li"><div class="t"><b>Tutup kas ' + esc(f.n) + ' (shift ' + SHIFTS[f.a.code].n + ')</b><small>Tunai ' + rp(f.cash) + '. Selisih ' + rp(f.diff) + '.</small></div>' + (f.diff ? chip('warn', 'Ada selisih', 'warn') : chip('good', 'Cocok', 'check')) + '</div>';
+        }).join('');
+        return '<div class="row" style="justify-content:space-between"><button type="button" class="btn sm" data-back="1">' + ic('left') + ' Kembali ke rekap</button>' + repChip(d) + '</div>' +
+          '<div class="sec-title">Laporan ' + d + '</div>' +
+          '<div class="grid2"><div class="tile"><div class="l">Kunjungan</div><div class="v num">' + rp0.kun + '</div></div><div class="tile"><div class="l">Pasien baru</div><div class="v num">' + rp0.baru + '</div></div>' +
+          '<div class="tile"><div class="l">Kas diterima</div><div class="v num" style="font-size:18px">' + rp(rp0.kas) + '</div></div><div class="tile"><div class="l">Paket terjual</div><div class="v num">' + rp0.paket + '</div></div></div>' +
+          '<div><div class="sec-title" style="margin-bottom:6px">Terapis (' + rp0.t.length + ' masuk)</div><div class="tablewrap"><table><thead><tr><th>Nama</th><th>Shift</th><th>Masuk-keluar</th><th class="r">Jam kerja</th><th class="r">Pasien</th><th class="r">Home visit</th></tr></thead><tbody>' + tRows + '</tbody></table></div></div>' +
+          '<div><div class="sec-title" style="margin-bottom:6px">Front desk (' + rp0.f.length + ' masuk)</div><div class="tablewrap"><table><thead><tr><th>Nama</th><th>Shift</th><th>Masuk-keluar</th><th class="r">Jam kerja</th><th class="r">Pasien baru</th><th class="r">Paket</th><th class="r">Tapping</th></tr></thead><tbody>' + fRows + '</tbody></table></div>' +
+          '<p class="notes" style="margin-top:6px">Insentif pasien baru dan paket masuk ke front desk yang bertugas saat pasien datang. Terlambat dihitung bila lewat toleransi 10 menit.</p></div>' +
+          '<div><div class="sec-title" style="margin-bottom:6px">Kas dan lain-lain hari itu</div><div class="list">' + cashRows +
+          '<div class="li"><div class="t"><b>Kas kecil keluar</b><small>' + (kecil.length ? kecil.map(function (k) { return esc(k.ket) + ' ' + rp(-k.amt); }).join(', ') : 'Tidak ada pengeluaran.') + '</small></div></div>' +
+          '<div class="li"><div class="t"><b>Penjualan di bawah harga normal</b><small>' + (promo.length ? promo.map(function (k) { return esc(k.paket) + ' (' + esc(k.promo) + '), ditagih ' + rp(k.paid) + ' dari ' + rp(k.normal); }).join('; ') : 'Tidak ada.') + '</small></div></div>' +
+          '<div class="li"><div class="t"><b>Keberatan dan revisi</b>' + (r.revs.length ? traceHtml(d) : '<small>Tidak ada revisi. Laporan final dikirim ' + esc(r.at) + ' oleh ' + esc(r.by) + '.</small>') + '</div></div></div></div>';
+      };
+
+      var financeHtml = function () {
+        var lk = locked();
+        if (detail) { return detailHtml(detail); }
+        var rows = DAYS_DATA.slice().reverse().map(function (x) {
+          var r = repOf(x.d), rp0 = reportOf(x);
+          if (!r.sent) {
+            return '<div class="li" style="align-items:flex-start"><div class="t"><b>' + x.d + '</b><small>Front desk ' + esc(r.by) + ' belum mengirim laporan.' + '' + '</small></div>' + repChip(x.d) + '</div>';
+          }
+          return '<button type="button" class="rowbtn" data-detail="' + x.d + '"><span class="rb-main"><b>' + x.d + '</b><small>' + rp0.kun + ' kunjungan · ' + rp0.baru + ' pasien baru · ' + rp(rp0.kas) + '</small></span>' + repChip(x.d) + ic('right') + '</button>';
+        }).join('');
+        return notifHtml() +
+          '<div><div class="sec-title" style="margin-bottom:6px">Rekap laporan harian</div><div class="list" style="gap:8px">' + rows + '</div></div>' +
+          '<p class="notes">Ketuk satu tanggal untuk melihat detailnya: siapa yang masuk, jam kerja, terlambat atau pulang lebih awal, pasien, penjualan, kas, dan jejak revisi. Finance dan owner hanya menerima laporan final. Keberatan terapis tidak masuk ke sini, karena sudah selesai di front desk sebelum laporan dikirim.</p>' +
+          '<div class="panel"><div class="lbl">Kunci periode</div><div class="sub" style="margin:4px 0 8px;font-size:13px">Setelah penggajian disetujui owner, semua laporan harian periode ini terkunci dan tidak bisa dibuka lagi.</div>' +
+          (lk ? callout('info', 'lock', 'Periode terkunci. Koreksi lewat penyesuaian di periode berikutnya.') : '') +
+          '<div class="row" style="margin-top:8px">' + (lk ? '<button type="button" class="btn" data-act="unlock">Buka kunci (hanya contoh)</button>'
+            : '<button type="button" class="btn primary" data-act="lock">Setujui penggajian (kunci periode)</button>') + '</div></div>';
       };
       var render = function () {
-        var body = '<div>' + seg('view', [['terapis', 'Tampilan terapis'], ['finance', 'Tampilan finance']], view) + '</div>' +
-          (view === 'terapis' ? terapisHtml() : financeHtml());
-        el.innerHTML = frame('Pendapatan saya', view === 'terapis' ? 'Terapis' : 'Finance', body);
+        var body = '<div>' + seg('view', [['terapis', 'Terapis'], ['fd', 'Front desk'], ['finance', 'Finance dan owner']], view) + '</div>' +
+          (view === 'terapis' ? terapisHtml() : (view === 'fd' ? fdHtml() : financeHtml()));
+        el.innerHTML = frame('Pendapatan saya', view === 'terapis' ? 'Terapis' : (view === 'fd' ? 'Front desk' : 'Finance dan owner'), body);
       };
       render();
       el.addEventListener('click', function (e) {
         var t = e.target.closest ? e.target.closest('button') : null; if (!t) { return; }
         if (t.getAttribute('data-seg') === 'view') { view = t.getAttribute('data-v'); render(); return; }
+        var dt = t.getAttribute('data-detail');
+        if (dt) { detail = dt; render(); return; }
+        if (t.getAttribute('data-back')) { detail = ''; render(); return; }
+        var act = t.getAttribute('data-act');
+        if (act === 'send') {
+          var rep0 = repOf(TODAY);
+          if (!locked() && !rep0.sent && !pendingFor(TODAY).length) { rep0.sent = true; rep0.at = TODAY + ' 19:55'; render(); toast('Laporan ' + TODAY + ' dikunci dan dikirim ke finance dan owner.'); }
+          return;
+        }
+        if (act === 'lock') { S.gaji.stage = Math.max(S.gaji.stage, 2); render(); toast('Penggajian disetujui. Periode terkunci.'); return; }
+        if (act === 'unlock') { S.gaji.stage = 0; render(); toast('Kunci periode dibuka, hanya untuk contoh.'); return; }
+        if (act === 'reset') { S.claims = seedClaims(); S.rep = seedRep(); detail = ''; render(); toast('Contoh diulang dari awal.'); return; }
         var cl = t.getAttribute('data-claim');
         if (cl) {
-          modal('<h3>Keberatan untuk ' + esc(cl) + '</h3><p class="sub">Jelaskan bagian yang menurut Anda tidak sesuai. Finance akan memeriksa kunjungan dan absen hari itu.</p>' +
+          if (locked()) { return; }
+          var sentCl = repOf(cl).sent;
+          modal('<h3>Keberatan untuk ' + esc(cl) + '</h3><p class="sub">' + (sentCl
+            ? 'Laporan hari itu sudah dikunci dan dikirim ke finance dan owner. Front desk akan membuka laporan, menyesuaikan, lalu mengirim ulang. Angka lama tetap tampil sebagai jejak.'
+            : 'Front desk akan memeriksa dan memutuskan hari ini juga, sebelum laporan hari itu dikirim ke finance dan owner.') + '</p>' +
             '<div class="field"><label for="claim-txt">Alasan</label><textarea id="claim-txt">Pasien ke-7 hari itu belum tercatat.</textarea></div>' +
-            '<div class="row" style="justify-content:flex-end"><button type="button" class="btn" data-close>Batal</button><button type="button" class="btn primary" id="claim-go">Kirim keberatan</button></div>',
+            '<div class="row" style="justify-content:flex-end"><button type="button" class="btn" data-close>Batal</button><button type="button" class="btn primary" id="claim-go">Kirim ke front desk</button></div>',
             function (o, close) {
               $('#claim-go', o).addEventListener('click', function () {
                 var txt = ($('#claim-txt', o).value || '').trim() || 'Ada yang tidak sesuai.';
                 S.claims.push({ day: cl, txt: txt, status: 'Menunggu', adj: 0, by: '' });
-                close(); render(); toast('Keberatan terkirim ke finance.');
+                close(); render(); toast('Keberatan terkirim ke front desk.');
+              });
+            });
+          return;
+        }
+        var ro = t.getAttribute('data-reopen');
+        if (ro) {
+          if (locked()) { return; }
+          var pc = pendingFor(ro)[0]; if (!pc) { return; }
+          modal('<h3>Buka laporan ' + esc(ro) + '</h3><p class="sub">Laporan ini sudah dikunci dan dikirim ke finance dan owner. Penyesuaian dicatat sebagai revisi, lalu laporan dikirim ulang.</p>' +
+            '<div class="tablewrap"><table><tbody><tr><td>Terapis</td><td class="r"><b>Citra</b> (pengaju keberatan)</td></tr>' +
+            '<tr><td>Keberatan</td><td class="r">' + esc(pc.txt) + '</td></tr>' +
+            '<tr><td>Penyesuaian</td><td class="r num">+1 pasien (' + rp(R.pasien) + ')</td></tr></tbody></table></div>' +
+            '<div class="field" style="margin-top:8px"><label for="rev-txt">Alasan penyesuaian</label><textarea id="rev-txt">Sudah dicek: pasien datang, tetapi belum tercatat.</textarea></div>' +
+            '<div class="row" style="justify-content:flex-end"><button type="button" class="btn" data-close>Batal</button><button type="button" class="btn primary" id="rev-go">Simpan dan kirim ulang laporan</button></div>',
+            function (o, close) {
+              $('#rev-go', o).addEventListener('click', function () {
+                var why = ($('#rev-txt', o).value || '').trim() || 'Penyesuaian data.';
+                pc.status = 'Diterima'; pc.adj = R.pasien; pc.by = 'front desk Laras';
+                repOf(ro).revs.push({ at: TODAY + ' 14:20', by: 'Laras', delta: 1, reason: why });
+                close(); render(); toast('Laporan ' + ro + ' dikirim ulang sebagai revisi ' + (repOf(ro).revs.length + 1) + '. Notifikasi lonceng terkirim ke owner.');
               });
             });
           return;
         }
         var dec = t.getAttribute('data-decide');
         if (dec) {
+          if (locked()) { return; }
           var day = t.getAttribute('data-day');
-          S.claims.forEach(function (c) { if (c.day === day && c.status === 'Menunggu') { c.status = dec === 'ok' ? 'Diterima' : 'Ditolak'; c.adj = dec === 'ok' ? R.pasien : 0; c.by = 'Finance'; } });
-          render(); toast(dec === 'ok' ? 'Koreksi dicatat. Pendapatan terapis bertambah ' + rp(R.pasien) + '.' : 'Keberatan ditolak, alasan tercatat.');
+          S.claims.forEach(function (c) { if (c.day === day && c.status === 'Menunggu') { c.status = dec === 'ok' ? 'Diterima' : 'Ditolak'; c.adj = dec === 'ok' ? R.pasien : 0; c.by = 'front desk Laras'; } });
+          render(); toast(dec === 'ok' ? 'Koreksi dicatat sebelum laporan dikirim. Pendapatan terapis bertambah ' + rp(R.pasien) + '.' : 'Keberatan ditolak, alasan tercatat.');
         }
       });
     }
@@ -977,14 +1235,15 @@
         '<div class="panel"><div class="row" style="justify-content:space-between"><div><h3 style="font-size:17px">Kirana</h3><div class="muted" style="font-size:12px">Front desk · Tetap · Rekening BRI ****-**-0456</div></div>' + chip('info', 'Data gaji') + '</div>' +
         '<div class="field" style="margin-top:12px"><label for="gp">Gaji pokok per bulan</label>' + money('gp', G.gp) + '</div>' +
         '<div class="field" style="margin-top:10px"><label for="batas">Batas jam kerja per bulan (diisi finance)</label><input type="number" id="batas" min="0" step="1" value="' + G.batas + '"></div></div>' +
-        '<div class="panel"><div class="sec-title" style="margin-bottom:8px">Tunjangan dan insentif</div><div class="list" style="gap:8px" id="tunj">' + tunjHtml() + '</div></div>' +
+        '<div class="panel"><div class="sec-title" style="margin-bottom:8px">Tunjangan dan insentif</div><div class="list" style="gap:8px" id="tunj">' + tunjHtml() + '</div>' +
+          '<p class="notes" style="margin-top:8px">Insentif pasien baru dan paket masuk ke front desk yang bertugas saat pasien datang untuk terapi, bukan yang mendaftarkan atau menjual. Paket dihitung 1× per paket, saat pasien pertama kali datang memakainya.</p></div>' +
         '<div class="panel"><div class="sec-title" style="margin-bottom:8px">Potongan tetap</div><div class="list" style="gap:8px" id="pot">' + potHtml() + '</div>' +
         '<div style="margin-top:10px"><button type="button" class="btn sm" data-act="addpot">' + ic('plus') + ' Tambah potongan tetap</button></div>' +
         '<p class="notes" style="margin-top:8px">Keterlambatan dipotong otomatis dari absen. Potongan lain diisi manual di sini.</p></div>' +
         '<div class="panel soft"><div class="sec-title" style="margin-bottom:6px">Dari data harian (otomatis)</div><div class="grid2">' +
         '<div class="tile"><div class="l">Jam kerja periode</div><div class="v num">' + hm(G.menit) + '</div></div>' +
         '<div class="tile"><div class="l">Terlambat</div><div class="v num" id="late">' + S.lateCount + ' kali</div></div></div>' +
-        '<p class="notes" style="margin-top:8px">Tambah keterlambatan di layar 2 (tab Absen), lalu kembali ke sini.</p></div>';
+        '<p class="notes" style="margin-top:8px">Tambah keterlambatan di adegan Absen, lalu kembali ke sini.</p></div>';
       var right =
         '<div class="panel"><div class="sec-title" style="margin-bottom:6px">Draf gaji · periode 26 Okt-25 Nov 2026</div><div id="out">' + outHtml() + '</div></div>' +
         '<div class="panel"><div class="sec-title" style="margin-bottom:8px">Persetujuan</div><div id="stage">' + stageHtml() + '</div></div>';
@@ -1015,12 +1274,12 @@
 
   /* M6: PWA pasien dan front desk */
   add({
-    id: 'm6', title: 'Front desk dan pasien melihat sisa paket yang sama',
-    now: 'Pasien ingat sisa 3, catatan front desk sisa 2. Tidak ada yang bisa membuktikan.',
-    with: 'Sisa paket dihitung dari buku mutasi. Pasien melihat sisa dan riwayatnya di HP, front desk melihat angka yang sama.',
+    id: 'm6', title: 'Beli paket, dan sisa paket yang selalu cocok',
+    now: 'Sisa paket dihitung dengan mata dari kolom tanggal di Excel. Pasien ingat sisa 3, catatan front desk sisa 2, dan tidak ada yang bisa membuktikan.',
+    with: 'Harga dan promo dari sistem, kwitansi langsung ke WhatsApp pasien. Sisa paket dihitung dari buku mutasi, jadi pasien dan front desk melihat angka yang sama.',
     who: ['Pasien', 'Front desk'],
     build: function (el) {
-      var view = 'pasien';
+      var view = 'jual';
       var P = S.paket, TOTAL = 12;
       var sisa = function () { return TOTAL - P.used; };
       var histHtml = function () {
@@ -1046,17 +1305,72 @@
           '<div class="field"><label for="fd-th">Terapis</label><select id="fd-th"><option>Dina</option><option>Citra</option><option>Elsa</option><option>Hendra</option></select></div></div>' +
           '<div class="row" style="margin-top:10px"><button type="button" class="btn primary" data-act="use"' + (s <= 0 ? ' disabled' : '') + '>Tandai sesi selesai (-1)</button><button type="button" class="btn" data-act="share4">Tambah peserta ke-4</button></div></div>' +
           '<div><div class="sec-title" style="margin-bottom:6px">Buku mutasi</div>' + histHtml() + '</div>' +
-          '<p class="notes">Aturan: sharing hanya untuk paket 12x, paling banyak 3 orang. Paket 3x dan 6x tidak bisa dibagi.</p>';
+          '<p class="notes">Aturan: sharing hanya untuk paket 12x, paling banyak 3 orang. Paket 3x dan 6x tidak bisa dibagi.</p>' +
+          '<p class="notes">Insentif paket dihitung 1× per paket, untuk front desk yang bertugas saat pasien pertama kali datang memakainya. Biasanya paket dibeli setelah terapi, jadi orangnya sama dengan yang menjual. Bila dibeli lebih dulu, seperti paket ini (dijual Kirana 1 Nov, sesi pertama 3 Nov saat Laras bertugas), insentifnya masuk ke Laras. Sesi berikutnya tidak menambah insentif.</p>';
+      };
+      /* Penjualan paket: harga dan promo dari data master, front desk hanya memilih. */
+      var PK = { '3': { n: 'Paket 3x', price: 1000000 }, '6': { n: 'Paket 6x', price: 1900000 }, '12': { n: 'Paket 12x', price: 3600000 } };
+      var PER_VISIT = 375000;
+      var PROMO = { '3': [], '6': [{ id: 'p6', n: 'Promo awal bulan', off: 100000 }], '12': [{ id: 'p12', n: 'Promo November', off: 200000 }] };
+      var jualPick = function () {
+        var J = S.jual, pk = PK[J.pkg] || null;
+        var pr = pk ? PROMO[J.pkg].filter(function (p) { return p.id === J.promo; })[0] || null : null;
+        var normal = pk ? pk.price : PER_VISIT, off = pr ? pr.off : 0;
+        return { pk: pk, pr: pr, normal: normal, off: off, total: normal - off };
+      };
+      var jualHtml = function () {
+        var J = S.jual, c = jualPick();
+        var promoField = c.pk
+          ? '<div class="field" style="margin-top:10px"><label for="jual-promo">Promo yang berlaku</label><select id="jual-promo"><option value="">Tanpa promo (harga normal)</option>' +
+            PROMO[J.pkg].map(function (p) { return '<option value="' + p.id + '"' + (p.id === J.promo ? ' selected' : '') + '>' + esc(p.n) + ' (potongan ' + rp(p.off) + ', sampai 30 Nov)</option>'; }).join('') + '</select>' +
+            (PROMO[J.pkg].length ? '' : '<small class="muted">Tidak ada promo aktif untuk paket ini.</small>') + '</div>'
+          : '';
+        var out = '<div class="panel"><div class="lbl">Selesai terapi · Bapak Wawan (pasien baru)</div>' +
+          '<div class="sub" style="margin-top:4px;font-size:13px">Terapis menyarankan 6 kali terapi. Tanyakan ke pasien: bayar per kedatangan, atau beli paket?</div>' +
+          '<div style="margin-top:10px">' + seg('pkg', [['1', 'Per kedatangan'], ['3', 'Paket 3x'], ['6', 'Paket 6x'], ['12', 'Paket 12x']], J.pkg) + '</div>' + promoField +
+          '<div class="tablewrap" style="margin-top:10px"><table><tbody>' +
+          '<tr><td>' + (c.pk ? c.pk.n + ', harga normal' : 'Terapi per kedatangan') + '</td><td class="r num">' + rp(c.normal) + '</td></tr>' +
+          (c.pr ? '<tr><td>' + esc(c.pr.n) + '</td><td class="r num">' + rp(-c.off) + '</td></tr>' : '') +
+          '<tr><td><b>Total ditagih</b></td><td class="r num"><b>' + rp(c.total) + '</b></td></tr></tbody></table></div>' +
+          '<p class="notes" style="margin-top:6px">Harga ditetapkan sistem dari daftar harga dan promo yang dibuat owner atau finance. Front desk tidak bisa mengetik harga sendiri.</p>' +
+          '<div class="row" style="margin-top:10px"><button type="button" class="btn primary" data-act="jual-go">Buat invoice dan kirim kwitansi ke WhatsApp</button></div></div>';
+        if (J.done) {
+          var d = J.done;
+          out += callout('good', 'check', 'Invoice dibuat: <b>' + esc(d.label) + ' ' + rp(d.total) + '</b>' + (d.promo ? ' (' + esc(d.promo) + ')' : '') + '. Kwitansi PDF terkirim ke WhatsApp pasien dengan harga ini, jadi pasien bisa mencocokkannya dengan uang yang ia bayar.') +
+            callout('info', 'clock', d.paket
+              ? 'Sesi yang baru selesai tercatat sebagai sesi ke-1 paket. Insentif paket (1×) dan insentif pasien baru masuk ke <b>Laras</b>, front desk yang bertugas saat pasien datang.'
+              : 'Insentif pasien baru masuk ke <b>Laras</b>, front desk yang bertugas saat pasien datang.') +
+            '<div class="row"><button type="button" class="btn" data-act="jual-reset">Ulangi contoh</button></div>';
+        }
+        var flagged = J.log.filter(function (x) { return x.paid < x.normal; });
+        out += '<div><div class="sec-title" style="margin-bottom:6px">Dilihat owner: penjualan di bawah harga normal</div>' +
+          (flagged.length ? '<div class="list">' + flagged.slice().reverse().map(function (x) {
+            return '<div class="li"><div class="t"><b>' + esc(x.paket) + ' · ' + esc(x.promo) + '</b><small>' + x.d + ' · ' + esc(x.who) + ' · normal ' + rp(x.normal) + ', ditagih ' + rp(x.paid) + '</small></div>' + chip('warn', 'Promo') + '</div>';
+          }).join('') + '</div>' : '<p class="notes">Belum ada penjualan di bawah harga normal.</p>') +
+          '<p class="notes" style="margin-top:6px">Setiap penjualan dengan promo ditandai bersama nama promonya. Kalau harga yang ditagih ke pasien berbeda dari yang tercatat, kwitansi di WhatsApp pasien akan memperlihatkannya.</p></div>';
+        return out;
       };
       var render = function () {
-        var body = '<div>' + seg('view', [['pasien', 'HP pasien'], ['fd', 'Front desk']], view) + '</div>' + (view === 'pasien' ? pasienHtml() : fdHtml());
-        el.innerHTML = frame(view === 'pasien' ? 'Paket saya' : 'Paket pasien', view === 'pasien' ? 'Pasien' : 'Front desk', body);
+        var body = '<div>' + seg('view', [['jual', 'Jual paket'], ['fd', 'Front desk'], ['pasien', 'HP pasien']], view) + '</div>' +
+          (view === 'pasien' ? pasienHtml() : (view === 'fd' ? fdHtml() : jualHtml()));
+        el.innerHTML = frame(view === 'pasien' ? 'Paket saya' : (view === 'fd' ? 'Paket pasien' : 'Penjualan paket'), view === 'pasien' ? 'Pasien' : 'Front desk', body);
       };
       render();
+      el.addEventListener('change', function (e) {
+        if (e.target.id === 'jual-promo') { S.jual.promo = e.target.value; S.jual.done = null; render(); }
+      });
       el.addEventListener('click', function (e) {
         var t = e.target.closest ? e.target.closest('button') : null; if (!t) { return; }
         if (t.getAttribute('data-seg') === 'view') { view = t.getAttribute('data-v'); render(); return; }
+        if (t.getAttribute('data-seg') === 'pkg') { S.jual.pkg = t.getAttribute('data-v'); S.jual.promo = ''; S.jual.done = null; render(); return; }
         var act = t.getAttribute('data-act');
+        if (act === 'jual-go') {
+          var c = jualPick();
+          S.jual.done = { paket: !!c.pk, label: c.pk ? c.pk.n : 'Terapi per kedatangan', total: c.total, promo: c.pr ? c.pr.n : '' };
+          if (c.pk && c.pr) { S.jual.log.push({ d: '17 Nov', who: 'Laras', paket: c.pk.n, promo: c.pr.n, normal: c.normal, paid: c.total }); }
+          render(); toast('Invoice dibuat. Kwitansi terkirim ke WhatsApp pasien.');
+        }
+        if (act === 'jual-reset') { S.jual.done = null; render(); }
         if (act === 'use' && sisa() > 0) {
           P.used += 1; P.hist.push({ d: '17 Nov', who: $('#fd-who', el).value, th: $('#fd-th', el).value });
           render(); toast('Sesi tercatat. Sisa paket sekarang ' + sisa() + ', dan pasien langsung melihatnya di HP.');
@@ -1212,7 +1526,7 @@
         '<div><div class="lbl" style="margin-bottom:6px">Pasien meminta terapis</div>' + seg('pref', [['all', 'Siapa saja'], ['f', 'Perempuan'], ['m', 'Laki-laki']], B.pref) + '</div>' +
         '<div id="bk-msg">' + (B.last ? callout('good', 'check', B.last) : '') + '</div>' +
         '<div style="display:flex;flex-direction:column;gap:10px" id="cards">' + cardsHtml() + '</div>' +
-        '<p class="notes">Jadwal terapis mengikuti layar 2. Ubah jadwal di sana dan pilihan di sini ikut berubah. Jam yang pudar sudah terisi.</p>';
+        '<p class="notes">Jadwal terapis mengikuti adegan Jadwal periode. Ubah jadwal di sana dan pilihan di sini ikut berubah. Jam yang pudar sudah terisi.</p>';
       el.innerHTML = frame('Booking', 'Front desk', body);
       el.addEventListener('change', function (e) { if (e.target.id === 'bk-day') { B.day = parseInt(e.target.value, 10); B.last = ''; $('#bk-msg', el).innerHTML = ''; $('#cards', el).innerHTML = cardsHtml(); } });
       el.addEventListener('click', function (e) {
@@ -1296,6 +1610,21 @@
     }
   });
 
+  /* ---------- Urutan presentasi: satu periode kerja, dengan satu hari penuh di tengahnya ---------- */
+  var BAB = [
+    { t: 'Awal periode', d: 'Sebelum periode jadwal berjalan, leader menyusun jadwal shift untuk semua karyawan.', ids: ['m2'], w: { m2: 'Sebelum periode dimulai' } },
+    { t: 'Satu hari di klinik: Selasa, 17 November', d: 'Dari karyawan masuk di pagi hari sampai laporan dikirim di malam hari. Semua yang terjadi hari ini tercatat sendiri di sistem.', ids: ['m2b', 'm8', 'm10', 'm1', 'm6', 'm7', 'm11', 'm4', 'm3'],
+      w: { m2b: '07:30 · Karyawan masuk', m8: '08:00 · Pengingat untuk pasien hari ini', m10: '09:00 · Pasien baru menghubungi klinik', m1: '11:20 · Owner membuka HP', m6: '14:00 · Pasien selesai terapi', m7: '14:30 · Bonus kunjungan pasien', m11: '16:00 · Kebutuhan operasional', m4: '19:30 · Penutupan hari dan laporan harian', m3: '20:00 · Owner melihat pemasukan hari ini' } },
+    { t: 'Akhir periode dan akhir bulan', d: 'Semua laporan harian yang sudah final menjadi dasar gaji dan laporan bulanan.', ids: ['m5', 'm9'], w: { m5: '25 November · Hari gajian', m9: '30 November · Akhir bulan' } }
+  ];
+  (function () {
+    var byIdMap = {}; SCENES.forEach(function (sc) { byIdMap[sc.id] = sc; });
+    var ordered = [];
+    BAB.forEach(function (b) { b.ids.forEach(function (id) { var sc = byIdMap[id]; sc.bab = b.t; sc.waktu = b.w[id]; ordered.push(sc); delete byIdMap[id]; }); });
+    if (Object.keys(byIdMap).length) { throw new Error('Adegan belum masuk urutan: ' + Object.keys(byIdMap).join(', ')); }
+    SCENES.length = 0; ordered.forEach(function (sc) { SCENES.push(sc); });
+  })();
+
   /* ---------- Router & halaman daftar ---------- */
   var root = $('#root');
   var header = function () {
@@ -1304,13 +1633,17 @@
       '<a class="btn sm" href="#daftar">Daftar masalah</a></div>';
   };
   function listPage() {
+    var no = {}; SCENES.forEach(function (sc, i) { no[sc.id] = i + 1; });
     root.innerHTML = header() +
       '<div class="hero"><h1>Dari masalah sehari-hari ke layar yang menyelesaikannya</h1>' +
-      '<p>Sebelas masalah nyata di klinik, masing-masing dengan layar yang bisa dicoba. Mulai dari yang paling sering ditanyakan owner setiap hari.</p>' +
-      '<div class="row" style="margin-top:20px"><a class="btn primary" href="#m1">Mulai dari masalah 1</a></div></div>' +
-      '<div class="cards">' + SCENES.map(function (s, i) {
-        return '<a class="card-link" href="#' + s.id + '"><span class="n">Masalah ' + (i + 1) + '</span><h3>' + esc(s.title) + '</h3><span class="a">Sekarang: ' + esc(s.now) + '</span><span class="b">Dengan sistem: ' + esc(s.with) + '</span></a>';
-      }).join('') + '</div>';
+      '<p>Ikuti satu periode kerja di klinik: jadwal disiapkan, lalu satu hari penuh dari absen pagi sampai laporan malam, dan ditutup dengan gajian dan laporan akhir bulan. Setiap layar bisa dicoba.</p>' +
+      '<div class="row" style="margin-top:20px"><a class="btn primary" href="#' + SCENES[0].id + '">Mulai dari awal periode</a></div></div>' +
+      BAB.map(function (b) {
+        return '<div class="bab"><h2>' + esc(b.t) + '</h2><p>' + esc(b.d) + '</p><div class="cards">' + b.ids.map(function (id) {
+          var sc = SCENES.filter(function (x) { return x.id === id; })[0];
+          return '<a class="card-link" href="#' + sc.id + '"><span class="n">Masalah ' + no[id] + ' · ' + esc(sc.waktu) + '</span><h3>' + esc(sc.title) + '</h3><span class="a">Sekarang: ' + esc(sc.now) + '</span><span class="b">Dengan sistem: ' + esc(sc.with) + '</span></a>';
+        }).join('') + '</div></div>';
+      }).join('');
   }
   function scenePage(i) {
     var s = SCENES[i], prev = SCENES[i - 1], next = SCENES[i + 1];
@@ -1319,7 +1652,7 @@
       '<span class="muted" style="font-size:13px">' + (i + 1) + ' dari ' + SCENES.length + '</span>' +
       (next ? '<a class="btn sm primary" href="#' + next.id + '">Berikutnya ' + ic('right') + '</a>' : '') + '</div></div>';
     root.innerHTML = header() + nav +
-      '<div class="scene"><div class="story"><span class="tag">Masalah ' + (i + 1) + '</span><h2>' + esc(s.title) + '</h2>' +
+      '<div class="scene"><div class="story"><span class="tag">Masalah ' + (i + 1) + ' · ' + esc(s.waktu) + '</span><div class="muted" style="font-size:12px">' + esc(s.bab) + '</div><h2>' + esc(s.title) + '</h2>' +
       '<div class="box before"><small>Sekarang</small>' + esc(s.now) + '</div>' +
       '<div class="box after"><small>Dengan sistem</small>' + esc(s.with) + '</div>' +
       '<div class="row">' + s.who.map(function (w) { return chip('info', w); }).join('') + '<span class="muted" style="font-size:12px">yang melihat layar ini</span></div></div>' +
