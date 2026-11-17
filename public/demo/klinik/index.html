@@ -326,30 +326,32 @@
   .bk-ghost small { display: block; font-weight: 500; font-size: 11px; }
   .bk-ghost.no { border-color: var(--bad); background: var(--bad-soft); color: var(--bad); }
   .bk-card b { font-size: 13px; line-height: 1.25; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .bk-card .bk-t, .bk-card .bk-sv, .bk-card .bk-st { font-size: 11px; line-height: 1.25; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bk-card .bk-t, .bk-card .bk-sv { font-size: 11px; line-height: 1.25; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .bk-card.short { flex-direction: row; align-items: center; gap: 6px; padding-top: 2px; padding-bottom: 2px; }
   .bk-card.short .bk-t { display: none; }
   .bk-card.short b { flex: 1 1 auto; min-width: 0; }
-  .bk-card.short .bk-st { flex: none; }
+  .bk-card.short .bk-badge { flex: none; }
   .st-PENDING { background: var(--warn-soft); border-left-color: var(--warn); }
   .st-CONFIRMED { background: var(--accent-soft); border-left-color: var(--accent); }
   .st-CHECKED_IN { background: var(--good-soft); border-left-color: var(--good); }
   .st-DONE { background: var(--surface-2); border-left-color: var(--axis); }
   .st-NO_SHOW { background: var(--bad-soft); border-left-color: var(--bad); }
   .st-CANCELED { background: var(--surface); border-left-color: var(--line); opacity: 0.7; }
+  /* Lencana status: warna isi mengikuti status, teks memakai warna latar supaya tetap terbaca di mode terang dan gelap. */
+  .bk-badge { display: inline-flex; align-items: center; align-self: flex-start; max-width: 100%; box-sizing: border-box; padding: 1px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; line-height: 1.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background: var(--ink-2); color: var(--bg); }
+  .bk-badge.lg { padding: 2px 10px; font-size: 12px; }
+  .bk-badge.PENDING { background: var(--warn); color: #3d2a00; }
+  .bk-badge.CONFIRMED { background: var(--accent-text); color: var(--bg); }
+  .bk-badge.CHECKED_IN { background: var(--good-ink); color: var(--bg); }
+  .bk-badge.DONE { background: var(--ink-2); color: var(--bg); }
+  .bk-badge.NO_SHOW { background: var(--bad-ink); color: var(--bg); }
+  .bk-badge.CANCELED { background: var(--surface-2); color: var(--muted); box-shadow: inset 0 0 0 1px var(--line); }
   .bk-now { position: relative; align-self: start; height: 2px; background: var(--bad); z-index: 2; pointer-events: none; }
   .bk-now::before { content: attr(data-t); position: absolute; left: 0; top: -8px; padding: 0 5px; border-radius: 4px; background: var(--bad); color: #fff; font-size: 10px; line-height: 16px; font-variant-numeric: tabular-nums; }
-  .bk-legend { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12px; color: var(--ink-2); }
-  .bk-legend i { display: inline-block; width: 14px; height: 12px; margin-right: 4px; vertical-align: -2px; border-radius: 3px; border: 1px solid var(--line); border-left-width: 4px; }
-  .bk-legend i.st-PENDING { border-left-color: var(--warn); }
-  .bk-legend i.st-CONFIRMED { border-left-color: var(--accent); }
-  .bk-legend i.st-CHECKED_IN { border-left-color: var(--good); }
-  .bk-legend i.st-DONE { border-left-color: var(--axis); }
-  .bk-legend i.st-NO_SHOW { border-left-color: var(--bad); }
+  .bk-legend { display: flex; flex-wrap: wrap; gap: 6px 8px; font-size: 12px; color: var(--ink-2); }
   .bk-li { border-left-width: 4px; }
   .bk-lt { flex: none; min-width: 48px; font-weight: 600; font-size: 14px; line-height: 1.2; }
   .bk-lt small { display: block; font-weight: 400; font-size: 11px; color: var(--muted); }
-  .bk-card:not(.short) .bk-st { white-space: normal; }
   .bk-more { cursor: pointer; min-height: 36px; padding: 6px 0; font-weight: 500; color: var(--accent-text); }
   .bk-cat { font-size: 11px; font-weight: 600; line-height: 1.25; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .bk-card.narrow { padding: 3px 4px; }
@@ -655,8 +657,8 @@
   var BK_SV_ORDER = ['reg', 'baru', 'paket', 'hv'];
   var BK_STATUS = {
     PENDING: { n: 'Menunggu konfirmasi', s: 'Menunggu' },
-    CONFIRMED: { n: 'Terkonfirmasi', s: 'Konfirmasi' },
-    CHECKED_IN: { n: 'Sudah datang', s: 'Datang' },
+    CONFIRMED: { n: 'Terkonfirmasi', s: 'Terkonfirmasi' },
+    CHECKED_IN: { n: 'Sudah datang', s: 'Sudah datang' },
     DONE: { n: 'Selesai', s: 'Selesai' },
     NO_SHOW: { n: 'Tidak datang', s: 'Tak datang' },
     CANCELED: { n: 'Batal', s: 'Batal' }
@@ -677,6 +679,8 @@
   function bkMonday(iso) { var k = (bkDow(iso) + 6) % 7; return isoAdd(iso, -k); }
   function bkInitial(name) { var w = String(name).split(' '); return (w[1] || w[0]).charAt(0); }
   function bkActive(b) { return b.st !== 'CANCELED'; }
+  /* Status ditampilkan sebagai lencana berwarna: kuning menunggu, biru terkonfirmasi, hijau sudah datang, abu-abu selesai, merah tidak datang. */
+  function bkBadge(st, short, big) { var s = BK_STATUS[st]; return '<span class="bk-badge ' + st + (big ? ' lg' : '') + '">' + esc(short ? s.s : s.n) + '</span>'; }
   function bkFind(id) { return S.booking.list.filter(function (b) { return b.id === id; })[0]; }
   function bkCatTag(b) { return b.cat === 'teman' ? 'Teman owner ' + b.disc + '%' : (BK_CATS[b.cat] && b.cat !== 'umum' ? BK_CATS[b.cat].s : ''); }
   /* Rentang jam kerja terapis pada satu tanggal, dari jadwal shift. */
@@ -1974,7 +1978,7 @@
   add({
     id: 'm10', title: 'Jadwal pasien rapi per 30 menit, nyaman di HP maupun komputer',
     now: 'Janji pasien diatur di Setmore. Tampilannya tabel untuk desktop, sulit dipakai dari HP, dan jam kerja terapis harus diinput ulang dari jadwal shift.',
-    with: 'Front desk mengatur janji per 30 menit di kalender terapis. Jam kerja diambil dari jadwal shift, dan daftar jam menampilkan semua jam terapis dari masuk sampai pulang, jam yang sudah terisi diberi keterangan dan tidak bisa dipilih. Tiap sesi 60 menit, home visit 90 menit. Pasien gratis 10x, teman owner, dan warrior ditandai di jadwal dan masuk laporan harian. Layar yang sama nyaman di HP.',
+    with: 'Front desk mengatur janji per 30 menit di kalender terapis. Jam kerja diambil dari jadwal shift, dan daftar jam menampilkan jam kosong terapis dari masuk sampai pulang, janji yang sudah ada tampil satu baris dan tidak bisa dipilih. Tiap sesi 60 menit, home visit 90 menit. Status janji tampil sebagai lencana berwarna. Pasien gratis 10x, teman owner, dan warrior ditandai di jadwal dan masuk laporan harian. Layar yang sama nyaman di HP.',
     who: ['Front desk', 'Terapis'],
     build: function (el) {
       var B = S.booking, ROWH = 44, drag = null, dragEnd = 0;
@@ -1984,8 +1988,6 @@
         return B.who === 't:' + p.id;
       };
       var hoursText = function (min) { return (Math.round(min / 6) / 10).toString().replace('.', ',') + ' jam'; };
-      var stSw = function (st) { return '<i class="st-' + st + '"></i>'; };
-      var stKind = function (st) { return st === 'PENDING' ? 'warn' : (st === 'NO_SHOW' ? 'bad' : (st === 'CONFIRMED' ? 'info' : (st === 'CANCELED' ? '' : 'good'))); };
       var freeRanges = function (w) {
         var busy = {}, out = [], cur = null, m;
         B.list.forEach(function (b) { if (b.date === B.date && b.th === w.p.id && bkActive(b)) { for (var k = b.t; k < b.t + b.dur; k += BK_SLOT) { busy[k] = true; } } });
@@ -2040,7 +2042,7 @@
               var lay = nn > 1 ? ';width:calc(' + (100 / nn) + '% - 6px);margin-left:calc(' + (100 * ln.lane[b.id] / nn) + '% + 3px);justify-self:start' : '';
               out += '<button type="button" class="bk-card st-' + b.st + (k2 < 2 ? ' short' : '') + (nn > 1 ? ' narrow' : '') + (cat && k2 < 3 ? ' hascat' : '') + '" data-bk="' + b.id + '"' + (b.st === 'PENDING' || b.st === 'CONFIRMED' ? ' data-drag="1"' : '') + ' style="' + pos + ' / span ' + k2 + lay + '" aria-label="' + esc(b.name + ', ' + fromMin(b.t) + ' sampai ' + fromMin(b.t + b.dur) + ', ' + w.p.n + ', ' + stt.n + (cat ? ', ' + cat : '')) + '" title="' + esc(b.name + (cat ? ' · ' + cat : '')) + '">' +
                 '<span class="bk-t">' + fromMin(b.t) + '-' + fromMin(b.t + b.dur) + '</span><b>' + esc(b.name) + '</b>' +
-                (k2 >= 2 ? '<span class="bk-sv">' + esc(sv.n) + '</span>' + (cat ? '<span class="bk-cat">' + esc(cat.replace('Teman owner', 'Teman')) + '</span>' : '') : '') + '<span class="bk-st">' + esc(k2 >= 2 ? stt.n : stt.s) + '</span></button>';
+                (k2 >= 2 ? '<span class="bk-sv">' + esc(sv.n) + '</span>' + (cat ? '<span class="bk-cat">' + esc(cat.replace('Teman owner', 'Teman')) + '</span>' : '') : '') + bkBadge(b.st, ths.length > 1 || nn > 1 || k2 < 2) + '</button>';
             });
             if (!cover[m] && !okStart[m]) { out += '<div class="bk-gap" style="' + pos + '" title="Tidak cukup untuk satu sesi 60 menit"></div>'; }
             if (okStart[m]) {
@@ -2061,9 +2063,9 @@
         var day = B.list.filter(function (b) { return b.date === B.date && whoOk(byId(b.th)); });
         day.sort(function (a, c) { return (bkActive(a) === bkActive(c) ? 0 : (bkActive(a) ? -1 : 1)) || a.t - c.t || (a.th < c.th ? -1 : 1); });
         var items = day.map(function (b) {
-          var stt = BK_STATUS[b.st], sv = BK_SERVICES[b.sv], p = byId(b.th), cc = catChip(b);
+          var sv = BK_SERVICES[b.sv], p = byId(b.th), cc = catChip(b);
           return '<button type="button" class="rowbtn bk-li st-' + b.st + '" data-bk="' + b.id + '"><span class="bk-lt num">' + fromMin(b.t) + '<small>' + fromMin(b.t + b.dur) + '</small></span>' +
-            '<span class="rb-main"><b>' + esc(b.name) + '</b><small>' + esc(sv.n) + ' · ' + esc(p.n) + (bkFits(b) || !bkActive(b) ? '' : ' · di luar jam kerja') + '</small>' + (cc ? '<span style="margin-top:2px">' + cc + '</span>' : '') + '</span>' + chip(stKind(b.st), stt.n) + '</button>';
+            '<span class="rb-main"><b>' + esc(b.name) + '</b><small>' + esc(sv.n) + ' · ' + esc(p.n) + (bkFits(b) || !bkActive(b) ? '' : ' · di luar jam kerja') + '</small>' + (cc ? '<span style="margin-top:2px">' + cc + '</span>' : '') + '</span>' + bkBadge(b.st, false, true) + '</button>';
         }).join('');
         var free = ths.map(function (w) {
           var rs = bkStarts(B.date, w.p.id);
@@ -2120,7 +2122,7 @@
           (cats.length ? '<p class="notes">Kategori pasien hari ini: ' + cats.map(function (x) { return esc(BK_CATS[x[0]].n) + ' ' + x[1]; }).join(' · ') + '. Masuk laporan harian.</p>' : '') +
           (orphans.length ? callout('warn', 'warn', '<b>' + orphans.length + ' janji di luar jam kerja</b> karena jadwal shift berubah. Pindahkan: ' + orphans.map(function (b) { return '<button type="button" class="btn sm" data-bk="' + b.id + '">' + esc(b.name) + ' ' + fromMin(b.t) + '</button>'; }).join(' ')) : '') +
           main +
-          '<div class="bk-legend"><span>' + stSw('PENDING') + 'Menunggu konfirmasi</span><span>' + stSw('CONFIRMED') + 'Terkonfirmasi</span><span>' + stSw('CHECKED_IN') + 'Sudah datang</span><span>' + stSw('DONE') + 'Selesai</span><span>' + stSw('NO_SHOW') + 'Tidak datang</span></div>' +
+          '<div class="bk-legend">' + ['PENDING', 'CONFIRMED', 'CHECKED_IN', 'DONE', 'NO_SHOW'].map(function (k) { return bkBadge(k, false); }).join('') + '</div>' +
           '<p class="notes">Jadwal terkunci per terapis: janji per 30 menit, tiap sesi 60 menit (home visit 90 menit), dan jam yang sudah terisi tidak bisa dipilih. Jam kerja terapis diambil dari jadwal shift. Untuk memindahkan janji, geser kotaknya ke jam atau terapis lain (di HP: tahan sebentar, lalu geser). Jam yang sudah terisi menolak. Angka kecil di bawah tanggal adalah jumlah janji. ' + (isToday ? 'Garis merah menunjukkan waktu sekarang. ' : '') +
           'Ubah jadwal di Jadwal periode, lalu kalender ini ikut berubah. <button type="button" class="btn sm" data-act="reset">Ulangi contoh</button></p>';
         el.innerHTML = frame('Jadwal pasien', 'Front desk', body, 'wide');
@@ -2160,10 +2162,14 @@
           if (!ws.length) { warn = callout('warn', 'warn', 'Belum ada terapis bertugas pada ' + esc(bkLong(f.date)) + (f.date > BK_PERIOD_END ? '. Jadwal shift periode berikutnya belum disusun leader.' : '.')); }
           else if (!starts.length) { warn = callout('warn', 'warn', 'Semua jam ' + esc(byId(f.th).n) + ' pada ' + esc(bkLong(f.date)) + ' sudah terisi. Pilih terapis atau hari lain.'); }
           var slots = f.th ? bkSlots(f.date, f.th, id, BK_SERVICES[f.sv].min) : [];
-          var timeOpts = slots.map(function (s) {
-            var info = s.busy.length ? ' · terisi: ' + s.busy.slice(0, 2).map(function (b) { return b.name + ' ' + fromMin(b.t) + '-' + fromMin(b.t + b.dur); }).join(', ') + (s.busy.length > 2 ? ' +' + (s.busy.length - 2) : '') : '';
-            return '<option value="' + s.t + '"' + (s.t === f.t ? ' selected' : '') + (s.busy.length ? ' disabled' : '') + '>' + fromMin(s.t) + ' - ' + fromMin(s.t + BK_SERVICES[f.sv].min) + info + '</option>';
-          }).join('');
+          /* Seperti kalender: jam kosong jadi pilihan, tiap janji yang sudah ada tampil satu baris saja (tidak bisa dipilih). Jam mulai yang menabrak janji itu tidak ditawarkan lagi, jadi tidak ada baris berulang. */
+          var opts = [], seenB = {};
+          slots.forEach(function (s) {
+            if (!s.busy.length) { opts.push({ k: s.t, html: '<option value="' + s.t + '"' + (s.t === f.t ? ' selected' : '') + '>' + fromMin(s.t) + ' - ' + fromMin(s.t + BK_SERVICES[f.sv].min) + '</option>' }); return; }
+            s.busy.forEach(function (b) { if (!seenB[b.id]) { seenB[b.id] = 1; opts.push({ k: b.t, html: '<option value="" disabled>Terisi · ' + esc(b.name) + ' · ' + fromMin(b.t) + '-' + fromMin(b.t + b.dur) + '</option>' }); } });
+          });
+          opts.sort(function (a, c) { return a.k - c.k; });
+          var timeOpts = opts.map(function (o) { return o.html; }).join('');
           var stIds = ex ? BK_ST_ORDER : ['PENDING', 'CONFIRMED'];
           var catExtra = '';
           if (f.cat === 'teman') {
@@ -2179,20 +2185,20 @@
             '<div class="grid2"><div class="field"><label for="bkf-th">Terapis</label><select id="bkf-th"' + (ws.length ? '' : ' disabled') + '>' + ws.map(function (w) { return '<option value="' + w.p.id + '"' + (w.p.id === f.th ? ' selected' : '') + '>' + esc(w.p.n) + ' (' + (w.p.g === 'f' ? 'P' : 'L') + ')</option>'; }).join('') + '</select></div>' +
             '<div class="field"><label for="bkf-t">Jam (per 30 menit)</label><select id="bkf-t"' + (slots.length ? '' : ' disabled') + '>' + timeOpts + '</select></div></div>' +
             '<div class="field"><label for="bkf-cat">Kategori pasien</label><select id="bkf-cat">' + BK_CAT_ORDER.map(function (k) { return '<option value="' + k + '"' + (k === f.cat ? ' selected' : '') + '>' + esc(BK_CATS[k].n) + '</option>'; }).join('') + '</select></div>' + catExtra + warn +
-            (w0 ? '<p class="notes">' + esc(w0.p.n) + ' masuk ' + fromMin(w0.s) + ' dan pulang ' + fromMin(w0.e) + '. Semua jam kerjanya tampil, tiap sesi ' + BK_SERVICES[f.sv].min + ' menit. Jam yang sudah terisi diberi keterangan dan tidak bisa dipilih.</p>' : '') +
+            (w0 ? '<p class="notes">' + esc(w0.p.n) + ' masuk ' + fromMin(w0.s) + ' dan pulang ' + fromMin(w0.e) + '. Jam kosong tampil sebagai pilihan, tiap sesi ' + BK_SERVICES[f.sv].min + ' menit. Janji yang sudah ada tampil satu baris dan tidak bisa dipilih.</p>' : '') +
             '<div class="field"><label for="bkf-name">Nama pasien</label><input type="text" id="bkf-name" autocomplete="off" value="' + esc(f.name) + '"></div>' +
             '<div class="field"><label for="bkf-wa">Nomor WhatsApp</label><input type="tel" id="bkf-wa" inputmode="tel" autocomplete="off" value="' + esc(f.wa) + '"></div>' +
             '<div class="field"><label for="bkf-st">Status</label><select id="bkf-st">' + stIds.map(function (k) { return '<option value="' + k + '"' + (k === f.st ? ' selected' : '') + '>' + esc(BK_STATUS[k].n) + '</option>'; }).join('') + '</select></div>' +
             '<div id="bkf-err"></div>';
         };
         var detail = function () {
-          if (!ex) { return '<p class="sub">Isi data pasien. Pilihan jam per 30 menit dari terapis masuk sampai pulang. Jam yang sudah terisi diberi keterangan dan tidak bisa dipilih. Lama sesi mengikuti layanan.</p>'; }
-          var p = byId(ex.th), stt = BK_STATUS[ex.st], cc = catChip(ex);
+          if (!ex) { return '<p class="sub">Isi data pasien. Pilihan jam per 30 menit dari terapis masuk sampai pulang. Janji yang sudah ada tampil satu baris dan tidak bisa dipilih. Lama sesi mengikuti layanan.</p>'; }
+          var p = byId(ex.th), cc = catChip(ex);
           var quick = BK_ST_ORDER.filter(function (k) { return k !== ex.st; }).map(function (k) {
             return '<button type="button" class="btn sm' + (BK_NEXT[ex.st] === k ? ' primary' : '') + '" data-qs="' + k + '">' + esc(BK_STATUS[k].n) + '</button>';
           }).join('');
           var logs = ['Dibuat oleh ' + ex.by].concat(ex.log.map(function (l) { return l.txt + ' · ' + l.by + ' ' + l.at; }));
-          return '<div class="row" style="justify-content:space-between;align-items:flex-start"><div><b>' + esc(bkLong(ex.date)) + ' · ' + fromMin(ex.t) + '-' + fromMin(ex.t + ex.dur) + '</b><div class="muted" style="font-size:12px">' + esc(BK_SERVICES[ex.sv].n) + ' · Terapis ' + esc(p.n) + ' · ' + esc(ex.wa) + '</div></div>' + chip(stKind(ex.st), stt.n) + '</div>' +
+          return '<div class="row" style="justify-content:space-between;align-items:flex-start"><div><b>' + esc(bkLong(ex.date)) + ' · ' + fromMin(ex.t) + '-' + fromMin(ex.t + ex.dur) + '</b><div class="muted" style="font-size:12px">' + esc(BK_SERVICES[ex.sv].n) + ' · Terapis ' + esc(p.n) + ' · ' + esc(ex.wa) + '</div></div>' + bkBadge(ex.st, false, true) + '</div>' +
             (cc ? '<div class="row">' + cc + (ex.cat === 'teman' ? '<span class="muted" style="font-size:12px">Masuk laporan sebagai penjualan di bawah harga normal</span>' : '') + '</div>' : '') +
             '<div><div class="lbl" style="margin-bottom:6px">Ubah status</div><div class="row" style="gap:6px">' + quick + '</div></div>' +
             '<p class="notes">' + logs.map(esc).join('<br>') + '</p>';
@@ -2838,7 +2844,7 @@
   function listPage() {
     var no = {}; SCENES.forEach(function (sc, i) { no[sc.id] = i + 1; });
     root.innerHTML = header() +
-      '<div class="hero"><h1>Dari masalah sehari-hari ke layar yang menyelesaikannya</h1>' +
+      '<div class="hero"><h1>Dari masalah sehari-hari, biarkan sistem yang menyelesaikannya</h1>' +
       '<p>Ikuti satu periode kerja di klinik: jadwal disiapkan, lalu satu hari penuh dari absen pagi sampai laporan malam, dan ditutup dengan gajian dan laporan akhir bulan. Setiap layar bisa dicoba.</p>' +
       '<div class="row" style="margin-top:20px"><a class="btn primary" href="#' + SCENES[0].id + '">Mulai dari awal periode</a></div></div>' +
       BAB.map(function (b) {
