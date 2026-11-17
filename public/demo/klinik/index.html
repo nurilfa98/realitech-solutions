@@ -314,10 +314,17 @@
   .bk-time.half { color: var(--muted); }
   .bk-off, .bk-free { min-width: 0; border: 0; border-top: 1px solid var(--grid); border-left: 1px solid var(--grid); border-radius: 0; }
   .bk-off { background: var(--surface-2); opacity: 0.7; }
+  .bk-gap { min-width: 0; border-top: 1px solid var(--grid); border-left: 1px solid var(--grid); background: var(--surface-2); opacity: 0.45; }
   .bk-free { background: var(--surface); color: var(--axis); font-size: 18px; line-height: 1; padding: 0; }
   .bk-free:hover, .bk-free:focus-visible { background: var(--accent-soft); color: var(--accent-text); }
   .bk-card { position: relative; z-index: 1; margin: 2px 3px; padding: 4px 8px; min-width: 0; overflow: hidden; display: flex; flex-direction: column; gap: 1px; text-align: left; border-radius: 8px; border: 1px solid var(--line); border-left: 4px solid var(--axis); background: var(--surface-2); color: var(--ink); }
   .bk-card:hover { filter: brightness(0.97); }
+  .bk-card { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+  .bk-card[data-drag] { cursor: grab; }
+  .bk-card.dragging { opacity: 0.4; cursor: grabbing; }
+  .bk-ghost { position: absolute; z-index: 2; box-sizing: border-box; pointer-events: none; padding: 3px 6px; overflow: hidden; border-radius: 8px; border: 2px dashed var(--accent); background: var(--accent-soft); color: var(--accent-text); font-size: 11px; font-weight: 600; line-height: 1.3; }
+  .bk-ghost small { display: block; font-weight: 500; font-size: 11px; }
+  .bk-ghost.no { border-color: var(--bad); background: var(--bad-soft); color: var(--bad); }
   .bk-card b { font-size: 13px; line-height: 1.25; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .bk-card .bk-t, .bk-card .bk-sv, .bk-card .bk-st { font-size: 11px; line-height: 1.25; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .bk-card.short { flex-direction: row; align-items: center; gap: 6px; padding-top: 2px; padding-bottom: 2px; }
@@ -345,7 +352,6 @@
   .bk-card:not(.short) .bk-st { white-space: normal; }
   .bk-more { cursor: pointer; min-height: 36px; padding: 6px 0; font-weight: 500; color: var(--accent-text); }
   .bk-cat { font-size: 11px; font-weight: 600; line-height: 1.25; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .bk-lv { display: inline-block; margin-left: 4px; padding: 0 6px; border-radius: 999px; background: var(--surface-2); color: var(--ink-2); font-size: 10px; font-weight: 600; vertical-align: 1px; }
   .bk-card.narrow { padding: 3px 4px; }
   .bk-card.narrow .bk-t, .bk-card.narrow .bk-sv, .bk-card.narrow .bk-cat { display: none; }
   .bk-card.hascat .bk-t { display: none; }
@@ -450,10 +456,10 @@
     { id: 'c', n: 'Citra', role: 'T', g: 'f', st: 'Tetap', days: ['OFF', 'OFF', 'P', 'S', 'M', 'P', 'SL'] },
     { id: 'd', n: 'Dina', role: 'T', g: 'f', st: 'Tetap', days: ['PL', 'S', 'P', 'S', 'P', 'OFF', 'OFF'] },
     { id: 'e', n: 'Elsa', role: 'T', g: 'f', st: 'Kontrak', days: ['OFF', 'OFF', 'M', 'P', 'S', 'S', 'PL'] },
-    { id: 'f', n: 'Farah', role: 'T', g: 'f', st: 'Kontrak', lv: 'Pemula', days: ['SL', 'P', 'S', 'M', 'P', 'OFF', 'OFF'] },
+    { id: 'f', n: 'Farah', role: 'T', g: 'f', st: 'Kontrak', days: ['SL', 'P', 'S', 'M', 'P', 'OFF', 'OFF'] },
     { id: 'g', n: 'Galih', role: 'T', g: 'm', st: 'Tetap', days: ['OFF', 'OFF', 'P', 'P', 'S', 'S', 'PL'] },
     { id: 'h', n: 'Hendra', role: 'T', g: 'm', st: 'Tetap', days: ['OFF', 'OFF', 'S', 'S', 'P', 'P', 'SL'] },
-    { id: 'i', n: 'Irfan', role: 'T', g: 'm', st: 'Kontrak', lv: 'Pemula', days: ['SL', 'S', 'S', 'P', 'P', 'OFF', 'OFF'] },
+    { id: 'i', n: 'Irfan', role: 'T', g: 'm', st: 'Kontrak', days: ['SL', 'S', 'S', 'P', 'P', 'OFF', 'OFF'] },
     { id: 'j', n: 'Joko', role: 'T', g: 'm', st: 'Kontrak', days: ['PL', 'P', 'P', 'S', 'S', 'OFF', 'OFF'] },
     { id: 'k', n: 'Kirana', role: 'F', g: 'f', st: 'Tetap', phase: 0, days: ['L', 'L', 'R', 'R', 'R', 'OFF', 'OFF'] },
     { id: 'l', n: 'Laras', role: 'F', g: 'f', st: 'Tetap', phase: 1, days: ['OFF', 'OFF', 'R', 'R', 'R', 'L', 'L'] },
@@ -638,16 +644,15 @@
   var BK_WEEK_MAX = '2026-11-30';
   var BK_ME = 'Kirana';
   var BK_DISC_MAX = 15; /* batas diskon teman owner (persen), diatur owner */
-  /* Durasi bawaan. Front desk boleh mengubahnya per janji (mis. terapis pemula atau alat yang belum dikuasai). */
+  /* Durasi ditentukan layanan dan tidak diinput: 60 menit sesuai SOP, home visit 90 menit. Jam hanya per 30 menit dan hanya jam kosong yang bisa dipilih. */
+  var BK_LEN = 60;
   var BK_SERVICES = {
-    reg: { n: 'Physio reguler', min: 60 },
-    baru: { n: 'Pasien baru', min: 60 },
-    paket: { n: 'Sesi paket', min: 60 },
-    hv: { n: 'Home visit', min: 90 },
-    eswt: { n: 'ESWT', min: 60 } /* durasi ESWT belum dikonfirmasi, sementara 60 menit */
+    reg: { n: 'Physio reguler', min: BK_LEN },
+    baru: { n: 'Pasien baru', min: BK_LEN },
+    paket: { n: 'Sesi paket', min: BK_LEN },
+    hv: { n: 'Home visit', min: 90 }
   };
-  var BK_SV_ORDER = ['reg', 'baru', 'paket', 'hv', 'eswt'];
-  var BK_DUR = [30, 60, 90, 120, 150, 180, 210, 240];
+  var BK_SV_ORDER = ['reg', 'baru', 'paket', 'hv'];
   var BK_STATUS = {
     PENDING: { n: 'Menunggu konfirmasi', s: 'Menunggu' },
     CONFIRMED: { n: 'Terkonfirmasi', s: 'Konfirmasi' },
@@ -693,63 +698,71 @@
     var p = byId(b.th), w = p && bkWindow(p, b.date);
     return !!w && b.t >= w.s && b.t < w.e;
   }
-  /* Jam mulai yang bisa dipilih: tiap 30 menit sepanjang jam kerja. */
-  function bkStarts(date, th) {
+  /* Semua jam mulai dari terapis masuk sampai pulang, tiap 30 menit. Jam yang sudah terisi membawa daftar janji yang menabraknya (busy). Sesi harus selesai paling lambat saat jam pulang. len = durasi layanan, bawaan 60 menit. */
+  function bkSlots(date, th, ignoreId, len) {
+    len = len || BK_LEN;
     var p = byId(th), w = p && bkWindow(p, date), out = [], m;
     if (!w) { return out; }
-    for (m = w.s; m + BK_SLOT <= w.e; m += BK_SLOT) { out.push(m); }
+    for (m = w.s; m + len <= w.e; m += BK_SLOT) { out.push({ t: m, busy: bkClashes(date, th, m, len, ignoreId) }); }
     return out;
   }
-  /* Pemeriksaan sebelum menyimpan. err = galat yang menahan penyimpanan. warns = peringatan, tetap boleh disimpan. notes = catatan. */
-  function bkCheck(f, id) {
-    var r = { err: '', warns: [], notes: [] };
-    var name = String(f.name).trim(), wa = String(f.wa).replace(/[^0-9]/g, '');
-    var sv = BK_SERVICES[f.sv], p = byId(f.th), w = p && bkWindow(p, f.date), dur = f.dur;
-    if (!name) { r.err = 'Isi nama pasien.'; return r; }
-    if (wa.length < 9 || wa.length > 14 || (wa.charAt(0) !== '0' && wa.slice(0, 2) !== '62')) { r.err = 'Nomor WhatsApp belum benar. Contoh: 0812-0000-0101.'; return r; }
-    if (!sv) { r.err = 'Pilih layanan.'; return r; }
-    if (!p) { r.err = 'Pilih terapis.'; return r; }
-    if (!w) { r.err = p.n + ' tidak bertugas pada ' + bkLong(f.date) + '.'; return r; }
-    if (typeof f.t !== 'number' || isNaN(f.t) || f.t % BK_SLOT !== 0) { r.err = 'Jadwal hanya per 30 menit, misalnya 08:00 atau 08:30.'; return r; }
-    if (f.t < w.s || f.t >= w.e) { r.err = 'Jam itu di luar jam kerja ' + p.n + ' (' + fromMin(w.s) + '-' + fromMin(w.e) + ').'; return r; }
-    if (typeof dur !== 'number' || isNaN(dur) || dur < BK_SLOT || dur > 240 || dur % BK_SLOT !== 0) { r.err = 'Durasi harus kelipatan 30 menit, paling lama 4 jam.'; return r; }
-    if (!BK_CATS[f.cat]) { r.err = 'Pilih kategori pasien.'; return r; }
-    if (f.cat === 'teman' && !(f.disc >= 1 && f.disc <= BK_DISC_MAX)) { r.err = 'Diskon teman owner 1 sampai ' + BK_DISC_MAX + ' persen.'; return r; }
-    if (f.cat === 'gratis' && f.sv === 'baru') { r.err = 'Pasien baru belum punya kartu bonus penuh, jadi tidak bisa berkategori gratis.'; return r; }
-    if (f.t + dur > w.e) { r.warns.push('Selesai ' + fromMin(f.t + dur) + ', lewat jam pulang ' + p.n + ' (' + fromMin(w.e) + ').'); }
-    var cl = bkClashes(f.date, f.th, f.t, dur, id);
-    if (cl.length) { r.warns.push('Bentrok dengan ' + cl.map(function (b) { return b.name + ' (' + fromMin(b.t) + '-' + fromMin(b.t + b.dur) + ')'; }).join(', ') + '.'); }
-    if (p.lv) { r.notes.push(p.n + ' masih ' + p.lv.toLowerCase() + ': layanan bisa lebih lama dan pasiennya sebaiknya tidak banyak, karena memengaruhi insentif per pasien.'); }
-    return r;
+  /* Jam mulai yang boleh dipilih: hanya yang masih kosong untuk terapis itu. */
+  function bkStarts(date, th, ignoreId, len) {
+    return bkSlots(date, th, ignoreId, len).filter(function (s) { return !s.busy.length; }).map(function (s) { return s.t; });
   }
-  function bkValidate(f, id) { return bkCheck(f, id).err; }
+  /* Pemeriksaan sebelum menyimpan. Mengembalikan teks galat, atau string kosong bila boleh disimpan. */
+  function bkValidate(f, id) {
+    var name = String(f.name).trim(), wa = String(f.wa).replace(/[^0-9]/g, '');
+    var sv = BK_SERVICES[f.sv], p = byId(f.th), w = p && bkWindow(p, f.date);
+    if (!name) { return 'Isi nama pasien.'; }
+    if (wa.length < 9 || wa.length > 14 || (wa.charAt(0) !== '0' && wa.slice(0, 2) !== '62')) { return 'Nomor WhatsApp belum benar. Contoh: 0812-0000-0101.'; }
+    if (!sv) { return 'Pilih layanan.'; }
+    if (!p) { return 'Pilih terapis.'; }
+    if (!w) { return p.n + ' tidak bertugas pada ' + bkLong(f.date) + '.'; }
+    if (typeof f.t !== 'number' || isNaN(f.t) || f.t < 0) { return 'Tidak ada jam kosong. Pilih hari atau terapis lain.'; }
+    if (f.t % BK_SLOT !== 0) { return 'Jadwal hanya per 30 menit, misalnya 08:00 atau 08:30.'; }
+    var len = sv.min;
+    if (f.t < w.s || f.t + len > w.e) { return 'Jam itu di luar jam kerja ' + p.n + ' (' + fromMin(w.s) + '-' + fromMin(w.e) + '). Sesi ' + len + ' menit harus selesai sebelum jam pulang.'; }
+    var cl = bkClashes(f.date, f.th, f.t, len, id);
+    if (cl.length) { return 'Jam ' + fromMin(f.t) + ' sudah terisi oleh ' + cl.map(function (b) { return b.name + ' (' + fromMin(b.t) + '-' + fromMin(b.t + b.dur) + ')'; }).join(', ') + '. Pilih jam yang masih kosong.'; }
+    if (!BK_CATS[f.cat]) { return 'Pilih kategori pasien.'; }
+    if (f.cat === 'teman' && !(f.disc >= 1 && f.disc <= BK_DISC_MAX)) { return 'Diskon teman owner 1 sampai ' + BK_DISC_MAX + ' persen.'; }
+    if (f.cat === 'gratis' && f.sv === 'baru') { return 'Pasien baru belum punya kartu bonus penuh, jadi tidak bisa berkategori gratis.'; }
+    return '';
+  }
   function bkSave(f, id) {
-    var B = S.booking, p = byId(f.th), b, msg, chk = bkCheck(f, id);
+    var B = S.booking, p = byId(f.th), b, msg;
     var name = String(f.name).trim(), wa = String(f.wa).trim(), at = fromMin(BK_NOW), disc = f.cat === 'teman' ? f.disc : 0;
     if (id) {
       b = bkFind(id);
-      if (b.date !== f.date || b.th !== f.th || b.t !== f.t || b.sv !== f.sv || b.dur !== f.dur) { b.log.push({ at: at, by: BK_ME, txt: 'Dipindah atau diubah: ' + bkLong(f.date) + ' ' + fromMin(f.t) + ', ' + f.dur + ' menit, bersama ' + p.n }); }
+      if (b.date !== f.date || b.th !== f.th || b.t !== f.t || b.sv !== f.sv) { b.log.push({ at: at, by: BK_ME, txt: 'Dipindah atau diubah: ' + bkLong(f.date) + ' ' + fromMin(f.t) + ', bersama ' + p.n }); }
       if (b.st !== f.st) { b.log.push({ at: at, by: BK_ME, txt: 'Status menjadi ' + BK_STATUS[f.st].n }); }
       if (b.cat !== f.cat) { b.log.push({ at: at, by: BK_ME, txt: 'Kategori menjadi ' + BK_CATS[f.cat].n }); }
-      b.date = f.date; b.th = f.th; b.t = f.t; b.sv = f.sv; b.dur = f.dur; b.name = name; b.wa = wa; b.st = f.st; b.cat = f.cat; b.disc = disc;
+      b.date = f.date; b.th = f.th; b.t = f.t; b.sv = f.sv; b.dur = BK_SERVICES[f.sv].min; b.name = name; b.wa = wa; b.st = f.st; b.cat = f.cat; b.disc = disc;
       msg = 'Perubahan disimpan: ' + name + ', ' + bkLong(f.date) + ' ' + fromMin(f.t) + ' bersama ' + p.n + '.';
     } else {
-      b = { id: 'b' + (++B.seq), date: f.date, th: f.th, t: f.t, dur: f.dur, name: name, wa: wa, sv: f.sv, st: f.st, cat: f.cat, disc: disc, by: BK_ME, log: [{ at: at, by: BK_ME, txt: 'Booking dibuat' }] };
+      b = { id: 'b' + (++B.seq), date: f.date, th: f.th, t: f.t, dur: BK_SERVICES[f.sv].min, name: name, wa: wa, sv: f.sv, st: f.st, cat: f.cat, disc: disc, by: BK_ME, log: [{ at: at, by: BK_ME, txt: 'Booking dibuat' }] };
       B.list.push(b);
       msg = 'Booking dibuat: ' + name + ', ' + bkLong(f.date) + ' ' + fromMin(f.t) + ' bersama ' + p.n + '. Pengingat WhatsApp masuk ke daftar reminder.';
     }
-    if (chk.warns.length) { msg += ' Perhatian: ' + chk.warns.join(' '); }
-    return { b: b, msg: msg, warns: chk.warns };
+    return { b: b, msg: msg };
   }
-  /* Layanan yang berlangsung lebih lama dari rencana: front desk memperpanjang 30 menit. */
-  function bkExtend(id) {
-    var b = bkFind(id);
-    if (b.dur >= 240) { return 'Durasi sudah paling lama (4 jam).'; }
-    b.dur += BK_SLOT;
-    b.log.push({ at: fromMin(BK_NOW), by: BK_ME, txt: 'Diperpanjang menjadi ' + b.dur + ' menit' });
-    var cl = bkClashes(b.date, b.th, b.t, b.dur, b.id), msg = 'Durasi menjadi ' + b.dur + ' menit.';
-    if (cl.length) { msg += ' Bentrok dengan ' + cl.map(function (x) { return x.name + ' (' + fromMin(x.t) + ')'; }).join(', ') + ', tetap tersimpan.'; }
-    return msg;
+  /* Cek pemindahan janji (drag) ke terapis dan jam lain di hari yang sama. Mengembalikan teks galat, atau string kosong bila boleh. */
+  function bkMoveCheck(b, th, t) {
+    var p = byId(th), w = p && bkWindow(p, b.date);
+    if (!p) { return 'Lepaskan di kolom terapis.'; }
+    if (!w) { return p.n + ' tidak bertugas pada ' + bkLong(b.date) + '.'; }
+    if (t % BK_SLOT !== 0) { return 'Jadwal hanya per 30 menit.'; }
+    if (t < w.s || t + b.dur > w.e) { return 'Di luar jam kerja ' + p.n + ' (' + fromMin(w.s) + '-' + fromMin(w.e) + ').'; }
+    var cl = bkClashes(b.date, th, t, b.dur, b.id);
+    if (cl.length) { return 'Sudah terisi oleh ' + cl.map(function (x) { return x.name + ' (' + fromMin(x.t) + '-' + fromMin(x.t + x.dur) + ')'; }).join(', ') + '.'; }
+    return '';
+  }
+  function bkMove(id, th, t) {
+    var b = bkFind(id), p = byId(th), old = fromMin(b.t) + ' bersama ' + byId(b.th).n;
+    b.log.push({ at: fromMin(BK_NOW), by: BK_ME, txt: 'Dipindah dari ' + old + ' ke ' + fromMin(t) + ' bersama ' + p.n });
+    b.th = th; b.t = t;
+    return 'Janji dipindah: ' + b.name + ', ' + bkLong(b.date) + ' ' + fromMin(t) + '-' + fromMin(t + b.dur) + ' bersama ' + p.n + '.';
   }
   function bkSetStatus(id, st) {
     var b = bkFind(id);
@@ -774,7 +787,7 @@
     }
     return r < 0.05 ? 'CANCELED' : (r < (tomorrow ? 0.55 : 0.8) ? 'PENDING' : 'CONFIRMED');
   }
-  /* Janji contoh 16-25 November. Deterministik, jadi tampilan sama setiap dibuka. Terapis pemula dapat pasien lebih sedikit dan sesinya sering lebih lama. */
+  /* Janji contoh 16-25 November. Deterministik, jadi tampilan sama setiap dibuka. Sesi 60 menit, home visit 90 menit, dan tidak bertumpuk. */
   function seedBookings() {
     var rnd = mulberry(20261116), list = [], seq = 0, i;
     var firstF = ['Ratna', 'Wulan', 'Dewi', 'Maya', 'Yuni', 'Lestari', 'Fitri', 'Anggun', 'Retno', 'Nadia', 'Putri', 'Susi'];
@@ -784,12 +797,11 @@
     for (i = 0; i < 10; i++) {
       var date = isoAdd('2026-11-16', i), base = date <= BK_TODAY ? 0.24 : Math.max(0.07, 0.2 - 0.025 * (i - 2));
       bkTherapists(date).forEach(function (w) {
-        var m = w.s, fp = w.p.lv ? base * 0.5 : base;
+        var m = w.s, fp = base;
         while (m < w.e) {
           if (rnd() >= fp) { m += BK_SLOT; continue; }
-          var r = rnd(), sv = r < 0.12 ? 'baru' : (r < 0.45 ? 'paket' : (r < 0.5 ? 'hv' : (r < 0.56 ? 'eswt' : 'reg')));
+          var r = rnd(), sv = r < 0.12 ? 'baru' : (r < 0.45 ? 'paket' : (r < 0.5 ? 'hv' : 'reg'));
           var dur = BK_SERVICES[sv].min;
-          if (w.p.lv && rnd() < 0.35) { dur += 30; }
           if (m + dur > w.e) { m += BK_SLOT; continue; }
           var f = rnd() < 0.7;
           var name = (f ? 'Ibu ' + pick(firstF) : 'Bpk. ' + pick(firstM)) + ' ' + lastI.charAt(Math.floor(rnd() * lastI.length)) + '.';
@@ -895,7 +907,6 @@
     if (c.warrior) { a.push('Warrior ' + c.warrior); }
     return a.join(' · ');
   }
-  function lvTag(n) { var p = PEOPLE.filter(function (x) { return x.n === n; })[0]; return p && p.lv ? ' <span class="chip">' + esc(p.lv) + '</span>' : ''; }
 
   /* ---------- UI helpers ---------- */
   function toast(msg) {
@@ -1464,7 +1475,7 @@
       var detailHtml = function (d) {
         var x = dayOf(d), r = repOf(d), rp0 = reportOf(x);
         var tRows = rp0.t.map(function (t) {
-          return '<tr><td>' + esc(t.n) + lvTag(t.n) + '</td><td>' + shiftName(t.a.code) + '</td><td>' + flagCell(t.a) + '</td><td class="r num">' + dur(t.a.mins) + '</td><td class="r num">' + t.p + '</td><td class="r num">' + t.hv + '</td></tr>';
+          return '<tr><td>' + esc(t.n) + '</td><td>' + shiftName(t.a.code) + '</td><td>' + flagCell(t.a) + '</td><td class="r num">' + dur(t.a.mins) + '</td><td class="r num">' + t.p + '</td><td class="r num">' + t.hv + '</td></tr>';
         }).join('');
         var fRows = rp0.f.map(function (f) {
           return '<tr><td>' + esc(f.n) + '</td><td>' + shiftName(f.a.code) + '</td><td>' + flagCell(f.a) + '</td><td class="r num">' + dur(f.a.mins) + '</td><td class="r num">' + f.baru + '</td><td class="r num">' + f.paket + '</td><td class="r num">' + f.tap + '</td></tr>';
@@ -1963,10 +1974,10 @@
   add({
     id: 'm10', title: 'Jadwal pasien rapi per 30 menit, nyaman di HP maupun komputer',
     now: 'Janji pasien diatur di Setmore. Tampilannya tabel untuk desktop, sulit dipakai dari HP, dan jam kerja terapis harus diinput ulang dari jadwal shift.',
-    with: 'Front desk mengatur janji per 30 menit di kalender terapis. Jam kerja dari jadwal shift tampil sebagai panduan, tidak mengunci, dan front desk tetap bebas menyesuaikan. Pasien gratis 10x, teman owner, dan warrior ditandai di jadwal dan masuk laporan harian. Layar yang sama nyaman di HP.',
+    with: 'Front desk mengatur janji per 30 menit di kalender terapis. Jam kerja diambil dari jadwal shift, dan daftar jam menampilkan semua jam terapis dari masuk sampai pulang, jam yang sudah terisi diberi keterangan dan tidak bisa dipilih. Tiap sesi 60 menit, home visit 90 menit. Pasien gratis 10x, teman owner, dan warrior ditandai di jadwal dan masuk laporan harian. Layar yang sama nyaman di HP.',
     who: ['Front desk', 'Terapis'],
     build: function (el) {
-      var B = S.booking, ROWH = 44;
+      var B = S.booking, ROWH = 44, drag = null, dragEnd = 0;
       var whoOk = function (p) {
         if (B.who === 'all') { return true; }
         if (B.who.indexOf('g:') === 0) { return p.g === B.who.slice(2); }
@@ -2003,16 +2014,17 @@
       var calHtml = function (ths) {
         var lo = Math.min.apply(null, ths.map(function (w) { return w.s; })), hi = Math.max.apply(null, ths.map(function (w) { return w.e; }));
         var rows = (hi - lo) / BK_SLOT, colMin = ths.length === 1 ? 220 : 124, r, m;
-        var out = '<div class="bk-scroll" tabindex="0" aria-label="Kalender terapis"><div class="bk-grid" style="grid-template-columns:52px repeat(' + ths.length + ',minmax(' + colMin + 'px,1fr));grid-template-rows:auto repeat(' + rows + ',' + ROWH + 'px);min-width:' + (52 + colMin * ths.length) + 'px">';
+        var out = '<div class="bk-scroll" tabindex="0" aria-label="Kalender terapis"><div class="bk-grid" data-lo="' + lo + '" style="grid-template-columns:52px repeat(' + ths.length + ',minmax(' + colMin + 'px,1fr));grid-template-rows:auto repeat(' + rows + ',' + ROWH + 'px);min-width:' + (52 + colMin * ths.length) + 'px">';
         out += '<div class="bk-corner"></div>' + ths.map(function (w, i) {
-          return '<div class="bk-head" style="grid-column:' + (i + 2) + '"><b>' + esc(w.p.n) + (w.p.lv ? ' <span class="bk-lv">' + esc(w.p.lv) + '</span>' : '') + '</b><small>' + esc(w.name) + ' ' + fromMin(w.s) + '-' + fromMin(w.e) + '</small></div>';
+          return '<div class="bk-head" data-th="' + w.p.id + '" style="grid-column:' + (i + 2) + '"><b>' + esc(w.p.n) + '</b><small>' + esc(w.name) + ' ' + fromMin(w.s) + '-' + fromMin(w.e) + '</small></div>';
         }).join('');
         for (r = 0; r < rows; r++) {
           m = lo + r * BK_SLOT;
           out += '<div class="bk-time' + (m % 60 ? ' half' : '') + '" style="grid-row:' + (r + 2) + '">' + fromMin(m) + '</div>';
         }
         ths.forEach(function (w, ci) {
-          var col = ci + 2, starts = {}, cover = {};
+          var col = ci + 2, starts = {}, cover = {}, okStart = {};
+          bkStarts(B.date, w.p.id).forEach(function (s) { okStart[s] = true; });
           var mine = B.list.filter(function (b) { return b.date === B.date && b.th === w.p.id && bkActive(b) && bkFits(b); });
           var ln = lanesOf(mine);
           mine.forEach(function (b) {
@@ -2026,11 +2038,12 @@
             (starts[m] || []).forEach(function (b) {
               var k2 = Math.max(1, Math.min(b.dur / BK_SLOT, rows - r)), sv = BK_SERVICES[b.sv], stt = BK_STATUS[b.st], nn = ln.n[b.id], cat = bkCatTag(b);
               var lay = nn > 1 ? ';width:calc(' + (100 / nn) + '% - 6px);margin-left:calc(' + (100 * ln.lane[b.id] / nn) + '% + 3px);justify-self:start' : '';
-              out += '<button type="button" class="bk-card st-' + b.st + (k2 < 2 ? ' short' : '') + (nn > 1 ? ' narrow' : '') + (cat && k2 < 3 ? ' hascat' : '') + '" data-bk="' + b.id + '" style="' + pos + ' / span ' + k2 + lay + '" aria-label="' + esc(b.name + ', ' + fromMin(b.t) + ' sampai ' + fromMin(b.t + b.dur) + ', ' + w.p.n + ', ' + stt.n + (cat ? ', ' + cat : '')) + '" title="' + esc(b.name + (cat ? ' · ' + cat : '')) + '">' +
+              out += '<button type="button" class="bk-card st-' + b.st + (k2 < 2 ? ' short' : '') + (nn > 1 ? ' narrow' : '') + (cat && k2 < 3 ? ' hascat' : '') + '" data-bk="' + b.id + '"' + (b.st === 'PENDING' || b.st === 'CONFIRMED' ? ' data-drag="1"' : '') + ' style="' + pos + ' / span ' + k2 + lay + '" aria-label="' + esc(b.name + ', ' + fromMin(b.t) + ' sampai ' + fromMin(b.t + b.dur) + ', ' + w.p.n + ', ' + stt.n + (cat ? ', ' + cat : '')) + '" title="' + esc(b.name + (cat ? ' · ' + cat : '')) + '">' +
                 '<span class="bk-t">' + fromMin(b.t) + '-' + fromMin(b.t + b.dur) + '</span><b>' + esc(b.name) + '</b>' +
                 (k2 >= 2 ? '<span class="bk-sv">' + esc(sv.n) + '</span>' + (cat ? '<span class="bk-cat">' + esc(cat.replace('Teman owner', 'Teman')) + '</span>' : '') : '') + '<span class="bk-st">' + esc(k2 >= 2 ? stt.n : stt.s) + '</span></button>';
             });
-            if (!cover[m]) {
+            if (!cover[m] && !okStart[m]) { out += '<div class="bk-gap" style="' + pos + '" title="Tidak cukup untuk satu sesi 60 menit"></div>'; }
+            if (okStart[m]) {
               out += '<button type="button" class="bk-free" data-new="' + w.p.id + ':' + m + '" style="' + pos + '" aria-label="Booking baru ' + esc(w.p.n) + ' pukul ' + fromMin(m) + '">+</button>';
             }
           }
@@ -2050,16 +2063,16 @@
         var items = day.map(function (b) {
           var stt = BK_STATUS[b.st], sv = BK_SERVICES[b.sv], p = byId(b.th), cc = catChip(b);
           return '<button type="button" class="rowbtn bk-li st-' + b.st + '" data-bk="' + b.id + '"><span class="bk-lt num">' + fromMin(b.t) + '<small>' + fromMin(b.t + b.dur) + '</small></span>' +
-            '<span class="rb-main"><b>' + esc(b.name) + '</b><small>' + esc(sv.n) + ' · ' + esc(p.n) + (p.lv ? ' (pemula)' : '') + (bkFits(b) || !bkActive(b) ? '' : ' · di luar jam kerja') + '</small>' + (cc ? '<span style="margin-top:2px">' + cc + '</span>' : '') + '</span>' + chip(stKind(b.st), stt.n) + '</button>';
+            '<span class="rb-main"><b>' + esc(b.name) + '</b><small>' + esc(sv.n) + ' · ' + esc(p.n) + (bkFits(b) || !bkActive(b) ? '' : ' · di luar jam kerja') + '</small>' + (cc ? '<span style="margin-top:2px">' + cc + '</span>' : '') + '</span>' + chip(stKind(b.st), stt.n) + '</button>';
         }).join('');
         var free = ths.map(function (w) {
-          var rs = freeRanges(w);
-          return '<div class="li" style="align-items:flex-start"><div class="t"><b>' + esc(w.p.n) + (w.p.lv ? ' (pemula)' : '') + '</b><small>' + esc(w.name) + ' ' + fromMin(w.s) + '-' + fromMin(w.e) + '</small>' +
-            '<div class="row" style="gap:6px;margin-top:6px">' + (rs.length ? rs.map(function (x) { return '<button type="button" class="btn sm" data-new="' + w.p.id + ':' + x.s + '">' + fromMin(x.s) + '-' + fromMin(x.e) + '</button>'; }).join('') : '<span class="muted" style="font-size:12px">Penuh</span>') + '</div></div></div>';
+          var rs = bkStarts(B.date, w.p.id);
+          return '<div class="li" style="align-items:flex-start"><div class="t"><b>' + esc(w.p.n) + '</b><small>' + esc(w.name) + ' ' + fromMin(w.s) + '-' + fromMin(w.e) + '</small>' +
+            '<div class="row" style="gap:6px;margin-top:6px">' + (rs.length ? rs.map(function (m) { return '<button type="button" class="btn sm" data-new="' + w.p.id + ':' + m + '">' + fromMin(m) + '</button>'; }).join('') : '<span class="muted" style="font-size:12px">Penuh</span>') + '</div></div></div>';
         }).join('');
         return '<div class="sec-title">Janji ' + esc(bkLong(B.date)) + '</div>' +
           (items ? '<div style="display:flex;flex-direction:column;gap:6px">' + items + '</div>' : callout('info', 'clock', 'Belum ada janji pada hari ini. Tekan Booking baru, atau ketuk jam kosong di bawah.')) +
-          '<div class="sec-title" style="margin-top:6px">Jam kosong (ketuk untuk booking)</div><div class="list">' + free + '</div>';
+          '<div class="sec-title" style="margin-top:6px">Jam mulai yang masih kosong (ketuk untuk booking)</div><div class="list">' + free + '</div>';
       };
 
       var render = function () {
@@ -2108,7 +2121,7 @@
           (orphans.length ? callout('warn', 'warn', '<b>' + orphans.length + ' janji di luar jam kerja</b> karena jadwal shift berubah. Pindahkan: ' + orphans.map(function (b) { return '<button type="button" class="btn sm" data-bk="' + b.id + '">' + esc(b.name) + ' ' + fromMin(b.t) + '</button>'; }).join(' ')) : '') +
           main +
           '<div class="bk-legend"><span>' + stSw('PENDING') + 'Menunggu konfirmasi</span><span>' + stSw('CONFIRMED') + 'Terkonfirmasi</span><span>' + stSw('CHECKED_IN') + 'Sudah datang</span><span>' + stSw('DONE') + 'Selesai</span><span>' + stSw('NO_SHOW') + 'Tidak datang</span></div>' +
-          '<p class="notes">Janji hanya per 30 menit, dan durasi sesuai SOP adalah 60 menit. Jadwal shift hanya memberi rentang jam kerja, sedangkan pasien dapat jam berapa diatur front desk. Bila ada terapis yang menangani lebih lama, misalnya terapis pemula yang masih memakai alat lebih lama, front desk mengubah durasinya per janji, dan janji yang bertumpuk tampil berdampingan. Angka kecil di bawah tanggal adalah jumlah janji. ' + (isToday ? 'Garis merah menunjukkan waktu sekarang. ' : '') +
+          '<p class="notes">Jadwal terkunci per terapis: janji per 30 menit, tiap sesi 60 menit (home visit 90 menit), dan jam yang sudah terisi tidak bisa dipilih. Jam kerja terapis diambil dari jadwal shift. Untuk memindahkan janji, geser kotaknya ke jam atau terapis lain (di HP: tahan sebentar, lalu geser). Jam yang sudah terisi menolak. Angka kecil di bawah tanggal adalah jumlah janji. ' + (isToday ? 'Garis merah menunjukkan waktu sekarang. ' : '') +
           'Ubah jadwal di Jadwal periode, lalu kalender ini ikut berubah. <button type="button" class="btn sm" data-act="reset">Ulangi contoh</button></p>';
         el.innerHTML = frame('Jadwal pasien', 'Front desk', body, 'wide');
         var sc2 = $('.bk-scroll', el); if (sc2 && keep) { sc2.scrollTop = keep[0] || 0; sc2.scrollLeft = keep[1] || 0; }
@@ -2117,16 +2130,16 @@
       /* ----- Formulir: booking baru, ubah, dan status ----- */
       var openForm = function (o) {
         var ex = o.id ? bkFind(o.id) : null, id = ex ? ex.id : null;
-        var f = ex ? { date: ex.date, th: ex.th, t: ex.t, dur: ex.dur, name: ex.name, wa: ex.wa, sv: ex.sv, st: ex.st, cat: ex.cat, disc: ex.disc || BK_DISC_MAX } :
+        var f = ex ? { date: ex.date, th: ex.th, t: ex.t, dur: BK_SERVICES[ex.sv].min, name: ex.name, wa: ex.wa, sv: ex.sv, st: ex.st, cat: ex.cat, disc: ex.disc || BK_DISC_MAX } :
           { date: o.date || B.date, th: o.th || (B.who.indexOf('t:') === 0 ? B.who.slice(2) : ''), t: o.t == null ? -1 : o.t, dur: BK_SERVICES[o.sv || 'reg'].min, name: o.name || '', wa: o.wa || '', sv: o.sv || 'reg', st: 'PENDING', cat: 'umum', disc: BK_DISC_MAX };
-        var durTouched = !!ex && ex.dur !== BK_SERVICES[ex.sv].min;
         var reqMin = o.req == null ? null : o.req;
         var fix = function () {
           var ws = bkTherapists(f.date);
           if (!ws.length) { f.th = ''; return; }
           if (!ws.some(function (w) { return w.p.id === f.th; })) { f.th = ws[0].p.id; }
-          var starts = bkStarts(f.date, f.th);
-          if (starts.length && starts.indexOf(f.t) < 0) {
+          var starts = bkStarts(f.date, f.th, id, BK_SERVICES[f.sv].min);
+          if (!starts.length) { f.t = -1; }
+          else if (starts.indexOf(f.t) < 0) {
             var nxt = starts.filter(function (m) { return m >= f.t; })[0];
             f.t = nxt != null ? nxt : starts[starts.length - 1];
           }
@@ -2139,20 +2152,17 @@
         };
         var body = function () {
           fix();
-          var ws = bkTherapists(f.date), starts = f.th ? bkStarts(f.date, f.th) : [], hint = '', warn = '', w0 = f.th ? bkWindow(byId(f.th), f.date) : null;
+          var ws = bkTherapists(f.date), starts = f.th ? bkStarts(f.date, f.th, id, BK_SERVICES[f.sv].min) : [], hint = '', warn = '', w0 = f.th ? bkWindow(byId(f.th), f.date) : null;
           if (reqMin != null && reqMin % BK_SLOT !== 0) {
             var lo = reqMin - reqMin % BK_SLOT;
-            hint = callout('info', 'clock', 'Pasien meminta jam <b>' + fromMin(reqMin) + '</b>. Jadwal berjalan per 30 menit, jadi pilihannya <b>' + fromMin(lo) + '</b> atau <b>' + fromMin(lo + BK_SLOT) + '</b>. Tawarkan salah satunya ke pasien.');
+            hint = callout('info', 'clock', 'Pasien meminta jam <b>' + fromMin(reqMin) + '</b>. Jadwal berjalan per 30 menit, jadi pilihannya <b>' + fromMin(lo) + '</b> atau <b>' + fromMin(lo + BK_SLOT) + '</b>, selama jam itu masih kosong. Tawarkan salah satunya ke pasien.');
           }
           if (!ws.length) { warn = callout('warn', 'warn', 'Belum ada terapis bertugas pada ' + esc(bkLong(f.date)) + (f.date > BK_PERIOD_END ? '. Jadwal shift periode berikutnya belum disusun leader.' : '.')); }
-          else {
-            var chk = bkCheck(f, id);
-            chk.warns.forEach(function (x) { warn += callout('warn', 'warn', esc(x)); });
-            chk.notes.forEach(function (x) { warn += callout('info', 'clock', esc(x)); });
-          }
-          var timeOpts = starts.map(function (m) {
-            var tag = bkClashes(f.date, f.th, m, f.dur, id).length ? ' · terisi' : '';
-            return '<option value="' + m + '"' + (m === f.t ? ' selected' : '') + '>' + fromMin(m) + ' - ' + fromMin(m + f.dur) + tag + '</option>';
+          else if (!starts.length) { warn = callout('warn', 'warn', 'Semua jam ' + esc(byId(f.th).n) + ' pada ' + esc(bkLong(f.date)) + ' sudah terisi. Pilih terapis atau hari lain.'); }
+          var slots = f.th ? bkSlots(f.date, f.th, id, BK_SERVICES[f.sv].min) : [];
+          var timeOpts = slots.map(function (s) {
+            var info = s.busy.length ? ' · terisi: ' + s.busy.slice(0, 2).map(function (b) { return b.name + ' ' + fromMin(b.t) + '-' + fromMin(b.t + b.dur); }).join(', ') + (s.busy.length > 2 ? ' +' + (s.busy.length - 2) : '') : '';
+            return '<option value="' + s.t + '"' + (s.t === f.t ? ' selected' : '') + (s.busy.length ? ' disabled' : '') + '>' + fromMin(s.t) + ' - ' + fromMin(s.t + BK_SERVICES[f.sv].min) + info + '</option>';
           }).join('');
           var stIds = ex ? BK_ST_ORDER : ['PENDING', 'CONFIRMED'];
           var catExtra = '';
@@ -2166,27 +2176,25 @@
           return hint +
             '<div class="grid2 bk-stack"><div class="field"><label for="bkf-date">Hari</label><select id="bkf-date">' + dateOpts().map(function (d) { return '<option value="' + d + '"' + (d === f.date ? ' selected' : '') + '>' + esc(bkLong(d)) + '</option>'; }).join('') + '</select></div>' +
             '<div class="field"><label for="bkf-sv">Layanan</label><select id="bkf-sv">' + BK_SV_ORDER.map(function (k) { return '<option value="' + k + '"' + (k === f.sv ? ' selected' : '') + '>' + esc(BK_SERVICES[k].n) + ' (' + BK_SERVICES[k].min + ' menit)</option>'; }).join('') + '</select></div></div>' +
-            '<div class="grid2"><div class="field"><label for="bkf-th">Terapis</label><select id="bkf-th"' + (ws.length ? '' : ' disabled') + '>' + ws.map(function (w) { return '<option value="' + w.p.id + '"' + (w.p.id === f.th ? ' selected' : '') + '>' + esc(w.p.n) + ' (' + (w.p.g === 'f' ? 'P' : 'L') + ')' + (w.p.lv ? ' pemula' : '') + '</option>'; }).join('') + '</select></div>' +
-            '<div class="field"><label for="bkf-t">Jam (per 30 menit)</label><select id="bkf-t"' + (starts.length ? '' : ' disabled') + '>' + timeOpts + '</select></div></div>' +
-            '<div class="grid2 bk-stack"><div class="field"><label for="bkf-dur">Durasi (bisa diubah)</label><select id="bkf-dur">' + BK_DUR.map(function (m) { return '<option value="' + m + '"' + (m === f.dur ? ' selected' : '') + '>' + m + ' menit</option>'; }).join('') + '</select></div>' +
-            '<div class="field"><label for="bkf-cat">Kategori pasien</label><select id="bkf-cat">' + BK_CAT_ORDER.map(function (k) { return '<option value="' + k + '"' + (k === f.cat ? ' selected' : '') + '>' + esc(BK_CATS[k].n) + '</option>'; }).join('') + '</select></div></div>' + catExtra + warn +
-            (w0 ? '<p class="notes">' + esc(w0.p.n) + ' masuk ' + fromMin(w0.s) + ' dan pulang ' + fromMin(w0.e) + '. Front desk yang mengatur jam pasiennya.</p>' : '') +
+            '<div class="grid2"><div class="field"><label for="bkf-th">Terapis</label><select id="bkf-th"' + (ws.length ? '' : ' disabled') + '>' + ws.map(function (w) { return '<option value="' + w.p.id + '"' + (w.p.id === f.th ? ' selected' : '') + '>' + esc(w.p.n) + ' (' + (w.p.g === 'f' ? 'P' : 'L') + ')</option>'; }).join('') + '</select></div>' +
+            '<div class="field"><label for="bkf-t">Jam (per 30 menit)</label><select id="bkf-t"' + (slots.length ? '' : ' disabled') + '>' + timeOpts + '</select></div></div>' +
+            '<div class="field"><label for="bkf-cat">Kategori pasien</label><select id="bkf-cat">' + BK_CAT_ORDER.map(function (k) { return '<option value="' + k + '"' + (k === f.cat ? ' selected' : '') + '>' + esc(BK_CATS[k].n) + '</option>'; }).join('') + '</select></div>' + catExtra + warn +
+            (w0 ? '<p class="notes">' + esc(w0.p.n) + ' masuk ' + fromMin(w0.s) + ' dan pulang ' + fromMin(w0.e) + '. Semua jam kerjanya tampil, tiap sesi ' + BK_SERVICES[f.sv].min + ' menit. Jam yang sudah terisi diberi keterangan dan tidak bisa dipilih.</p>' : '') +
             '<div class="field"><label for="bkf-name">Nama pasien</label><input type="text" id="bkf-name" autocomplete="off" value="' + esc(f.name) + '"></div>' +
             '<div class="field"><label for="bkf-wa">Nomor WhatsApp</label><input type="tel" id="bkf-wa" inputmode="tel" autocomplete="off" value="' + esc(f.wa) + '"></div>' +
             '<div class="field"><label for="bkf-st">Status</label><select id="bkf-st">' + stIds.map(function (k) { return '<option value="' + k + '"' + (k === f.st ? ' selected' : '') + '>' + esc(BK_STATUS[k].n) + '</option>'; }).join('') + '</select></div>' +
             '<div id="bkf-err"></div>';
         };
         var detail = function () {
-          if (!ex) { return '<p class="sub">Isi data pasien. Jam hanya per 30 menit, dan front desk bebas mengatur jam serta durasinya.</p>'; }
+          if (!ex) { return '<p class="sub">Isi data pasien. Pilihan jam per 30 menit dari terapis masuk sampai pulang. Jam yang sudah terisi diberi keterangan dan tidak bisa dipilih. Lama sesi mengikuti layanan.</p>'; }
           var p = byId(ex.th), stt = BK_STATUS[ex.st], cc = catChip(ex);
           var quick = BK_ST_ORDER.filter(function (k) { return k !== ex.st; }).map(function (k) {
             return '<button type="button" class="btn sm' + (BK_NEXT[ex.st] === k ? ' primary' : '') + '" data-qs="' + k + '">' + esc(BK_STATUS[k].n) + '</button>';
           }).join('');
           var logs = ['Dibuat oleh ' + ex.by].concat(ex.log.map(function (l) { return l.txt + ' · ' + l.by + ' ' + l.at; }));
-          return '<div class="row" style="justify-content:space-between;align-items:flex-start"><div><b>' + esc(bkLong(ex.date)) + ' · ' + fromMin(ex.t) + '-' + fromMin(ex.t + ex.dur) + '</b><div class="muted" style="font-size:12px">' + esc(BK_SERVICES[ex.sv].n) + ' · Terapis ' + esc(p.n) + (p.lv ? ' (pemula)' : '') + ' · ' + esc(ex.wa) + '</div></div>' + chip(stKind(ex.st), stt.n) + '</div>' +
+          return '<div class="row" style="justify-content:space-between;align-items:flex-start"><div><b>' + esc(bkLong(ex.date)) + ' · ' + fromMin(ex.t) + '-' + fromMin(ex.t + ex.dur) + '</b><div class="muted" style="font-size:12px">' + esc(BK_SERVICES[ex.sv].n) + ' · Terapis ' + esc(p.n) + ' · ' + esc(ex.wa) + '</div></div>' + chip(stKind(ex.st), stt.n) + '</div>' +
             (cc ? '<div class="row">' + cc + (ex.cat === 'teman' ? '<span class="muted" style="font-size:12px">Masuk laporan sebagai penjualan di bawah harga normal</span>' : '') + '</div>' : '') +
             '<div><div class="lbl" style="margin-bottom:6px">Ubah status</div><div class="row" style="gap:6px">' + quick + '</div></div>' +
-            '<div class="row" style="justify-content:space-between"><span class="sub" style="font-size:13px">Durasi ' + ex.dur + ' menit. Layanan lebih lama dari rencana?</span><button type="button" class="btn sm" data-ext="1">Perpanjang 30 menit</button></div>' +
             '<p class="notes">' + logs.map(esc).join('<br>') + '</p>';
         };
         var inner = '<h3>' + (ex ? esc(ex.name) : 'Booking baru') + '</h3>' + detail() +
@@ -2196,17 +2204,15 @@
           var read = function () {
             var g = function (k, def, empty) { var x = $('#' + k, ov); return x && x.value !== undefined && (x.value !== '' || empty) ? x.value : def; };
             f.date = g('bkf-date', f.date); f.sv = g('bkf-sv', f.sv); f.th = g('bkf-th', f.th); f.cat = g('bkf-cat', f.cat);
+            f.dur = BK_SERVICES[f.sv].min;
             var tv = parseInt(g('bkf-t', f.t), 10); if (!isNaN(tv)) { f.t = tv; }
-            var dv = parseInt(g('bkf-dur', f.dur), 10); if (!isNaN(dv)) { f.dur = dv; }
             var cv = parseInt(g('bkf-disc', f.disc, true), 10); f.disc = isNaN(cv) ? 0 : cv;
             f.name = g('bkf-name', f.name, true); f.wa = g('bkf-wa', f.wa, true); f.st = g('bkf-st', f.st);
           };
           ov.addEventListener('change', function (e) {
             var k = e.target.id;
-            if (k === 'bkf-date' || k === 'bkf-sv' || k === 'bkf-th' || k === 'bkf-t' || k === 'bkf-dur' || k === 'bkf-cat') {
+            if (k === 'bkf-date' || k === 'bkf-sv' || k === 'bkf-th' || k === 'bkf-t' || k === 'bkf-cat') {
               read();
-              if (k === 'bkf-dur') { durTouched = true; }
-              if (k === 'bkf-sv' && !durTouched) { f.dur = BK_SERVICES[f.sv].min; }
               if (f.cat === 'teman' && !f.disc) { f.disc = BK_DISC_MAX; }
               $('#bkf', ov).innerHTML = body();
             }
@@ -2215,7 +2221,6 @@
             var t = e.target.closest ? e.target.closest('button') : null; if (!t) { return; }
             var qs = t.getAttribute('data-qs');
             if (qs && ex) { var m = bkSetStatus(ex.id, qs); close(); render(); toast(m); return; }
-            if (t.getAttribute('data-ext') && ex) { var m2 = bkExtend(ex.id); close(); render(); toast(m2); return; }
             if (t.id === 'bkf-save') {
               read();
               var err = bkValidate(f, id);
@@ -2233,6 +2238,7 @@
       render();
       el.addEventListener('click', function (e) {
         var t = e.target.closest ? e.target.closest('button') : null; if (!t) { return; }
+        if (Date.now() - dragEnd < 400) { return; }
         var v;
         if (t.getAttribute('data-seg') === 'bkview') { B.view = t.getAttribute('data-v'); render(); return; }
         if ((v = t.getAttribute('data-bkday'))) { B.date = v; B.last = ''; render(); return; }
@@ -2257,6 +2263,78 @@
           render(); toast('Contoh diulang dari awal.');
         }
       });
+
+      /* ----- Pindah janji: geser dengan mouse, atau tahan sebentar lalu geser di layar sentuh ----- */
+      var dragTarget = function (x, y) {
+        var g = $('.bk-grid', el), t0 = g && g.querySelector('.bk-time'); if (!t0) { return null; }
+        var gr = g.getBoundingClientRect(), tr = t0.getBoundingClientRect(), lo = parseInt(g.getAttribute('data-lo'), 10), col = null;
+        Array.prototype.slice.call(g.querySelectorAll('.bk-head')).forEach(function (h) { var r = h.getBoundingClientRect(); if (x >= r.left && x < r.right && x >= tr.right) { col = { th: h.getAttribute('data-th'), r: r }; } });
+        var row = Math.round((y - drag.off - tr.top) / ROWH);
+        return { th: col ? col.th : '', t: lo + row * BK_SLOT, left: col ? col.r.left - gr.left : 0, top: tr.top - gr.top + row * ROWH, width: col ? col.r.width : 0, g: g };
+      };
+      var dragShow = function () {
+        var d = drag, tg = dragTarget(d.x, d.y); if (!tg) { return; }
+        var err = tg.th ? bkMoveCheck(d.b, tg.th, tg.t) : 'Lepaskan di kolom terapis.';
+        var gh = d.ghost; if (!gh || !gh.parentNode) { gh = d.ghost = document.createElement('div'); tg.g.appendChild(gh); }
+        gh.className = 'bk-ghost' + (err ? ' no' : '');
+        gh.style.left = tg.left + 'px'; gh.style.top = (tg.top + 2) + 'px'; gh.style.width = Math.max(0, tg.width - 6) + 'px'; gh.style.marginLeft = '3px';
+        gh.style.height = (d.b.dur / BK_SLOT * ROWH - 4) + 'px';
+        gh.innerHTML = '<span>' + fromMin(tg.t) + '-' + fromMin(tg.t + d.b.dur) + '</span><small>' + esc(err || 'Lepas untuk memindahkan') + '</small>';
+        d.tg = tg; d.err = err;
+      };
+      var dragStart = function () {
+        var d = drag; if (!d || d.on) { return; }
+        d.on = true; d.c.classList.add('dragging');
+        try { d.c.setPointerCapture(d.id); } catch (x) { /* pointer tiruan atau sudah lepas */ }
+        try { if (navigator.vibrate) { navigator.vibrate(15); } } catch (x2) { /* tidak didukung */ }
+        d.timerScroll = setInterval(function () {
+          var sc = $('.bk-scroll', el); if (!sc || !drag) { return; }
+          var r = sc.getBoundingClientRect(), dx = 0, dy = 0;
+          if (drag.x < r.left + 36) { dx = -14; } else if (drag.x > r.right - 36) { dx = 14; }
+          if (drag.y < r.top + 60) { dy = -14; } else if (drag.y > r.bottom - 36) { dy = 14; }
+          if (dx || dy) { sc.scrollLeft += dx; sc.scrollTop += dy; dragShow(); }
+        }, 30);
+        dragShow();
+      };
+      var dragFinish = function (commit) {
+        var d = drag; if (!d) { return; }
+        clearTimeout(d.timer); clearInterval(d.timerScroll);
+        drag = null;
+        if (!d.on) { return; }
+        dragEnd = Date.now();
+        if (d.ghost && d.ghost.remove) { d.ghost.remove(); }
+        d.c.classList.remove('dragging');
+        var tg = d.tg;
+        if (!commit || !tg) { return; }
+        if (tg.th === d.b.th && tg.t === d.b.t) { return; }
+        if (d.err) { toast('Tidak bisa dipindah. ' + d.err + ' Janji tetap di tempatnya.'); return; }
+        var msg = bkMove(d.b.id, tg.th, tg.t);
+        B.last = ''; render(); toast(msg);
+      };
+      el.addEventListener('pointerdown', function (e) {
+        if (drag || (e.pointerType === 'mouse' && e.button > 0)) { return; }
+        var c = e.target.closest ? e.target.closest('.bk-card[data-drag]') : null; if (!c) { return; }
+        var b = bkFind(c.getAttribute('data-bk')); if (!b) { return; }
+        drag = { b: b, c: c, id: e.pointerId, type: e.pointerType, x0: e.clientX, y0: e.clientY, x: e.clientX, y: e.clientY, off: e.clientY - c.getBoundingClientRect().top, on: false, timer: 0, timerScroll: 0, ghost: null, tg: null, err: '' };
+        if (drag.type !== 'mouse') { drag.timer = setTimeout(dragStart, 350); }
+      });
+      el.addEventListener('pointermove', function (e) {
+        var d = drag; if (!d || e.pointerId !== d.id) { return; }
+        d.x = e.clientX; d.y = e.clientY;
+        if (!d.on) {
+          var dist = Math.sqrt(Math.pow(d.x - d.x0, 2) + Math.pow(d.y - d.y0, 2));
+          if (d.type === 'mouse') { if (dist > 5) { dragStart(); } }
+          else if (dist > 10) { clearTimeout(d.timer); drag = null; }
+          return;
+        }
+        if (e.preventDefault) { e.preventDefault(); }
+        dragShow();
+      });
+      el.addEventListener('pointerup', function (e) { if (drag && e.pointerId === drag.id) { dragFinish(true); } });
+      el.addEventListener('pointercancel', function (e) { if (drag && e.pointerId === drag.id) { dragFinish(false); } });
+      /* Setelah tahan sebentar, geseran jari tidak boleh menggulung halaman. */
+      el.addEventListener('touchmove', function (e) { if (drag && drag.on && e.cancelable) { e.preventDefault(); } }, { passive: false });
+      el.addEventListener('contextmenu', function (e) { if (drag) { e.preventDefault(); } });
     }
   });
 
