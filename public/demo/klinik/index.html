@@ -231,7 +231,7 @@
   tr.total td { font-weight: 700; border-bottom: 0; }
   .field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
   .field label, .lbl { font-size: 12px; color: var(--ink-2); font-weight: 500; }
-  input[type="text"], input[type="number"], input[type="time"], select, textarea {
+  input[type="text"], input[type="number"], input[type="time"], input[type="tel"], select, textarea {
     width: 100%; min-height: 44px; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--line);
     background: var(--surface); min-width: 0;
   }
@@ -289,6 +289,74 @@
   .stepper > div { font-size: 11px; text-align: center; padding: 6px 2px; border-radius: 8px; background: var(--surface-2); color: var(--muted); overflow-wrap: anywhere; }
   .stepper > div.on { background: var(--accent-soft); color: var(--accent-text); font-weight: 600; }
   .stepper > div.done { background: var(--good-soft); color: var(--good-ink); }
+
+  /* Jadwal pasien */
+  .bk-top { display: flex; gap: 8px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+  .bk-strip { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+  .bk-day { display: flex; flex-direction: column; align-items: center; gap: 0; padding: 6px 0; min-height: 58px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); }
+  .bk-day span { font-size: 11px; color: var(--muted); }
+  .bk-day b { font-family: var(--font-display); font-size: 16px; line-height: 1.3; }
+  .bk-day small { font-size: 11px; color: var(--ink-2); }
+  .bk-day.today b::after { content: ""; display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: currentColor; margin-left: 3px; vertical-align: middle; }
+  .bk-day[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+  .bk-day[aria-pressed="true"] span, .bk-day[aria-pressed="true"] small { color: var(--on-accent); }
+  .bk-chips { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
+  .bk-chip { flex: none; min-height: 40px; padding: 4px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); font-size: 13px; font-weight: 500; }
+  .bk-chip[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-text); }
+  .bk-scroll { overflow: auto; max-height: min(68vh, 600px); border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+  .bk-grid { display: grid; position: relative; width: 100%; }
+  .bk-corner, .bk-head { position: sticky; top: 0; z-index: 4; background: var(--surface); border-bottom: 1px solid var(--line); }
+  .bk-corner { left: 0; z-index: 5; grid-column: 1; grid-row: 1; }
+  .bk-head { display: flex; flex-direction: column; padding: 6px 6px 5px; min-width: 0; border-left: 1px solid var(--grid); }
+  .bk-head b { font-size: 13px; line-height: 1.3; }
+  .bk-head small { font-size: 11px; color: var(--muted); line-height: 1.25; }
+  .bk-time { position: sticky; left: 0; z-index: 3; grid-column: 1; background: var(--surface); border-top: 1px solid var(--grid); padding: 2px 6px 0 0; text-align: right; font-size: 11px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+  .bk-time.half { color: var(--muted); }
+  .bk-off, .bk-free { min-width: 0; border: 0; border-top: 1px solid var(--grid); border-left: 1px solid var(--grid); border-radius: 0; }
+  .bk-off { background: var(--surface-2); opacity: 0.7; }
+  .bk-free { background: var(--surface); color: var(--axis); font-size: 18px; line-height: 1; padding: 0; }
+  .bk-free:hover, .bk-free:focus-visible { background: var(--accent-soft); color: var(--accent-text); }
+  .bk-card { position: relative; z-index: 1; margin: 2px 3px; padding: 4px 8px; min-width: 0; overflow: hidden; display: flex; flex-direction: column; gap: 1px; text-align: left; border-radius: 8px; border: 1px solid var(--line); border-left: 4px solid var(--axis); background: var(--surface-2); color: var(--ink); }
+  .bk-card:hover { filter: brightness(0.97); }
+  .bk-card b { font-size: 13px; line-height: 1.25; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bk-card .bk-t, .bk-card .bk-sv, .bk-card .bk-st { font-size: 11px; line-height: 1.25; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bk-card.short { flex-direction: row; align-items: center; gap: 6px; padding-top: 2px; padding-bottom: 2px; }
+  .bk-card.short .bk-t { display: none; }
+  .bk-card.short b { flex: 1 1 auto; min-width: 0; }
+  .bk-card.short .bk-st { flex: none; }
+  .st-PENDING { background: var(--warn-soft); border-left-color: var(--warn); }
+  .st-CONFIRMED { background: var(--accent-soft); border-left-color: var(--accent); }
+  .st-CHECKED_IN { background: var(--good-soft); border-left-color: var(--good); }
+  .st-DONE { background: var(--surface-2); border-left-color: var(--axis); }
+  .st-NO_SHOW { background: var(--bad-soft); border-left-color: var(--bad); }
+  .st-CANCELED { background: var(--surface); border-left-color: var(--line); opacity: 0.7; }
+  .bk-now { position: relative; align-self: start; height: 2px; background: var(--bad); z-index: 2; pointer-events: none; }
+  .bk-now::before { content: attr(data-t); position: absolute; left: 0; top: -8px; padding: 0 5px; border-radius: 4px; background: var(--bad); color: #fff; font-size: 10px; line-height: 16px; font-variant-numeric: tabular-nums; }
+  .bk-legend { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12px; color: var(--ink-2); }
+  .bk-legend i { display: inline-block; width: 14px; height: 12px; margin-right: 4px; vertical-align: -2px; border-radius: 3px; border: 1px solid var(--line); border-left-width: 4px; }
+  .bk-legend i.st-PENDING { border-left-color: var(--warn); }
+  .bk-legend i.st-CONFIRMED { border-left-color: var(--accent); }
+  .bk-legend i.st-CHECKED_IN { border-left-color: var(--good); }
+  .bk-legend i.st-DONE { border-left-color: var(--axis); }
+  .bk-legend i.st-NO_SHOW { border-left-color: var(--bad); }
+  .bk-li { border-left-width: 4px; }
+  .bk-lt { flex: none; min-width: 48px; font-weight: 600; font-size: 14px; line-height: 1.2; }
+  .bk-lt small { display: block; font-weight: 400; font-size: 11px; color: var(--muted); }
+  .bk-card:not(.short) .bk-st { white-space: normal; }
+  .bk-more { cursor: pointer; min-height: 36px; padding: 6px 0; font-weight: 500; color: var(--accent-text); }
+  .bk-cat { font-size: 11px; font-weight: 600; line-height: 1.25; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bk-lv { display: inline-block; margin-left: 4px; padding: 0 6px; border-radius: 999px; background: var(--surface-2); color: var(--ink-2); font-size: 10px; font-weight: 600; vertical-align: 1px; }
+  .bk-card.narrow { padding: 3px 4px; }
+  .bk-card.narrow .bk-t, .bk-card.narrow .bk-sv, .bk-card.narrow .bk-cat { display: none; }
+  .bk-card.hascat .bk-t { display: none; }
+  .bk-hint { display: none; }
+  @media (max-width: 640px) { .bk-hint { display: block; } }
+  @media (max-width: 460px) { .bk-stack { grid-template-columns: minmax(0, 1fr); } }
+
+  /* Kartu bonus */
+  .lgrid { display: grid; gap: 8px; margin-top: 12px; }
+  .lc { display: grid; place-items: center; width: 100%; max-width: 46px; aspect-ratio: 1; justify-self: center; border-radius: 50%; border: 1.5px solid var(--axis); font-size: 13px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+  .lc.on { background: var(--accent); border-color: var(--accent); color: var(--on-accent); font-weight: 600; }
 
   /* Tooltip, toast, modal */
   .tip {
@@ -382,10 +450,10 @@
     { id: 'c', n: 'Citra', role: 'T', g: 'f', st: 'Tetap', days: ['OFF', 'OFF', 'P', 'S', 'M', 'P', 'SL'] },
     { id: 'd', n: 'Dina', role: 'T', g: 'f', st: 'Tetap', days: ['PL', 'S', 'P', 'S', 'P', 'OFF', 'OFF'] },
     { id: 'e', n: 'Elsa', role: 'T', g: 'f', st: 'Kontrak', days: ['OFF', 'OFF', 'M', 'P', 'S', 'S', 'PL'] },
-    { id: 'f', n: 'Farah', role: 'T', g: 'f', st: 'Kontrak', days: ['SL', 'P', 'S', 'M', 'P', 'OFF', 'OFF'] },
+    { id: 'f', n: 'Farah', role: 'T', g: 'f', st: 'Kontrak', lv: 'Pemula', days: ['SL', 'P', 'S', 'M', 'P', 'OFF', 'OFF'] },
     { id: 'g', n: 'Galih', role: 'T', g: 'm', st: 'Tetap', days: ['OFF', 'OFF', 'P', 'P', 'S', 'S', 'PL'] },
     { id: 'h', n: 'Hendra', role: 'T', g: 'm', st: 'Tetap', days: ['OFF', 'OFF', 'S', 'S', 'P', 'P', 'SL'] },
-    { id: 'i', n: 'Irfan', role: 'T', g: 'm', st: 'Kontrak', days: ['SL', 'S', 'S', 'P', 'P', 'OFF', 'OFF'] },
+    { id: 'i', n: 'Irfan', role: 'T', g: 'm', st: 'Kontrak', lv: 'Pemula', days: ['SL', 'S', 'S', 'P', 'P', 'OFF', 'OFF'] },
     { id: 'j', n: 'Joko', role: 'T', g: 'm', st: 'Kontrak', days: ['PL', 'P', 'P', 'S', 'S', 'OFF', 'OFF'] },
     { id: 'k', n: 'Kirana', role: 'F', g: 'f', st: 'Tetap', phase: 0, days: ['L', 'L', 'R', 'R', 'R', 'OFF', 'OFF'] },
     { id: 'l', n: 'Laras', role: 'F', g: 'f', st: 'Tetap', phase: 1, days: ['OFF', 'OFF', 'R', 'R', 'R', 'L', 'L'] },
@@ -418,6 +486,330 @@
     };
   }
 
+  // ==== Kas kecil ditunda dari MVP. Helper tanggal (MON, isoAdd, fdate) dan mulberry tetap aktif karena dipakai jadwal pasien. ====
+// [DITUNDA]   /* ---------- Data awal kas kecil (semua fiktif) ----------
+// [DITUNDA]      Riwayat Excel (2022 sampai Oktober 2026) diimpor sebagai arsip. November 2026 sudah berjalan di sistem
+// [DITUNDA]      dengan dua kantong: rekening (kartu ATM) dan tunai (laci front desk). */
+// [DITUNDA]   var CATS = ['Air minum & es batu', 'Transport & motor klinik', 'Keamanan & kebersihan', 'Perlengkapan klinis', 'Konsumsi', 'Perawatan gedung & alat', 'ATK', 'Biaya admin bank', 'Lain-lain'];
+  var MON = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+// [DITUNDA]   var MON_FULL = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+// [DITUNDA]   var KAS_TODAY = '2026-11-17';
+// [DITUNDA]   var KAS_ARSIP = 'Belum dikategorikan';
+// [DITUNDA]   var KAS_ITEMS = [
+// [DITUNDA]     ['Galon dan es batu', 60000, 90000, 3], ['Bensin motor klinik', 40000, 60000, 3], ['Parkir home visit', 5000, 15000, 4],
+// [DITUNDA]     ['Kertas dan tinta', 30000, 80000, 2], ['Perlengkapan kebersihan', 90000, 180000, 2], ['Konsumsi rapat leader', 80000, 150000, 1],
+// [DITUNDA]     ['Pulsa dan paket data', 50000, 100000, 1], ['Gula, kopi, teh', 30000, 70000, 2], ['Fotokopi berkas', 10000, 40000, 2],
+// [DITUNDA]     ['Baterai dan lakban', 15000, 45000, 1], ['Servis motor klinik', 150000, 350000, 1], ['Perbaikan kran dan lampu', 50000, 200000, 1],
+// [DITUNDA]     ['Ojek online antar berkas', 12000, 30000, 2]
+// [DITUNDA]   ];
+// [DITUNDA]   var KAS_TOPUPS = [800000, 1000000, 1500000, 2000000, 2500000];
+// [DITUNDA]   /* Catatan November di sistem: [tanggal, jam, jenis, kantong, kategori, keterangan, jumlah, pencatat, nota, status] */
+// [DITUNDA]   var KAS_NOV = [
+// [DITUNDA]     ['02', '08:50', 'TOPUP', 'rek', 'Top-up', 'Top-up dari owner', 1000000, 'Finance', '-', 'none'],
+// [DITUNDA]     ['02', '09:10', 'EXPENSE', 'tun', 'Air minum & es batu', 'Galon dan es batu', 75000, 'Kirana', 'foto', 'ok'],
+// [DITUNDA]     ['03', '10:30', 'WITHDRAW', 'rek', '', 'Tarik tunai di ATM', 500000, 'Kirana', '-', 'none'],
+// [DITUNDA]     ['03', '15:00', 'EXPENSE', 'tun', 'Keamanan & kebersihan', 'Perlengkapan kebersihan', 120000, 'Laras', 'foto', 'ok'],
+// [DITUNDA]     ['04', '13:20', 'EXPENSE', 'tun', 'Transport & motor klinik', 'Bensin motor klinik', 50000, 'Laras', 'foto', 'ok'],
+// [DITUNDA]     ['06', '14:10', 'EXPENSE', 'tun', 'Konsumsi', 'Konsumsi pelatihan', 95000, 'Kirana', 'foto', 'ok'],
+// [DITUNDA]     ['08', '10:00', 'WITHDRAW', 'rek', '', 'Tarik tunai di ATM', 500000, 'Laras', '-', 'none'],
+// [DITUNDA]     ['08', '12:40', 'EXPENSE', 'tun', 'Lain-lain', 'Pulsa dan paket data', 75000, 'Laras', 'foto', 'ok'],
+// [DITUNDA]     ['09', '16:20', 'EXPENSE', 'tun', 'Konsumsi', 'Gula, kopi, teh', 55000, 'Kirana', 'foto', 'wait'],
+// [DITUNDA]     ['11', '09:30', 'EXPENSE', 'tun', 'Air minum & es batu', 'Galon dan es batu', 85000, 'Kirana', 'foto', 'wait'],
+// [DITUNDA]     ['12', '11:15', 'EXPENSE', 'tun', 'Transport & motor klinik', 'Bensin motor klinik', 50000, 'Laras', 'foto', 'wait'],
+// [DITUNDA]     ['12', '14:50', 'EXPENSE', 'tun', 'Transport & motor klinik', 'Parkir home visit', 12000, 'Laras', 'tanpa', 'none'],
+// [DITUNDA]     ['13', '10:20', 'EXPENSE', 'tun', 'Air minum & es batu', 'Galon dan es batu', 170000, 'Kirana', 'foto', 'wait'],
+// [DITUNDA]     ['13', '15:30', 'EXPENSE', 'tun', 'Konsumsi', 'Konsumsi rapat leader', 120000, 'Kirana', 'foto', 'wait'],
+// [DITUNDA]     ['14', '10:00', 'WITHDRAW', 'rek', '', 'Tarik tunai di ATM', 100000, 'Kirana', '-', 'none'],
+// [DITUNDA]     ['14', '13:00', 'EXPENSE', 'tun', 'Keamanan & kebersihan', 'Perlengkapan kebersihan', 150000, 'Kirana', 'foto', 'wait'],
+// [DITUNDA]     ['16', '11:30', 'EXPENSE', 'tun', 'ATK', 'Kertas dan tinta', 35000, 'Laras', 'foto', 'wait']
+// [DITUNDA]   ];
+// [DITUNDA]   function kasCfgDefault() { return { noNotaItem: 20000, noNotaDay: 50000, warn: 100000, serah: 200000, tarik: 1000000, ulang: 5 }; }
+  function isoAdd(iso, n) { var d = new Date(iso + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.getUTCFullYear() + '-' + pad2(d.getUTCMonth() + 1) + '-' + pad2(d.getUTCDate()); }
+  function fdate(iso, withYear) { var d = new Date(iso + 'T00:00:00Z'); return DAYS[d.getUTCDay()] + ' ' + d.getUTCDate() + ' ' + MON[d.getUTCMonth()] + (withYear ? ' ' + d.getUTCFullYear() : ''); }
+// [DITUNDA]   function monthRange(y, m) { var last = new Date(Date.UTC(y, m, 0)).getUTCDate(); return [y + '-' + pad2(m) + '-01', y + '-' + pad2(m) + '-' + pad2(last)]; }
+// [DITUNDA]   function payRange(y, m) { var py = m === 1 ? y - 1 : y, pm = m === 1 ? 12 : m - 1; return [py + '-' + pad2(pm) + '-26', y + '-' + pad2(m) + '-25']; }
+  function mulberry(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+// [DITUNDA]   function kasEntry(date, time, t, o) {
+// [DITUNDA]     var e = { id: 0, date: date, time: time, t: t, cat: '', ket: '', amt: 0, pk: 'tun', by: '', holder: '', nota: '-', st: 'none', flag: '', ver: '', note: '', adv: 0, closed: false };
+// [DITUNDA]     for (var k in o) { if (Object.prototype.hasOwnProperty.call(o, k) && k !== 'time') { e[k] = o[k]; } }
+// [DITUNDA]     e.time = time;
+// [DITUNDA]     return e;
+// [DITUNDA]   }
+// [DITUNDA]   /* Dampak satu catatan ke kantong dan ke rekap. tot = perubahan saldo total (rekening + tunai). */
+// [DITUNDA]   function kasEff(e) {
+// [DITUNDA]     var z = { rek: 0, tun: 0, muka: 0, tot: 0, masuk: 0, keluar: 0, kor: 0 }, a = e.amt;
+// [DITUNDA]     if (e.pk === 'arsip') {
+// [DITUNDA]       if (e.t === 'TOPUP') { z.tot = a; z.masuk = a; } else { z.tot = -a; z.keluar = a; }
+// [DITUNDA]       return z;
+// [DITUNDA]     }
+// [DITUNDA]     if (e.t === 'OPEN') { z.rek = e.rek; z.tun = e.tun; return z; }
+// [DITUNDA]     if (e.t === 'TOPUP') { z.rek = a; z.masuk = a; }
+// [DITUNDA]     else if (e.t === 'WITHDRAW') { z.rek = -a; z.tun = a; }
+// [DITUNDA]     else if (e.t === 'EXPENSE') { z.keluar = a; if (e.pk === 'rek') { z.rek = -a; } else if (e.pk === 'tun') { z.tun = -a; } else { z.muka = -a; } }
+// [DITUNDA]     else if (e.t === 'ADVANCE') { z.tun = -a; z.muka = a; }
+// [DITUNDA]     else if (e.t === 'RETURN') { z.tun = a; z.muka = -a; }
+// [DITUNDA]     else if (e.t === 'ADJ') { z.kor = a; if (e.pk === 'rek') { z.rek = a; } else { z.tun = a; } }
+// [DITUNDA]     z.tot = z.rek + z.tun;
+// [DITUNDA]     return z;
+// [DITUNDA]   }
+// [DITUNDA]   /* Penanda harga tidak wajar: nominal lebih dari 1,5 kali rata-rata catatan lain dengan keterangan yang sama (minimal 3 catatan). */
+// [DITUNDA]   function kasPriceFlag(list, ket, amt) {
+// [DITUNDA]     var n = 0, s = 0, key = ket.toLowerCase();
+// [DITUNDA]     list.forEach(function (x) { if (x.t === 'EXPENSE' && x.amt > 0 && x.ket.toLowerCase() === key) { n++; s += x.amt; } });
+// [DITUNDA]     return (n >= 3 && amt > 1.5 * s / n) ? 'harga' : '';
+// [DITUNDA]   }
+// [DITUNDA]   function seedKas() {
+// [DITUNDA]     var rnd = mulberry(20261117), list = [], seq = 0, bal = 0, flat = [];
+// [DITUNDA]     var push = function (e) { e.id = ++seq; list.push(e); return e; };
+// [DITUNDA]     KAS_ITEMS.forEach(function (it, i) { for (var w = 0; w < it[3]; w++) { flat.push(i); } });
+// [DITUNDA]     for (var y = 2022; y <= 2026; y++) {
+// [DITUNDA]       for (var m = 1; m <= (y === 2026 ? 10 : 12); m++) {
+// [DITUNDA]         var dim = new Date(Date.UTC(y, m, 0)).getUTCDate(), n = 33 + Math.floor(rnd() * 12), days = [], lastDay = 0, di = 0;
+// [DITUNDA]         for (var i = 0; i < n; i++) { days.push(1 + Math.floor(rnd() * dim)); }
+// [DITUNDA]         days.sort(function (a, b) { return a - b; });
+// [DITUNDA]         for (var j = 0; j < days.length; j++) {
+// [DITUNDA]           var dd = days[j], it = KAS_ITEMS[flat[Math.floor(rnd() * flat.length)]];
+// [DITUNDA]           var a = Math.round((it[1] + rnd() * (it[2] - it[1])) / 500) * 500;
+// [DITUNDA]           var date = y + '-' + pad2(m) + '-' + pad2(dd);
+// [DITUNDA]           if (dd !== lastDay) { lastDay = dd; di = 0; }
+// [DITUNDA]           var tm = function () { di++; return fromMin(Math.min(1190, 540 + di * 55 + Math.floor(rnd() * 40))); };
+// [DITUNDA]           if (bal - a < 150000) {
+// [DITUNDA]             var tp = KAS_TOPUPS[Math.floor(rnd() * KAS_TOPUPS.length)];
+// [DITUNDA]             push(kasEntry(date, tm(), 'TOPUP', { pk: 'arsip', amt: tp, ket: 'Top-up dari owner', cat: KAS_ARSIP, nota: 'arsip', st: 'arsip' }));
+// [DITUNDA]             bal += tp;
+// [DITUNDA]           }
+// [DITUNDA]           push(kasEntry(date, tm(), 'EXPENSE', { pk: 'arsip', amt: a, ket: it[0], cat: KAS_ARSIP, nota: 'arsip', st: 'arsip' }));
+// [DITUNDA]           bal -= a;
+// [DITUNDA]         }
+// [DITUNDA]       }
+// [DITUNDA]     }
+// [DITUNDA]     /* November di sistem: gabungkan catatan tetap dengan pengeluaran kecil tanpa nota yang berulang. */
+// [DITUNDA]     var sys = KAS_NOV.map(function (r) { return { d: r[0], t: r[1], row: r }; });
+// [DITUNDA]     ['03', '06', '09', '10', '13'].forEach(function (dd) {
+// [DITUNDA]       [['Parkir', 20000, '17:00'], ['Ojek online antar berkas', 15000, '17:05'], ['Parkir home visit', 10000, '17:10']].forEach(function (x) {
+// [DITUNDA]         sys.push({ d: dd, t: x[2], row: [dd, x[2], 'EXPENSE', 'tun', 'Transport & motor klinik', x[0], x[1], 'Laras', 'tanpa', 'none'] });
+// [DITUNDA]       });
+// [DITUNDA]     });
+// [DITUNDA]     sys.sort(function (a, b) { return a.d === b.d ? (a.t < b.t ? -1 : (a.t > b.t ? 1 : 0)) : (a.d < b.d ? -1 : 1); });
+// [DITUNDA]     var sr = 0, st = 0;
+// [DITUNDA]     sys.forEach(function (x) {
+// [DITUNDA]       var r = x.row, z = kasEff({ t: r[2], pk: r[3], amt: r[6], rek: 0, tun: 0 });
+// [DITUNDA]       sr += z.rek; st += z.tun;
+// [DITUNDA]     });
+// [DITUNDA]     var tun0 = 130000 - st, rek0 = 200000 - sr, need = tun0 + rek0, gap = need - bal;
+// [DITUNDA]     if (gap > 0) { push(kasEntry('2026-10-31', '17:30', 'TOPUP', { pk: 'arsip', amt: gap, ket: 'Top-up dari owner', cat: KAS_ARSIP, nota: 'arsip', st: 'arsip' })); }
+// [DITUNDA]     if (gap < 0) { push(kasEntry('2026-10-31', '17:30', 'EXPENSE', { pk: 'arsip', amt: -gap, ket: 'Belanja akhir bulan', cat: KAS_ARSIP, nota: 'arsip', st: 'arsip' })); }
+// [DITUNDA]     push(kasEntry('2026-11-01', '00:00', 'OPEN', { pk: 'tun', ket: 'Saldo awal sistem', rek: rek0, tun: tun0, by: 'Finance' }));
+// [DITUNDA]     sys.forEach(function (x) {
+// [DITUNDA]       var r = x.row, e = kasEntry('2026-11-' + r[0], r[1], r[2], { pk: r[3], cat: r[4], ket: r[5], amt: r[6], by: r[7], nota: r[8], st: r[9] });
+// [DITUNDA]       if (e.t === 'EXPENSE' && e.nota === 'foto') { e.flag = kasPriceFlag(list, e.ket, e.amt); }
+// [DITUNDA]       if (e.st === 'ok') { e.ver = 'Finance'; }
+// [DITUNDA]       push(e);
+// [DITUNDA]     });
+// [DITUNDA]     return list;
+// [DITUNDA]   }
+// [DITUNDA]   function kasState(list) {
+// [DITUNDA]     var r = { rek: 0, tun: 0, muka: 0, tot: 0 };
+// [DITUNDA]     (list || S.kas).forEach(function (e) { var z = kasEff(e); r.rek += z.rek; r.tun += z.tun; r.muka += z.muka; r.tot += z.tot; });
+// [DITUNDA]     return r;
+// [DITUNDA]   }
+// [DITUNDA]   /* Rekap satu rentang tanggal: saldo awal + masuk - keluar + koreksi - uang muka belum lapor = saldo akhir. */
+// [DITUNDA]   function kasSum(from, to) {
+// [DITUNDA]     var r = { awal: 0, masuk: 0, keluar: 0, kor: 0, tot: 0, n: 0 };
+// [DITUNDA]     S.kas.forEach(function (e) {
+// [DITUNDA]       var z = kasEff(e);
+// [DITUNDA]       if (e.date < from) { r.awal += z.tot; }
+// [DITUNDA]       else if (e.date <= to) { r.masuk += z.masuk; r.keluar += z.keluar; r.kor += z.kor; r.tot += z.tot; if (e.t !== 'OPEN' && e.t !== 'COUNT') { r.n++; } }
+// [DITUNDA]     });
+// [DITUNDA]     r.akhir = r.awal + r.tot;
+// [DITUNDA]     r.muka = r.tot - (r.masuk - r.keluar + r.kor);
+// [DITUNDA]     return r;
+// [DITUNDA]   }
+
+  /* ---------- Data jadwal pasien (semua fiktif) ----------
+     Janji hanya per 30 menit (tidak boleh 08:15). Jadwal shift hanya memberi rentang jam kerja sebagai panduan,
+     dan front desk yang mengatur siapa dapat jam berapa. Yang tidak boleh dilanggar hanya data wajib
+     (nama, nomor WhatsApp), kelipatan 30 menit, terapis yang bertugas, dan batas diskon. Sisanya peringatan. */
+  var BK_SLOT = 30;
+  var BK_TODAY = '2026-11-17';
+  var BK_NOW = 550; /* 09:10, saat pasien baru menghubungi klinik */
+  var BK_PERIOD_END = '2026-11-25'; /* jadwal shift periode ini terbit sampai tanggal ini */
+  var BK_WEEK_MIN = '2026-11-09';
+  var BK_WEEK_MAX = '2026-11-30';
+  var BK_ME = 'Kirana';
+  var BK_DISC_MAX = 15; /* batas diskon teman owner (persen), diatur owner */
+  /* Durasi bawaan. Front desk boleh mengubahnya per janji (mis. terapis pemula atau alat yang belum dikuasai). */
+  var BK_SERVICES = {
+    reg: { n: 'Physio reguler', min: 60 },
+    baru: { n: 'Pasien baru', min: 60 },
+    paket: { n: 'Sesi paket', min: 60 },
+    hv: { n: 'Home visit', min: 90 },
+    eswt: { n: 'ESWT', min: 60 } /* durasi ESWT belum dikonfirmasi, sementara 60 menit */
+  };
+  var BK_SV_ORDER = ['reg', 'baru', 'paket', 'hv', 'eswt'];
+  var BK_DUR = [30, 60, 90, 120, 150, 180, 210, 240];
+  var BK_STATUS = {
+    PENDING: { n: 'Menunggu konfirmasi', s: 'Menunggu' },
+    CONFIRMED: { n: 'Terkonfirmasi', s: 'Konfirmasi' },
+    CHECKED_IN: { n: 'Sudah datang', s: 'Datang' },
+    DONE: { n: 'Selesai', s: 'Selesai' },
+    NO_SHOW: { n: 'Tidak datang', s: 'Tak datang' },
+    CANCELED: { n: 'Batal', s: 'Batal' }
+  };
+  var BK_ST_ORDER = ['PENDING', 'CONFIRMED', 'CHECKED_IN', 'DONE', 'NO_SHOW', 'CANCELED'];
+  var BK_NEXT = { PENDING: 'CONFIRMED', CONFIRMED: 'CHECKED_IN', CHECKED_IN: 'DONE' };
+  /* Kategori pasien: dicatat per kunjungan, masuk laporan harian, dan jadi bahan evaluasi bulanan owner. */
+  var BK_CATS = {
+    umum: { n: 'Umum' },
+    gratis: { n: 'Gratis (bonus 10x)', s: 'Gratis 10x' },
+    teman: { n: 'Teman owner (diskon)', s: 'Teman owner' },
+    warrior: { n: 'Warrior (atlet)', s: 'Warrior' }
+  };
+  var BK_CAT_ORDER = ['umum', 'gratis', 'teman', 'warrior'];
+
+  function bkDow(iso) { return new Date(iso + 'T00:00:00Z').getUTCDay(); }
+  function bkLong(iso) { var d = new Date(iso + 'T00:00:00Z'); return DAYS_FULL[d.getUTCDay()] + ' ' + d.getUTCDate() + ' ' + MON[d.getUTCMonth()]; }
+  function bkMonday(iso) { var k = (bkDow(iso) + 6) % 7; return isoAdd(iso, -k); }
+  function bkInitial(name) { var w = String(name).split(' '); return (w[1] || w[0]).charAt(0); }
+  function bkActive(b) { return b.st !== 'CANCELED'; }
+  function bkFind(id) { return S.booking.list.filter(function (b) { return b.id === id; })[0]; }
+  function bkCatTag(b) { return b.cat === 'teman' ? 'Teman owner ' + b.disc + '%' : (BK_CATS[b.cat] && b.cat !== 'umum' ? BK_CATS[b.cat].s : ''); }
+  /* Rentang jam kerja terapis pada satu tanggal, dari jadwal shift. */
+  function bkWindow(p, iso) {
+    if (iso > BK_PERIOD_END) { return null; }
+    var c = resolve(p, bkDow(iso));
+    if (!isWork(c)) { return null; }
+    var sh = SHIFTS[c], s = toMin(sh.s), e = toMin(sh.e);
+    return { p: p, code: c, name: sh.n, s: s, e: e };
+  }
+  function bkTherapists(iso) {
+    return PEOPLE.filter(function (p) { return p.role === 'T'; }).map(function (p) { return bkWindow(p, iso); }).filter(function (w) { return !!w; });
+  }
+  function bkClashes(date, th, t, dur, ignoreId) {
+    return S.booking.list.filter(function (b) { return b.date === date && b.th === th && bkActive(b) && b.id !== ignoreId && b.t < t + dur && t < b.t + b.dur; });
+  }
+  /* Janji tampil di kalender bila terapisnya bertugas dan jamnya dimulai di dalam jam kerja. */
+  function bkFits(b) {
+    var p = byId(b.th), w = p && bkWindow(p, b.date);
+    return !!w && b.t >= w.s && b.t < w.e;
+  }
+  /* Jam mulai yang bisa dipilih: tiap 30 menit sepanjang jam kerja. */
+  function bkStarts(date, th) {
+    var p = byId(th), w = p && bkWindow(p, date), out = [], m;
+    if (!w) { return out; }
+    for (m = w.s; m + BK_SLOT <= w.e; m += BK_SLOT) { out.push(m); }
+    return out;
+  }
+  /* Pemeriksaan sebelum menyimpan. err = galat yang menahan penyimpanan. warns = peringatan, tetap boleh disimpan. notes = catatan. */
+  function bkCheck(f, id) {
+    var r = { err: '', warns: [], notes: [] };
+    var name = String(f.name).trim(), wa = String(f.wa).replace(/[^0-9]/g, '');
+    var sv = BK_SERVICES[f.sv], p = byId(f.th), w = p && bkWindow(p, f.date), dur = f.dur;
+    if (!name) { r.err = 'Isi nama pasien.'; return r; }
+    if (wa.length < 9 || wa.length > 14 || (wa.charAt(0) !== '0' && wa.slice(0, 2) !== '62')) { r.err = 'Nomor WhatsApp belum benar. Contoh: 0812-0000-0101.'; return r; }
+    if (!sv) { r.err = 'Pilih layanan.'; return r; }
+    if (!p) { r.err = 'Pilih terapis.'; return r; }
+    if (!w) { r.err = p.n + ' tidak bertugas pada ' + bkLong(f.date) + '.'; return r; }
+    if (typeof f.t !== 'number' || isNaN(f.t) || f.t % BK_SLOT !== 0) { r.err = 'Jadwal hanya per 30 menit, misalnya 08:00 atau 08:30.'; return r; }
+    if (f.t < w.s || f.t >= w.e) { r.err = 'Jam itu di luar jam kerja ' + p.n + ' (' + fromMin(w.s) + '-' + fromMin(w.e) + ').'; return r; }
+    if (typeof dur !== 'number' || isNaN(dur) || dur < BK_SLOT || dur > 240 || dur % BK_SLOT !== 0) { r.err = 'Durasi harus kelipatan 30 menit, paling lama 4 jam.'; return r; }
+    if (!BK_CATS[f.cat]) { r.err = 'Pilih kategori pasien.'; return r; }
+    if (f.cat === 'teman' && !(f.disc >= 1 && f.disc <= BK_DISC_MAX)) { r.err = 'Diskon teman owner 1 sampai ' + BK_DISC_MAX + ' persen.'; return r; }
+    if (f.cat === 'gratis' && f.sv === 'baru') { r.err = 'Pasien baru belum punya kartu bonus penuh, jadi tidak bisa berkategori gratis.'; return r; }
+    if (f.t + dur > w.e) { r.warns.push('Selesai ' + fromMin(f.t + dur) + ', lewat jam pulang ' + p.n + ' (' + fromMin(w.e) + ').'); }
+    var cl = bkClashes(f.date, f.th, f.t, dur, id);
+    if (cl.length) { r.warns.push('Bentrok dengan ' + cl.map(function (b) { return b.name + ' (' + fromMin(b.t) + '-' + fromMin(b.t + b.dur) + ')'; }).join(', ') + '.'); }
+    if (p.lv) { r.notes.push(p.n + ' masih ' + p.lv.toLowerCase() + ': layanan bisa lebih lama dan pasiennya sebaiknya tidak banyak, karena memengaruhi insentif per pasien.'); }
+    return r;
+  }
+  function bkValidate(f, id) { return bkCheck(f, id).err; }
+  function bkSave(f, id) {
+    var B = S.booking, p = byId(f.th), b, msg, chk = bkCheck(f, id);
+    var name = String(f.name).trim(), wa = String(f.wa).trim(), at = fromMin(BK_NOW), disc = f.cat === 'teman' ? f.disc : 0;
+    if (id) {
+      b = bkFind(id);
+      if (b.date !== f.date || b.th !== f.th || b.t !== f.t || b.sv !== f.sv || b.dur !== f.dur) { b.log.push({ at: at, by: BK_ME, txt: 'Dipindah atau diubah: ' + bkLong(f.date) + ' ' + fromMin(f.t) + ', ' + f.dur + ' menit, bersama ' + p.n }); }
+      if (b.st !== f.st) { b.log.push({ at: at, by: BK_ME, txt: 'Status menjadi ' + BK_STATUS[f.st].n }); }
+      if (b.cat !== f.cat) { b.log.push({ at: at, by: BK_ME, txt: 'Kategori menjadi ' + BK_CATS[f.cat].n }); }
+      b.date = f.date; b.th = f.th; b.t = f.t; b.sv = f.sv; b.dur = f.dur; b.name = name; b.wa = wa; b.st = f.st; b.cat = f.cat; b.disc = disc;
+      msg = 'Perubahan disimpan: ' + name + ', ' + bkLong(f.date) + ' ' + fromMin(f.t) + ' bersama ' + p.n + '.';
+    } else {
+      b = { id: 'b' + (++B.seq), date: f.date, th: f.th, t: f.t, dur: f.dur, name: name, wa: wa, sv: f.sv, st: f.st, cat: f.cat, disc: disc, by: BK_ME, log: [{ at: at, by: BK_ME, txt: 'Booking dibuat' }] };
+      B.list.push(b);
+      msg = 'Booking dibuat: ' + name + ', ' + bkLong(f.date) + ' ' + fromMin(f.t) + ' bersama ' + p.n + '. Pengingat WhatsApp masuk ke daftar reminder.';
+    }
+    if (chk.warns.length) { msg += ' Perhatian: ' + chk.warns.join(' '); }
+    return { b: b, msg: msg, warns: chk.warns };
+  }
+  /* Layanan yang berlangsung lebih lama dari rencana: front desk memperpanjang 30 menit. */
+  function bkExtend(id) {
+    var b = bkFind(id);
+    if (b.dur >= 240) { return 'Durasi sudah paling lama (4 jam).'; }
+    b.dur += BK_SLOT;
+    b.log.push({ at: fromMin(BK_NOW), by: BK_ME, txt: 'Diperpanjang menjadi ' + b.dur + ' menit' });
+    var cl = bkClashes(b.date, b.th, b.t, b.dur, b.id), msg = 'Durasi menjadi ' + b.dur + ' menit.';
+    if (cl.length) { msg += ' Bentrok dengan ' + cl.map(function (x) { return x.name + ' (' + fromMin(x.t) + ')'; }).join(', ') + ', tetap tersimpan.'; }
+    return msg;
+  }
+  function bkSetStatus(id, st) {
+    var b = bkFind(id);
+    b.st = st;
+    b.log.push({ at: fromMin(BK_NOW), by: BK_ME, txt: 'Status menjadi ' + BK_STATUS[st].n });
+    if (st === 'CHECKED_IN') { return 'Tercatat datang pukul ' + fromMin(BK_NOW) + ' oleh ' + BK_ME + '.'; }
+    if (st === 'DONE') {
+      var extra = b.cat === 'umum' ? '' : ' Tercatat sebagai kategori ' + BK_CATS[b.cat].n + ' di laporan harian.';
+      return (b.sv === 'baru' ? 'Selesai. Masuk catatan kunjungan hari ini sebagai pasien baru, insentifnya untuk front desk yang bertugas saat pasien datang.' : 'Selesai. Masuk catatan kunjungan hari ini tanpa input ulang.') + extra;
+    }
+    if (st === 'CANCELED') { return 'Janji dibatalkan, jamnya kosong lagi.'; }
+    if (st === 'NO_SHOW') { return 'Dicatat tidak datang.'; }
+    return 'Status: ' + BK_STATUS[st].n + '.';
+  }
+  function bkStatusAt(date, t, dur, r) {
+    var tomorrow = date === isoAdd(BK_TODAY, 1);
+    if (date < BK_TODAY) { return r < 0.06 ? 'CANCELED' : (r < 0.1 ? 'NO_SHOW' : 'DONE'); }
+    if (date === BK_TODAY) {
+      if (t + dur <= BK_NOW) { return 'DONE'; }
+      if (t <= BK_NOW) { return 'CHECKED_IN'; }
+      return r < 0.05 ? 'CANCELED' : (r < 0.25 ? 'PENDING' : 'CONFIRMED');
+    }
+    return r < 0.05 ? 'CANCELED' : (r < (tomorrow ? 0.55 : 0.8) ? 'PENDING' : 'CONFIRMED');
+  }
+  /* Janji contoh 16-25 November. Deterministik, jadi tampilan sama setiap dibuka. Terapis pemula dapat pasien lebih sedikit dan sesinya sering lebih lama. */
+  function seedBookings() {
+    var rnd = mulberry(20261116), list = [], seq = 0, i;
+    var firstF = ['Ratna', 'Wulan', 'Dewi', 'Maya', 'Yuni', 'Lestari', 'Fitri', 'Anggun', 'Retno', 'Nadia', 'Putri', 'Susi'];
+    var firstM = ['Hadi', 'Budi', 'Rudi', 'Agus', 'Dedi', 'Yoga', 'Tono', 'Wawan', 'Surya', 'Eko', 'Bayu', 'Rizal'];
+    var lastI = 'ABDEHJKMNPRSTW';
+    var pick = function (a) { return a[Math.floor(rnd() * a.length)]; };
+    for (i = 0; i < 10; i++) {
+      var date = isoAdd('2026-11-16', i), base = date <= BK_TODAY ? 0.24 : Math.max(0.07, 0.2 - 0.025 * (i - 2));
+      bkTherapists(date).forEach(function (w) {
+        var m = w.s, fp = w.p.lv ? base * 0.5 : base;
+        while (m < w.e) {
+          if (rnd() >= fp) { m += BK_SLOT; continue; }
+          var r = rnd(), sv = r < 0.12 ? 'baru' : (r < 0.45 ? 'paket' : (r < 0.5 ? 'hv' : (r < 0.56 ? 'eswt' : 'reg')));
+          var dur = BK_SERVICES[sv].min;
+          if (w.p.lv && rnd() < 0.35) { dur += 30; }
+          if (m + dur > w.e) { m += BK_SLOT; continue; }
+          var f = rnd() < 0.7;
+          var name = (f ? 'Ibu ' + pick(firstF) : 'Bpk. ' + pick(firstM)) + ' ' + lastI.charAt(Math.floor(rnd() * lastI.length)) + '.';
+          var cr = rnd(), cat = sv === 'baru' ? 'umum' : (cr < 0.05 ? 'gratis' : (cr < 0.09 ? 'teman' : (cr < 0.14 ? 'warrior' : 'umum')));
+          var disc = cat === 'teman' ? (rnd() < 0.5 ? 10 : 15) : 0;
+          seq++;
+          list.push({ id: 'b' + seq, date: date, th: w.p.id, t: m, dur: dur, name: name, wa: '0812-0000-' + ('0000' + seq).slice(-4), sv: sv, st: bkStatusAt(date, m, dur, rnd()), cat: cat, disc: disc, by: rnd() < 0.5 ? 'Kirana' : 'Laras', log: [] });
+          m += dur;
+        }
+      });
+    }
+    /* Beberapa janji hari ini belum dikonfirmasi pasien, supaya front desk punya yang perlu dikejar. */
+    list.filter(function (b) { return b.date === BK_TODAY && b.st === 'CONFIRMED'; }).forEach(function (b, k) { if (k % 6 === 2) { b.st = 'PENDING'; } });
+    /* Hari ini selalu ada satu contoh tiap kategori pasien (gratis 10x, teman owner, warrior), supaya terlihat di jadwal dan laporan. */
+    var todayOk = list.filter(function (b) { return b.date === BK_TODAY && b.sv !== 'baru' && b.st === 'CONFIRMED' && b.cat === 'umum'; });
+    [['gratis', 0], ['teman', 10], ['warrior', 0]].forEach(function (x, k) { var b = todayOk[k * 3 + 1]; if (b) { b.cat = x[0]; b.disc = x[1]; } });
+    /* Untuk contoh pesan WhatsApp 09:00: Bella pada Rabu 18 November kosong sampai pukul 10:00. */
+    return list.filter(function (b) { return !(b.th === 'b' && b.date === '2026-11-18' && b.t < 600); });
+  }
+
   var S = {
     week: 0,
     lateCount: 3,
@@ -438,19 +830,15 @@
       ]
     },
     jual: { pkg: '12', promo: '', done: null, log: [{ d: '14 Nov', who: 'Kirana', paket: 'Paket 6x', promo: 'Promo awal bulan', normal: 1900000, paid: 1800000 }] },
-    loy: { aktif: true, n: 10, count: 7, vouch: 0, paket: true },
+    loy: { aktif: true, n: 10, count: 7, vouch: 0, paket: true, card: 3, log: [{ d: '4 Nov', who: 'Bapak Hadi', by: 'Laras', th: 'Elsa' }] },
     remind: {},
-    booking: { day: 3, pref: 'all', taken: {}, last: '' },
-    kas: [
-      { d: '10 Nov', t: 'TOPUP', cat: 'Top-up dari owner', ket: 'Top-up kas kecil', amt: 1000000, by: 'Finance' },
-      { d: '11 Nov', t: 'EXPENSE', cat: 'Air minum & es batu', ket: 'Galon dan es batu', amt: -85000, by: 'Kirana' },
-      { d: '12 Nov', t: 'EXPENSE', cat: 'Transport & motor klinik', ket: 'Bensin motor klinik', amt: -50000, by: 'Laras' },
-      { d: '12 Nov', t: 'EXPENSE', cat: 'Transport & motor klinik', ket: 'Parkir home visit', amt: -12000, by: 'Laras' },
-      { d: '13 Nov', t: 'EXPENSE', cat: 'Konsumsi', ket: 'Konsumsi rapat leader', amt: -120000, by: 'Kirana' },
-      { d: '14 Nov', t: 'EXPENSE', cat: 'Keamanan & kebersihan', ket: 'Perlengkapan kebersihan', amt: -150000, by: 'Kirana' },
-      { d: '16 Nov', t: 'EXPENSE', cat: 'ATK', ket: 'Kertas dan tinta', amt: -35000, by: 'Laras' }
-    ],
-    kasOpen: 250000,
+    booking: { date: BK_TODAY, wk: '2026-11-16', who: 'all', view: 'cal', list: [], seq: 1000, last: '', reqDone: false },
+// [DITUNDA]     kas: seedKas(),
+// [DITUNDA]     kasCfg: kasCfgDefault(),
+// [DITUNDA]     kasBell: [],
+// [DITUNDA]     kasAsk: null,
+// [DITUNDA]     kasSeq: 0,
+// [DITUNDA]     kasN: 0,
     gaji: {
       gp: 4325000, batas: 173, menit: 11010,
       tunj: [
@@ -467,7 +855,8 @@
       stage: 0
     }
   };
-  var CATS = ['Air minum & es batu', 'Transport & motor klinik', 'Keamanan & kebersihan', 'Perlengkapan klinis', 'Konsumsi', 'Perawatan gedung & alat', 'ATK', 'Biaya admin bank', 'Lain-lain'];
+// [DITUNDA]   S.kasSeq = S.kas.length;
+  S.booking.list = seedBookings();
 
   /* ---------- Logika bersama ---------- */
   function resolve(p, i) {
@@ -492,6 +881,21 @@
   function tier(n) { return n <= 3 ? 20000 : 40000; }
   function lateTotal(n) { var t = 0; for (var k = 1; k <= n; k++) { t += tier(k); } return t; }
   function visitsOf(day) { return VISITS_BASE[(day - 1) % 7] + (day % 3) - 1; }
+  /* Kategori pasien per hari (contoh): gratis 10x dari kartu bonus, teman owner dengan diskon, dan warrior. Bahan evaluasi bulanan owner. */
+  var CAT_TEMAN = { 3: 15, 8: 10, 12: 15, 15: 10, 17: 10 };
+  var CAT_WAR = { 2: 1, 6: 2, 9: 1, 13: 1, 16: 2, 17: 1 };
+  function catDay(n) {
+    var tp = CAT_TEMAN[n] || 0;
+    return { gratis: S.loy.log.filter(function (l) { return l.d === n + ' Nov'; }).length, teman: tp ? 1 : 0, tpct: tp, tdisc: tp ? Math.round(375000 * tp / 100 / 1000) * 1000 : 0, warrior: CAT_WAR[n] || 0 };
+  }
+  function catLine(c) {
+    var a = [];
+    if (c.gratis) { a.push('Gratis 10x ' + c.gratis); }
+    if (c.teman) { a.push('Teman owner ' + c.teman); }
+    if (c.warrior) { a.push('Warrior ' + c.warrior); }
+    return a.join(' · ');
+  }
+  function lvTag(n) { var p = PEOPLE.filter(function (x) { return x.n === n; })[0]; return p && p.lv ? ' <span class="chip">' + esc(p.lv) + '</span>' : ''; }
 
   /* ---------- UI helpers ---------- */
   function toast(msg) {
@@ -979,7 +1383,7 @@
           return { n: f[0], a: attend(f[1], di, 20 + fi), baru: share(baru), paket: share(pk), tap: share(tp), cash: cash, diff: x.n === 12 && f[0] === 'Kirana' ? -10000 : 0 };
         });
         var sum = function (arr, k) { return arr.reduce(function (a, r) { return a + r[k]; }, 0); };
-        return { t: tRows, f: fRows, kun: sum(tRows, 'p'), hv: sum(tRows, 'hv'), baru: sum(fRows, 'baru'), paket: pk, tap: sum(fRows, 'tap'), sale: sale * 1000000, kas: kas, tunai: tunai };
+        return { t: tRows, f: fRows, kun: sum(tRows, 'p'), hv: sum(tRows, 'hv'), baru: sum(fRows, 'baru'), paket: pk, tap: sum(fRows, 'tap'), sale: sale * 1000000, kas: kas, tunai: tunai, cat: catDay(x.n) };
       };
 
       var terapisHtml = function () {
@@ -1060,13 +1464,16 @@
       var detailHtml = function (d) {
         var x = dayOf(d), r = repOf(d), rp0 = reportOf(x);
         var tRows = rp0.t.map(function (t) {
-          return '<tr><td>' + esc(t.n) + '</td><td>' + shiftName(t.a.code) + '</td><td>' + flagCell(t.a) + '</td><td class="r num">' + dur(t.a.mins) + '</td><td class="r num">' + t.p + '</td><td class="r num">' + t.hv + '</td></tr>';
+          return '<tr><td>' + esc(t.n) + lvTag(t.n) + '</td><td>' + shiftName(t.a.code) + '</td><td>' + flagCell(t.a) + '</td><td class="r num">' + dur(t.a.mins) + '</td><td class="r num">' + t.p + '</td><td class="r num">' + t.hv + '</td></tr>';
         }).join('');
         var fRows = rp0.f.map(function (f) {
           return '<tr><td>' + esc(f.n) + '</td><td>' + shiftName(f.a.code) + '</td><td>' + flagCell(f.a) + '</td><td class="r num">' + dur(f.a.mins) + '</td><td class="r num">' + f.baru + '</td><td class="r num">' + f.paket + '</td><td class="r num">' + f.tap + '</td></tr>';
         }).join('');
         var dd = d.slice(4);
-        var kecil = S.kas.filter(function (k) { return k.d === dd && k.t === 'EXPENSE'; });
+        var kdate = '2026-11-' + pad2(parseInt(dd, 10));
+// [DITUNDA]         var kecil = S.kas.filter(function (k) { return k.date === kdate && k.t === 'EXPENSE'; });
+// [DITUNDA]         var kTanpa = kecil.filter(function (k) { return k.nota === 'tanpa'; }).reduce(function (a, k) { return a + k.amt; }, 0);
+// [DITUNDA]         var kSum = kasSum(kdate, kdate);
         var promo = S.jual.log.filter(function (k) { return k.d === dd && k.paid < k.normal; });
         var cashRows = rp0.f.map(function (f) {
           return '<div class="li"><div class="t"><b>Tutup kas ' + esc(f.n) + ' (shift ' + SHIFTS[f.a.code].n + ')</b><small>Tunai ' + rp(f.cash) + '. Selisih ' + rp(f.diff) + '.</small></div>' + (f.diff ? chip('warn', 'Ada selisih', 'warn') : chip('good', 'Cocok', 'check')) + '</div>';
@@ -1075,11 +1482,14 @@
           '<div class="sec-title">Laporan ' + d + '</div>' +
           '<div class="grid2"><div class="tile"><div class="l">Kunjungan</div><div class="v num">' + rp0.kun + '</div></div><div class="tile"><div class="l">Pasien baru</div><div class="v num">' + rp0.baru + '</div></div>' +
           '<div class="tile"><div class="l">Kas diterima</div><div class="v num" style="font-size:18px">' + rp(rp0.kas) + '</div></div><div class="tile"><div class="l">Paket terjual</div><div class="v num">' + rp0.paket + '</div></div></div>' +
+          '<div><div class="sec-title" style="margin-bottom:6px">Kategori pasien (bahan evaluasi bulanan owner)</div><div class="grid3"><div class="tile"><div class="l">Gratis (bonus 10x)</div><div class="v num">' + rp0.cat.gratis + '</div></div>' +
+          '<div class="tile"><div class="l">Teman owner</div><div class="v num">' + rp0.cat.teman + '</div>' + (rp0.cat.teman ? '<div class="l">diskon ' + rp0.cat.tpct + '%, ' + rp(rp0.cat.tdisc) + '</div>' : '') + '</div>' +
+          '<div class="tile"><div class="l">Warrior (atlet)</div><div class="v num">' + rp0.cat.warrior + '</div></div></div></div>' +
           '<div><div class="sec-title" style="margin-bottom:6px">Terapis (' + rp0.t.length + ' masuk)</div><div class="tablewrap"><table><thead><tr><th>Nama</th><th>Shift</th><th>Masuk-keluar</th><th class="r">Jam kerja</th><th class="r">Pasien</th><th class="r">Home visit</th></tr></thead><tbody>' + tRows + '</tbody></table></div></div>' +
           '<div><div class="sec-title" style="margin-bottom:6px">Front desk (' + rp0.f.length + ' masuk)</div><div class="tablewrap"><table><thead><tr><th>Nama</th><th>Shift</th><th>Masuk-keluar</th><th class="r">Jam kerja</th><th class="r">Pasien baru</th><th class="r">Paket</th><th class="r">Tapping</th></tr></thead><tbody>' + fRows + '</tbody></table></div>' +
           '<p class="notes" style="margin-top:6px">Insentif pasien baru dan paket masuk ke front desk yang bertugas saat pasien datang. Terlambat dihitung bila lewat toleransi 10 menit.</p></div>' +
           '<div><div class="sec-title" style="margin-bottom:6px">Kas dan lain-lain hari itu</div><div class="list">' + cashRows +
-          '<div class="li"><div class="t"><b>Kas kecil keluar</b><small>' + (kecil.length ? kecil.map(function (k) { return esc(k.ket) + ' ' + rp(-k.amt); }).join(', ') : 'Tidak ada pengeluaran.') + '</small></div></div>' +
+// [DITUNDA]           '<div class="li"><div class="t"><b>Kas kecil hari itu</b><small>' + (kecil.length ? kecil.map(function (k) { return esc(k.ket) + ' ' + rp(k.amt); }).join(', ') + '. Tanpa nota ' + rp(kTanpa) + '.' : 'Tidak ada pengeluaran.') + ' Saldo akhir hari ' + rp(kSum.akhir) + '.</small></div></div>' +
           '<div class="li"><div class="t"><b>Penjualan di bawah harga normal</b><small>' + (promo.length ? promo.map(function (k) { return esc(k.paket) + ' (' + esc(k.promo) + '), ditagih ' + rp(k.paid) + ' dari ' + rp(k.normal); }).join('; ') : 'Tidak ada.') + '</small></div></div>' +
           '<div class="li"><div class="t"><b>Keberatan dan revisi</b>' + (r.revs.length ? traceHtml(d) : '<small>Tidak ada revisi. Laporan final dikirim ' + esc(r.at) + ' oleh ' + esc(r.by) + '.</small>') + '</div></div></div></div>';
       };
@@ -1092,7 +1502,7 @@
           if (!r.sent) {
             return '<div class="li" style="align-items:flex-start"><div class="t"><b>' + x.d + '</b><small>Front desk ' + esc(r.by) + ' belum mengirim laporan.' + '' + '</small></div>' + repChip(x.d) + '</div>';
           }
-          return '<button type="button" class="rowbtn" data-detail="' + x.d + '"><span class="rb-main"><b>' + x.d + '</b><small>' + rp0.kun + ' kunjungan · ' + rp0.baru + ' pasien baru · ' + rp(rp0.kas) + '</small></span>' + repChip(x.d) + ic('right') + '</button>';
+          return '<button type="button" class="rowbtn" data-detail="' + x.d + '"><span class="rb-main"><b>' + x.d + '</b><small>' + rp0.kun + ' kunjungan · ' + rp0.baru + ' pasien baru · ' + rp(rp0.kas) + (catLine(rp0.cat) ? ' · ' + catLine(rp0.cat) : '') + '</small></span>' + repChip(x.d) + ic('right') + '</button>';
         }).join('');
         return notifHtml() +
           '<div><div class="sec-title" style="margin-bottom:6px">Rekap laporan harian</div><div class="list" style="gap:8px">' + rows + '</div></div>' +
@@ -1380,46 +1790,97 @@
     }
   });
 
-  /* M7: Loyalitas */
+  /* M7: Kartu bonus pasien (10x terapi, gratis 1x) */
   add({
-    id: 'm7', title: 'Bonus loyalitas jalan sendiri, owner yang mengatur',
-    now: 'Bonus 10x terapi gratis 1x bergantung pada ingatan front desk atau pasien.',
-    with: 'Owner mengatur aturannya. Progres dan voucher terbit otomatis, dan voucher hanya bisa dipakai sekali.',
-    who: ['Owner', 'Pasien'],
+    id: 'm7', title: 'Kartu bonus pasien tercatat di sistem, tidak hanya di kertas',
+    now: 'Pasien baru menerima kartu kertas berangka 1 sampai 10. Setiap datang, front desk melingkari satu angka dengan pulpen. Setelah 10, pasien membawa kartu untuk 1 terapi gratis, lalu kartu diganti baru. Kartu hilang berarti progres hilang, dan klinik tidak punya catatan sendiri untuk memeriksanya.',
+    with: 'Front desk tidak lagi melingkari angka. Kunjungan yang selesai menambah progres otomatis, pasien melihatnya di HP tanpa membawa kartu, dan sesi gratis tercatat siapa yang memberikannya.',
+    who: ['Front desk', 'Pasien', 'Owner'],
     build: function (el) {
-      var L = S.loy;
-      var draw = function () {
-        $('#loy', el).innerHTML =
-          '<div class="panel"><div class="lbl">Progres bonus pasien</div><div class="hero-fig num">' + L.count + '<span class="muted" style="font-size:22px;font-weight:600">/' + L.n + '</span></div>' +
-          '<div class="bar" style="margin-top:12px"><i style="width:' + Math.min(100, L.count / L.n * 100) + '%"></i></div>' +
-          '<div class="sub" style="margin-top:8px;font-size:13px">' + (L.aktif ? 'Tinggal ' + (L.n - L.count) + ' kunjungan lagi untuk 1 sesi gratis.' : 'Program bonus sedang tidak aktif.') + '</div></div>' +
-          (L.vouch > 0 ? callout('good', 'check', 'Voucher <b>1 sesi gratis</b> tersedia (' + L.vouch + '). Terapis tetap menerima komponen per pasien penuh.') : '') +
-          '<div class="row"><button type="button" class="btn primary" data-act="visit"' + (L.aktif ? '' : ' disabled') + '>Simulasikan kunjungan selesai</button>' +
-          '<button type="button" class="btn" data-act="voucher"' + (L.vouch > 0 ? '' : ' disabled') + '>Pakai voucher</button></div>';
+      var L = S.loy, view = 'fd', kind = 'reg', NILAI = 375000, NAME = 'Ibu Ratna', ME = 'Kirana';
+      var full = function () { return L.vouch > 0; };
+      var statusText = function () {
+        if (!L.aktif) { return 'Program bonus sedang tidak aktif.'; }
+        return full() ? 'Kartu penuh. Kunjungan berikutnya gratis.' : 'Tinggal ' + (L.n - L.count) + ' kunjungan lagi untuk 1 sesi gratis.';
       };
-      var set =
-        '<div class="panel"><div class="sec-title" style="margin-bottom:8px">Pengaturan owner</div>' +
-        '<div class="row" style="justify-content:space-between"><span>Program bonus aktif</span><span class="switch"><button type="button" role="switch" aria-checked="' + L.aktif + '" aria-label="Program bonus aktif" data-act="toggle"></button></span></div>' +
-        '<div class="field" style="margin-top:12px"><label for="loy-n">Setiap berapa kunjungan dapat 1 sesi gratis</label><input type="number" id="loy-n" min="2" max="30" value="' + L.n + '"></div>' +
-        '<label class="chk" style="margin-top:8px"><input type="checkbox" id="loy-p"' + (L.paket ? ' checked' : '') + '> Kunjungan yang memakai paket ikut dihitung</label></div>';
-      el.innerHTML = frame('Bonus loyalitas', 'Owner dan pasien', set + '<div id="loy" style="display:flex;flex-direction:column;gap:16px"></div>' +
-        '<p class="notes">Coba ubah aturan di atas, lalu simulasikan kunjungan sampai voucher terbit.</p>');
-      draw();
+      var cardHtml = function () {
+        var dots = '', i;
+        for (i = 1; i <= L.n; i++) { dots += '<span class="lc' + (i <= L.count ? ' on' : '') + '">' + i + '</span>'; }
+        return '<div class="panel"><div class="row" style="justify-content:space-between"><div><b>' + NAME + '</b><div class="muted" style="font-size:12px">Kartu bonus ke-' + L.card + '</div></div>' +
+          (L.aktif ? (full() ? chip('good', 'Kartu penuh', 'check') : chip('info', L.count + ' dari ' + L.n)) : chip('', 'Tidak aktif')) + '</div>' +
+          '<div class="lgrid" style="grid-template-columns:repeat(' + (L.n <= 10 ? 5 : 10) + ',minmax(0,1fr))">' + dots + '</div>' +
+          '<div class="sub" style="margin-top:10px;font-size:13px">' + statusText() + '</div></div>';
+      };
+      var fdHtml = function () {
+        return cardHtml() +
+          (full() ? callout('good', 'check', '<b>' + NAME + ' berhak 1 sesi gratis</b> pada kunjungan ini. Kartu kertas tidak perlu dibawa. Terapis tetap menerima komponen per pasien penuh.') : '') +
+          '<div class="field"><label for="loy-kind">Kunjungan yang baru selesai</label><select id="loy-kind"><option value="reg"' + (kind === 'reg' ? ' selected' : '') + '>Physio reguler</option><option value="paket"' + (kind === 'paket' ? ' selected' : '') + '>Sesi paket</option></select></div>' +
+          '<div class="row"><button type="button" class="btn primary" data-act="visit"' + (L.aktif && !full() ? '' : ' disabled') + '>Simulasikan kunjungan selesai</button>' +
+          '<button type="button" class="btn" data-act="voucher"' + (full() ? '' : ' disabled') + '>Pakai bonus: sesi gratis</button></div>' +
+          '<p class="notes">Di sistem sungguhan, angka bertambah sendiri saat status janji menjadi Selesai (Masalah 4), jadi tidak ada lagi yang dilingkari. Front desk hanya menekan Pakai bonus saat pasien berhak, dan tombol itu mati selama kartu belum penuh.</p>';
+      };
+      var pasienHtml = function () {
+        if (!L.aktif) { return callout('info', 'clock', 'Program bonus sedang tidak aktif.'); }
+        var msg = full()
+          ? 'Halo ' + NAME + ', kartu bonus Anda sudah penuh. Terapi berikutnya GRATIS. Cukup sebutkan nama Anda ke front desk, kartu kertas tidak perlu dibawa.'
+          : 'Halo ' + NAME + ', terima kasih sudah terapi hari ini. Ini kunjungan ke-' + L.count + ' dari ' + L.n + ' di kartu bonus Anda. ' + (L.n - L.count) + ' kunjungan lagi untuk 1 terapi gratis.';
+        return cardHtml() +
+          '<div class="panel soft"><div class="sec-title">Pesan WhatsApp setelah terapi</div><p style="margin-top:6px">' + esc(msg) + '</p></div>' +
+          '<p class="notes">Progres yang sama terlihat di PWA pasien. Pasien tidak perlu membawa kartu, dan tidak kehilangan progres bila kartu hilang.</p>';
+      };
+      var ownerHtml = function () {
+        var n = L.log.length;
+        return '<div class="panel"><div class="sec-title" style="margin-bottom:8px">Pengaturan owner</div>' +
+          '<div class="row" style="justify-content:space-between"><span>Program bonus aktif</span><span class="switch"><button type="button" role="switch" aria-checked="' + L.aktif + '" aria-label="Program bonus aktif" data-act="toggle"></button></span></div>' +
+          '<div class="field" style="margin-top:12px"><label for="loy-n">Setiap berapa kunjungan dapat 1 sesi gratis</label><input type="number" id="loy-n" min="2" max="30" value="' + L.n + '"></div>' +
+          '<label class="chk" style="margin-top:8px"><input type="checkbox" id="loy-p"' + (L.paket ? ' checked' : '') + '> Kunjungan yang memakai paket ikut dihitung</label></div>' +
+          '<div class="grid2"><div class="tile"><div class="l">Sesi gratis bulan ini</div><div class="v num">' + n + '</div></div><div class="tile"><div class="l">Biaya bonus</div><div class="v num" style="font-size:18px">' + rp(n * NILAI) + '</div></div></div>' +
+          '<div><div class="sec-title" style="margin-bottom:6px">Siapa yang memberikan sesi gratis</div><div class="list">' +
+          (n ? L.log.slice().reverse().map(function (l) {
+            return '<div class="li"><div class="t"><b>' + esc(l.who) + '</b><small>' + esc(l.d) + ' · diberikan front desk ' + esc(l.by) + ' · Terapis ' + esc(l.th) + '</small></div>' + chip('', 'Gratis') + '</div>';
+          }).join('') : '<div class="li"><div class="t muted">Belum ada.</div></div>') + '</div></div>' +
+          '<div class="panel soft"><div class="sec-title">Beralih dari kartu kertas</div><ol style="margin:6px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-size:13px">' +
+          '<li>Pasien yang kartunya sedang berjalan: front desk memasukkan angka terakhir yang dilingkari, satu kali saja.</li>' +
+          '<li>Sejak itu angka bertambah otomatis. Kartu kertas boleh tetap dibagikan sebagai pengingat, tetapi yang berlaku adalah catatan sistem.</li>' +
+          '<li>Sesi gratis hanya bisa diberikan bila kartu di sistem penuh, dan tercatat siapa yang memberikannya.</li></ol></div>';
+      };
+      var render = function () {
+        var body = view === 'fd' ? fdHtml() : (view === 'pasien' ? pasienHtml() : ownerHtml());
+        $('#loyv', el).innerHTML = body;
+      };
+      el.innerHTML = frame('Kartu bonus', 'Front desk, pasien, owner',
+        seg('loyview', [['fd', 'Front desk'], ['pasien', 'HP pasien'], ['owner', 'Owner']], view) + '<div id="loyv" style="display:flex;flex-direction:column;gap:16px"></div>');
+      render();
       el.addEventListener('click', function (e) {
         var t = e.target.closest ? e.target.closest('button') : null; if (!t) { return; }
-        var act = t.getAttribute('data-act');
-        if (act === 'toggle') { L.aktif = !L.aktif; t.setAttribute('aria-checked', String(L.aktif)); draw(); }
-        if (act === 'visit' && L.aktif) {
-          L.count += 1;
-          if (L.count >= L.n) { L.count = 0; L.vouch += 1; toast('Target tercapai. Voucher 1 sesi gratis terbit otomatis.'); } else { toast('Kunjungan tercatat: ' + L.count + '/' + L.n + '.'); }
-          draw();
+        if (t.getAttribute('data-seg') === 'loyview') {
+          view = t.getAttribute('data-v');
+          $$('[data-seg="loyview"]', el).forEach(function (b) { b.setAttribute('aria-pressed', String(b === t)); });
+          render(); return;
         }
-        if (act === 'voucher' && L.vouch > 0) { L.vouch -= 1; draw(); toast('Voucher dipakai sekali dan tidak bisa dipakai lagi.'); }
+        var act = t.getAttribute('data-act');
+        if (act === 'toggle') { L.aktif = !L.aktif; render(); return; }
+        if (act === 'visit' && L.aktif && !full()) {
+          if (kind === 'paket' && !L.paket) { toast('Sesi paket tidak dihitung menurut aturan owner. Progres tetap ' + L.count + '/' + L.n + '.'); return; }
+          L.count += 1;
+          if (L.count >= L.n) { L.count = L.n; L.vouch = 1; toast('Kartu penuh. Kunjungan berikutnya gratis, dan pasien menerima pesan WhatsApp.'); } else { toast('Kunjungan tercatat: ' + L.count + '/' + L.n + '. Pesan WhatsApp ke pasien terkirim.'); }
+          render(); return;
+        }
+        if (act === 'voucher' && full()) {
+          L.vouch = 0; L.count = 0; L.card += 1; L.log.push({ d: '17 Nov', who: NAME, by: ME, th: 'Dina' });
+          render(); toast('Sesi gratis dicatat atas nama ' + ME + '. Kartu bonus ke-' + L.card + ' dimulai dari 0.');
+        }
       });
       el.addEventListener('input', function (e) {
-        if (e.target.id === 'loy-n') { var v = parseInt(e.target.value, 10); if (v >= 2 && v <= 30) { L.n = v; if (L.count >= L.n) { L.count = L.n - 1; } draw(); } }
+        if (e.target.id === 'loy-n') {
+          var v = parseInt(e.target.value, 10);
+          if (v >= 2 && v <= 30) { L.n = v; if (full() || L.count >= L.n) { L.count = L.n; L.vouch = 1; } }
+        }
       });
-      el.addEventListener('change', function (e) { if (e.target.id === 'loy-p') { L.paket = e.target.checked; } });
+      el.addEventListener('change', function (e) {
+        if (e.target.id === 'loy-p') { L.paket = e.target.checked; }
+        if (e.target.id === 'loy-kind') { kind = e.target.value || 'reg'; }
+      });
     }
   });
 
@@ -1430,24 +1891,20 @@
     with: 'Daftar yang perlu diingatkan tersusun otomatis. Satu klik, pesan siap dikirim, dan tercatat siapa serta kapan.',
     who: ['Front desk'],
     build: function (el) {
-      var APPTS = [
-        { t: '08:30', p: 'Ibu R.', th: 'Dina', sv: 'Physio reguler' },
-        { t: '09:30', p: 'Bpk. T.', th: 'Joko', sv: 'Paket 6x, sesi 4' },
-        { t: '10:30', p: 'Ibu S.', th: 'Citra', sv: 'Home visit' },
-        { t: '13:30', p: 'Bpk. A.', th: 'Hendra', sv: 'Physio reguler' },
-        { t: '15:00', p: 'Ibu W.', th: 'Elsa', sv: 'Paket 12x, sesi 9' },
-        { t: '16:00', p: 'Bpk. D.', th: 'Galih', sv: 'ESWT' }
-      ];
+      /* Daftar diambil dari janji besok di Jadwal pasien, jadi dua layar ini selalu sama. */
+      var APPTS = S.booking.list.filter(function (b) { return b.date === '2026-11-18' && (b.st === 'PENDING' || b.st === 'CONFIRMED'); })
+        .sort(function (a, c) { return a.t - c.t || (a.th < c.th ? -1 : 1); })
+        .map(function (b) { return { id: b.id, t: fromMin(b.t), p: b.name, th: byId(b.th).n, sv: BK_SERVICES[b.sv].n }; });
       var msg = function (a) {
         return 'Halo ' + a.p + ', kami mengingatkan jadwal terapi Anda besok, Rabu 18 November 2026 pukul ' + a.t + ' bersama terapis ' + a.th + ' (' + a.sv + '). Balas OK untuk konfirmasi. Terima kasih.';
       };
       var render = function () {
-        var done = Object.keys(S.remind).length;
+        var done = APPTS.filter(function (a) { return S.remind[a.id]; }).length;
         var body = '<div class="row" style="justify-content:space-between"><div><div class="sec-title">Jadwal besok · Rabu 18 November</div></div>' + chip(done === APPTS.length ? 'good' : 'warn', done + ' dari ' + APPTS.length + ' sudah diingatkan', done === APPTS.length ? 'check' : 'clock') + '</div>' +
-          '<div class="list">' + APPTS.map(function (a, i) {
-            var r = S.remind[i];
-            return '<div class="li"><span class="ava">' + esc(a.p.charAt(a.p.length - 2)) + '</span><div class="t"><b>' + a.t + ' · ' + esc(a.p) + '</b><small>' + esc(a.sv) + ' · Terapis ' + esc(a.th) + '</small></div>' +
-              (r ? chip('good', r, 'check') : '<button type="button" class="btn sm primary" data-rem="' + i + '">Kirim WA</button>') + '</div>';
+          '<div class="list">' + APPTS.map(function (a) {
+            var r = S.remind[a.id];
+            return '<div class="li"><span class="ava">' + esc(bkInitial(a.p)) + '</span><div class="t"><b>' + a.t + ' · ' + esc(a.p) + '</b><small>' + esc(a.sv) + ' · Terapis ' + esc(a.th) + '</small></div>' +
+              (r ? chip('good', r, 'check') : '<button type="button" class="btn sm primary" data-rem="' + a.id + '">Kirim WA</button>') + '</div>';
           }).join('') + '</div>' +
           '<p class="notes">Di sistem sungguhan, tombol membuka WhatsApp dengan pesan terisi. Di prototype ini pesan ditampilkan dan bisa disalin.</p>';
         el.innerHTML = frame('Reminder pasien', 'Front desk', body);
@@ -1457,12 +1914,12 @@
         var t = e.target.closest ? e.target.closest('button') : null; if (!t) { return; }
         var ri = t.getAttribute('data-rem');
         if (ri !== null) {
-          var a = APPTS[parseInt(ri, 10)], text = msg(a);
+          var a = APPTS.filter(function (x) { return x.id === ri; })[0], text = msg(a);
           modal('<h3>Pesan untuk ' + esc(a.p) + '</h3><p class="sub">Pesan sudah terisi. Periksa lalu kirim.</p><div class="panel soft" id="msgtxt" style="user-select:all">' + esc(text) + '</div>' +
             '<div class="row" style="justify-content:flex-end"><button type="button" class="btn" id="cp">' + ic('copy') + ' Salin pesan</button><button type="button" class="btn primary" id="sent">Tandai terkirim</button></div>',
             function (o, close) {
               $('#cp', o).addEventListener('click', function () { copyText(text); });
-              $('#sent', o).addEventListener('click', function () { S.remind[ri] = 'Diingatkan 15:42 oleh Kirana'; close(); render(); toast('Tercatat: siapa dan kapan pengingat dikirim.'); });
+              $('#sent', o).addEventListener('click', function () { S.remind[ri] = 'Diingatkan 08:05 oleh Kirana'; close(); render(); toast('Tercatat: siapa dan kapan pengingat dikirim.'); });
             });
         }
       });
@@ -1476,18 +1933,22 @@
     with: 'Laporan harian dan bulanan dibuat otomatis dari data harian, siap diunduh.',
     who: ['Owner', 'Finance', 'Front desk'],
     build: function (el) {
-      var rows = [], tb = 0, tl = 0, th = 0, tk = 0;
+      var rows = [], tb = 0, tl = 0, th = 0, tk = 0, tg = 0, tt = 0, td = 0, tw = 0;
       for (var d = 1; d <= 17; d++) {
         var wd = (d - 1) % 7, v = d === 17 ? 9 : visitsOf(d);
         var baru = Math.max(1, Math.round(v * 0.16)), hv = d % 4 === 0 ? 2 : (d % 3 === 0 ? 1 : 0), kas = (d === 17 ? REV_TODAY : REV[d - 1]) * 1000000;
-        rows.push({ d: d, wd: DAYS[wd], v: v, baru: baru, lama: v - baru, hv: hv, kas: kas });
+        var cd = catDay(d); rows.push({ d: d, wd: DAYS[wd], v: v, baru: baru, lama: v - baru, hv: hv, kas: kas, c: cd }); tg += cd.gratis; tt += cd.teman; td += cd.tdisc; tw += cd.warrior;
         tb += baru; tl += v - baru; th += hv; tk += kas;
       }
       var body = '<div class="row" style="justify-content:space-between"><div class="sec-title">Laporan harian · 1-17 November 2026</div></div>' +
         '<div class="grid3"><div class="tile"><div class="l">Kunjungan</div><div class="v num">' + (tb + tl) + '</div></div><div class="tile"><div class="l">Pasien baru</div><div class="v num">' + tb + '</div></div><div class="tile"><div class="l">Kas diterima</div><div class="v num" style="font-size:18px">' + jt(tk / 1000000) + '</div></div></div>' +
-        '<div class="tablewrap"><table><thead><tr><th>Tgl</th><th class="r">Baru</th><th class="r">Lama</th><th class="r">Home visit</th><th class="r">Kas diterima</th></tr></thead><tbody>' +
-        rows.map(function (r) { return '<tr><td>' + r.wd + ' ' + r.d + (r.d === 17 ? ' (berjalan)' : '') + '</td><td class="r num">' + r.baru + '</td><td class="r num">' + r.lama + '</td><td class="r num">' + r.hv + '</td><td class="r num">' + rp(r.kas) + '</td></tr>'; }).join('') +
-        '<tr class="total"><td>Total</td><td class="r num">' + tb + '</td><td class="r num">' + tl + '</td><td class="r num">' + th + '</td><td class="r num">' + rp(tk) + '</td></tr></tbody></table></div>' +
+        '<div><div class="sec-title" style="margin-bottom:6px">Evaluasi bulanan: kategori pasien</div><div class="grid3"><div class="tile"><div class="l">Gratis (bonus 10x)</div><div class="v num">' + tg + '</div><div class="l">nilai ' + rp(tg * 375000) + '</div></div>' +
+        '<div class="tile"><div class="l">Teman owner</div><div class="v num">' + tt + '</div><div class="l">diskon ' + rp(td) + '</div></div>' +
+        '<div class="tile"><div class="l">Warrior (atlet)</div><div class="v num">' + tw + '</div></div></div>' +
+        '<p class="notes" style="margin-top:6px">Kategori dicatat front desk di jadwal pasien, lalu masuk laporan harian dan rekap ini. Teman owner mendapat diskon sampai 15 persen, dan sesi gratis berasal dari kartu bonus 10x. Angka contoh.</p></div>' +
+        '<div class="tablewrap"><table><thead><tr><th>Tgl</th><th class="r">Baru</th><th class="r">Lama</th><th class="r">Home visit</th><th class="r">Gratis 10x</th><th class="r">Teman owner</th><th class="r">Warrior</th><th class="r">Kas diterima</th></tr></thead><tbody>' +
+        rows.map(function (r) { return '<tr><td>' + r.wd + ' ' + r.d + (r.d === 17 ? ' (berjalan)' : '') + '</td><td class="r num">' + r.baru + '</td><td class="r num">' + r.lama + '</td><td class="r num">' + r.hv + '</td><td class="r num">' + (r.c.gratis || '-') + '</td><td class="r num">' + (r.c.teman || '-') + '</td><td class="r num">' + (r.c.warrior || '-') + '</td><td class="r num">' + rp(r.kas) + '</td></tr>'; }).join('') +
+        '<tr class="total"><td>Total</td><td class="r num">' + tb + '</td><td class="r num">' + tl + '</td><td class="r num">' + th + '</td><td class="r num">' + tg + '</td><td class="r num">' + tt + '</td><td class="r num">' + tw + '</td><td class="r num">' + rp(tk) + '</td></tr></tbody></table></div>' +
         '<div class="row"><button type="button" class="btn primary" data-dl="Excel">Unduh Excel</button><button type="button" class="btn" data-dl="PDF">Unduh PDF</button></div>' +
         '<p class="notes">Tombol unduh hanya contoh di prototype. Di sistem sungguhan file langsung terunduh. Angka diambil dari data layar lain, dan lembar nyata klinik tidak dipakai.</p>';
       el.innerHTML = frame('Laporan', 'Owner', body, 'wide');
@@ -1498,123 +1959,787 @@
     }
   });
 
-  /* M10: Booking */
+  /* M10: Jadwal pasien (booking) */
   add({
-    id: 'm10', title: 'Permintaan terapis perempuan atau laki-laki terpenuhi',
-    now: 'Pasien kadang meminta terapis dengan jenis kelamin tertentu, dan jadwal dicek manual satu per satu.',
-    with: 'Booking menyaring terapis dari jadwal shift yang sebenarnya, jadi permintaan pasien langsung terlihat tersedia atau tidak.',
-    who: ['Front desk', 'Pasien'],
+    id: 'm10', title: 'Jadwal pasien rapi per 30 menit, nyaman di HP maupun komputer',
+    now: 'Janji pasien diatur di Setmore. Tampilannya tabel untuk desktop, sulit dipakai dari HP, dan jam kerja terapis harus diinput ulang dari jadwal shift.',
+    with: 'Front desk mengatur janji per 30 menit di kalender terapis. Jam kerja dari jadwal shift tampil sebagai panduan, tidak mengunci, dan front desk tetap bebas menyesuaikan. Pasien gratis 10x, teman owner, dan warrior ditandai di jadwal dan masuk laporan harian. Layar yang sama nyaman di HP.',
+    who: ['Front desk', 'Terapis'],
     build: function (el) {
-      var B = S.booking;
-      var hash = function (s) { var h = 0; for (var i = 0; i < s.length; i++) { h = (h * 31 + s.charCodeAt(i)) % 9973; } return h; };
-      var cardsHtml = function () {
-        var ths = PEOPLE.filter(function (p) { return p.role === 'T' && isWork(resolve(p, B.day)) && (B.pref === 'all' || p.g === B.pref); });
-        if (!ths.length) { return callout('warn', 'warn', 'Tidak ada terapis ' + (B.pref === 'f' ? 'perempuan' : 'laki-laki') + ' yang bertugas pada hari ' + DAYS_FULL[B.day] + '. Coba hari lain.'); }
-        return ths.map(function (p) {
-          var c = resolve(p, B.day), sh = SHIFTS[c], s = toMin(sh.s), e = toMin(sh.e), slots = '';
-          for (var m = s; m + 60 <= e; m += 60) {
-            var key = p.id + B.day + m, taken = B.taken[key] || hash(key) % 4 === 0;
-            slots += '<button type="button" class="btn sm" data-slot="' + key + '" data-t="' + fromMin(m) + '" data-p="' + p.id + '"' + (taken ? ' disabled' : '') + '>' + fromMin(m) + '</button>';
-          }
-          return '<div class="panel"><div class="row" style="justify-content:space-between"><div class="row"><span class="ava">' + p.n.charAt(0) + '</span><div><b>' + p.n + '</b><div class="muted" style="font-size:12px">' + (p.g === 'f' ? 'Perempuan' : 'Laki-laki') + ' · ' + sh.n + ' ' + sh.s + '-' + sh.e + '</div></div></div>' + (p.st === 'Freelance' ? chip('', 'Freelance') : '') + '</div>' +
-            '<div class="row" style="margin-top:10px">' + slots + '</div></div>';
-        }).join('');
+      var B = S.booking, ROWH = 44;
+      var whoOk = function (p) {
+        if (B.who === 'all') { return true; }
+        if (B.who.indexOf('g:') === 0) { return p.g === B.who.slice(2); }
+        return B.who === 't:' + p.id;
       };
-      var body =
-        '<div class="grid2"><div class="field"><label for="bk-day">Hari</label><select id="bk-day">' + [1, 2, 3, 4, 5, 6, 0].map(function (i) { return '<option value="' + i + '"' + (i === B.day ? ' selected' : '') + '>' + DAYS_FULL[i] + '</option>'; }).join('') + '</select></div>' +
-        '<div class="field"><label for="bk-sv">Layanan</label><select id="bk-sv"><option>Physio reguler (60 menit)</option><option>Paket 12x, sesi berikutnya</option></select></div></div>' +
-        '<div><div class="lbl" style="margin-bottom:6px">Pasien meminta terapis</div>' + seg('pref', [['all', 'Siapa saja'], ['f', 'Perempuan'], ['m', 'Laki-laki']], B.pref) + '</div>' +
-        '<div id="bk-msg">' + (B.last ? callout('good', 'check', B.last) : '') + '</div>' +
-        '<div style="display:flex;flex-direction:column;gap:10px" id="cards">' + cardsHtml() + '</div>' +
-        '<p class="notes">Jadwal terapis mengikuti adegan Jadwal periode. Ubah jadwal di sana dan pilihan di sini ikut berubah. Jam yang pudar sudah terisi.</p>';
-      el.innerHTML = frame('Booking', 'Front desk', body);
-      el.addEventListener('change', function (e) { if (e.target.id === 'bk-day') { B.day = parseInt(e.target.value, 10); B.last = ''; $('#bk-msg', el).innerHTML = ''; $('#cards', el).innerHTML = cardsHtml(); } });
+      var hoursText = function (min) { return (Math.round(min / 6) / 10).toString().replace('.', ',') + ' jam'; };
+      var stSw = function (st) { return '<i class="st-' + st + '"></i>'; };
+      var stKind = function (st) { return st === 'PENDING' ? 'warn' : (st === 'NO_SHOW' ? 'bad' : (st === 'CONFIRMED' ? 'info' : (st === 'CANCELED' ? '' : 'good'))); };
+      var freeRanges = function (w) {
+        var busy = {}, out = [], cur = null, m;
+        B.list.forEach(function (b) { if (b.date === B.date && b.th === w.p.id && bkActive(b)) { for (var k = b.t; k < b.t + b.dur; k += BK_SLOT) { busy[k] = true; } } });
+        for (m = w.s; m < w.e; m += BK_SLOT) {
+          if (busy[m]) { cur = null; continue; }
+          if (!cur) { cur = { s: m, e: m + BK_SLOT, w: w }; out.push(cur); } else { cur.e = m + BK_SLOT; }
+        }
+        return out;
+      };
+      /* Janji yang bertumpuk (mis. layanan melebihi rencana) ditampilkan berdampingan, tidak saling menutupi. */
+      var lanesOf = function (list) {
+        var sorted = list.slice().sort(function (a, c) { return a.t - c.t || a.dur - c.dur; }), ends = [], lane = {}, nl = {};
+        sorted.forEach(function (b) {
+          var i = 0; while (i < ends.length && ends[i] > b.t) { i++; }
+          lane[b.id] = i; ends[i] = b.t + b.dur;
+        });
+        sorted.forEach(function (b) {
+          var mx = lane[b.id];
+          sorted.forEach(function (c) { if (c.t < b.t + b.dur && b.t < c.t + c.dur && lane[c.id] > mx) { mx = lane[c.id]; } });
+          nl[b.id] = mx + 1;
+        });
+        return { lane: lane, n: nl };
+      };
+
+      /* ----- Tampilan: kalender kolom per terapis ----- */
+      var calHtml = function (ths) {
+        var lo = Math.min.apply(null, ths.map(function (w) { return w.s; })), hi = Math.max.apply(null, ths.map(function (w) { return w.e; }));
+        var rows = (hi - lo) / BK_SLOT, colMin = ths.length === 1 ? 220 : 124, r, m;
+        var out = '<div class="bk-scroll" tabindex="0" aria-label="Kalender terapis"><div class="bk-grid" style="grid-template-columns:52px repeat(' + ths.length + ',minmax(' + colMin + 'px,1fr));grid-template-rows:auto repeat(' + rows + ',' + ROWH + 'px);min-width:' + (52 + colMin * ths.length) + 'px">';
+        out += '<div class="bk-corner"></div>' + ths.map(function (w, i) {
+          return '<div class="bk-head" style="grid-column:' + (i + 2) + '"><b>' + esc(w.p.n) + (w.p.lv ? ' <span class="bk-lv">' + esc(w.p.lv) + '</span>' : '') + '</b><small>' + esc(w.name) + ' ' + fromMin(w.s) + '-' + fromMin(w.e) + '</small></div>';
+        }).join('');
+        for (r = 0; r < rows; r++) {
+          m = lo + r * BK_SLOT;
+          out += '<div class="bk-time' + (m % 60 ? ' half' : '') + '" style="grid-row:' + (r + 2) + '">' + fromMin(m) + '</div>';
+        }
+        ths.forEach(function (w, ci) {
+          var col = ci + 2, starts = {}, cover = {};
+          var mine = B.list.filter(function (b) { return b.date === B.date && b.th === w.p.id && bkActive(b) && bkFits(b); });
+          var ln = lanesOf(mine);
+          mine.forEach(function (b) {
+            (starts[b.t] = starts[b.t] || []).push(b);
+            for (var k = b.t; k < b.t + b.dur; k += BK_SLOT) { cover[k] = true; }
+          });
+          for (r = 0; r < rows; r++) {
+            m = lo + r * BK_SLOT;
+            var pos = 'grid-column:' + col + ';grid-row:' + (r + 2);
+            if (m < w.s || m >= w.e) { out += '<div class="bk-off" style="' + pos + '"></div>'; continue; }
+            (starts[m] || []).forEach(function (b) {
+              var k2 = Math.max(1, Math.min(b.dur / BK_SLOT, rows - r)), sv = BK_SERVICES[b.sv], stt = BK_STATUS[b.st], nn = ln.n[b.id], cat = bkCatTag(b);
+              var lay = nn > 1 ? ';width:calc(' + (100 / nn) + '% - 6px);margin-left:calc(' + (100 * ln.lane[b.id] / nn) + '% + 3px);justify-self:start' : '';
+              out += '<button type="button" class="bk-card st-' + b.st + (k2 < 2 ? ' short' : '') + (nn > 1 ? ' narrow' : '') + (cat && k2 < 3 ? ' hascat' : '') + '" data-bk="' + b.id + '" style="' + pos + ' / span ' + k2 + lay + '" aria-label="' + esc(b.name + ', ' + fromMin(b.t) + ' sampai ' + fromMin(b.t + b.dur) + ', ' + w.p.n + ', ' + stt.n + (cat ? ', ' + cat : '')) + '" title="' + esc(b.name + (cat ? ' · ' + cat : '')) + '">' +
+                '<span class="bk-t">' + fromMin(b.t) + '-' + fromMin(b.t + b.dur) + '</span><b>' + esc(b.name) + '</b>' +
+                (k2 >= 2 ? '<span class="bk-sv">' + esc(sv.n) + '</span>' + (cat ? '<span class="bk-cat">' + esc(cat.replace('Teman owner', 'Teman')) + '</span>' : '') : '') + '<span class="bk-st">' + esc(k2 >= 2 ? stt.n : stt.s) + '</span></button>';
+            });
+            if (!cover[m]) {
+              out += '<button type="button" class="bk-free" data-new="' + w.p.id + ':' + m + '" style="' + pos + '" aria-label="Booking baru ' + esc(w.p.n) + ' pukul ' + fromMin(m) + '">+</button>';
+            }
+          }
+        });
+        if (B.date === BK_TODAY && BK_NOW >= lo && BK_NOW < hi) {
+          var nr = Math.floor((BK_NOW - lo) / BK_SLOT), off = (BK_NOW - lo) % BK_SLOT;
+          out += '<div class="bk-now" data-t="' + fromMin(BK_NOW) + '" style="grid-row:' + (nr + 2) + ';grid-column:2 / -1;margin-top:' + Math.round(off / BK_SLOT * ROWH) + 'px"></div>';
+        }
+        return out + '</div></div>';
+      };
+
+      /* ----- Tampilan: daftar, lebih ringkas di HP ----- */
+      var catChip = function (b) { return b.cat === 'umum' ? '' : chip(b.cat === 'gratis' ? 'good' : (b.cat === 'teman' ? 'info' : 'warn'), bkCatTag(b)); };
+      var listHtml = function (ths) {
+        var day = B.list.filter(function (b) { return b.date === B.date && whoOk(byId(b.th)); });
+        day.sort(function (a, c) { return (bkActive(a) === bkActive(c) ? 0 : (bkActive(a) ? -1 : 1)) || a.t - c.t || (a.th < c.th ? -1 : 1); });
+        var items = day.map(function (b) {
+          var stt = BK_STATUS[b.st], sv = BK_SERVICES[b.sv], p = byId(b.th), cc = catChip(b);
+          return '<button type="button" class="rowbtn bk-li st-' + b.st + '" data-bk="' + b.id + '"><span class="bk-lt num">' + fromMin(b.t) + '<small>' + fromMin(b.t + b.dur) + '</small></span>' +
+            '<span class="rb-main"><b>' + esc(b.name) + '</b><small>' + esc(sv.n) + ' · ' + esc(p.n) + (p.lv ? ' (pemula)' : '') + (bkFits(b) || !bkActive(b) ? '' : ' · di luar jam kerja') + '</small>' + (cc ? '<span style="margin-top:2px">' + cc + '</span>' : '') + '</span>' + chip(stKind(b.st), stt.n) + '</button>';
+        }).join('');
+        var free = ths.map(function (w) {
+          var rs = freeRanges(w);
+          return '<div class="li" style="align-items:flex-start"><div class="t"><b>' + esc(w.p.n) + (w.p.lv ? ' (pemula)' : '') + '</b><small>' + esc(w.name) + ' ' + fromMin(w.s) + '-' + fromMin(w.e) + '</small>' +
+            '<div class="row" style="gap:6px;margin-top:6px">' + (rs.length ? rs.map(function (x) { return '<button type="button" class="btn sm" data-new="' + w.p.id + ':' + x.s + '">' + fromMin(x.s) + '-' + fromMin(x.e) + '</button>'; }).join('') : '<span class="muted" style="font-size:12px">Penuh</span>') + '</div></div></div>';
+        }).join('');
+        return '<div class="sec-title">Janji ' + esc(bkLong(B.date)) + '</div>' +
+          (items ? '<div style="display:flex;flex-direction:column;gap:6px">' + items + '</div>' : callout('info', 'clock', 'Belum ada janji pada hari ini. Tekan Booking baru, atau ketuk jam kosong di bawah.')) +
+          '<div class="sec-title" style="margin-top:6px">Jam kosong (ketuk untuk booking)</div><div class="list">' + free + '</div>';
+      };
+
+      var render = function () {
+        var sc = $('.bk-scroll', el), keep = sc ? [sc.scrollTop, sc.scrollLeft] : null;
+        var all = bkTherapists(B.date), ths = all.filter(function (w) { return whoOk(w.p); });
+        var isToday = B.date === BK_TODAY;
+        var act = B.list.filter(function (b) { return b.date === B.date && bkActive(b) && whoOk(byId(b.th)); });
+        var pend = act.filter(function (b) { return b.st === 'PENDING'; }).length;
+        var freeMin = 0; ths.forEach(function (w) { freeRanges(w).forEach(function (x) { freeMin += x.e - x.s; }); });
+        var orphans = B.list.filter(function (b) { return b.date === B.date && bkActive(b) && !bkFits(b) && whoOk(byId(b.th)); });
+        var cnt = function (g) { return all.filter(function (w) { return w.p.g === g; }).length; };
+        var cats = ['gratis', 'teman', 'warrior'].map(function (k) { return [k, act.filter(function (b) { return b.cat === k && b.st !== 'NO_SHOW'; }).length]; }).filter(function (x) { return x[1] > 0; });
+
+        var req = B.reqDone ? '' :
+          '<div class="panel soft"><div class="row" style="justify-content:space-between"><div class="sec-title">Pesan WhatsApp masuk · 09:00</div>' + chip('warn', 'Belum dijawab', 'clock') + '</div>' +
+          '<p style="margin-top:6px">"Pagi kak, saya Sinta. Mau terapi besok Rabu jam 8.15 sama Mbak Bella ya."</p>' +
+          '<div class="row" style="margin-top:10px"><button type="button" class="btn sm primary" data-act="req">Atur jadwal untuk pesan ini</button></div></div>';
+
+        var strip = '<div class="bk-strip">';
+        for (var i = 0; i < 7; i++) {
+          var d = isoAdd(B.wk, i), n = d > BK_PERIOD_END ? '-' : B.list.filter(function (b) { return b.date === d && bkActive(b); }).length;
+          strip += '<button type="button" class="bk-day' + (d === BK_TODAY ? ' today' : '') + '" data-bkday="' + d + '" aria-pressed="' + (d === B.date) + '" aria-label="' + esc(bkLong(d) + (d === BK_TODAY ? ', hari ini' : '') + ', ' + n + ' janji') + '"><span>' + DAYS[bkDow(d)] + '</span><b>' + parseInt(d.slice(8), 10) + '</b><small>' + n + '</small></button>';
+        }
+        strip += '</div>';
+
+        var chips = '<div class="bk-chips" role="group" aria-label="Pilih terapis">' +
+          [['all', 'Semua'], ['g:f', 'Perempuan (' + cnt('f') + ')'], ['g:m', 'Laki-laki (' + cnt('m') + ')']].concat(all.map(function (w) { return ['t:' + w.p.id, w.p.n]; })).map(function (c) {
+            return '<button type="button" class="bk-chip" data-who="' + c[0] + '" aria-pressed="' + (B.who === c[0]) + '">' + esc(c[1]) + '</button>';
+          }).join('') + '</div>';
+
+        var main;
+        if (!all.length) { main = callout('warn', 'warn', 'Belum ada terapis yang bertugas pada ' + esc(bkLong(B.date)) + (B.date > BK_PERIOD_END ? '. Jadwal shift periode berikutnya belum disusun leader, jadi booking baru dibuka setelah jadwal terbit.' : '.')); }
+        else if (!ths.length) { main = callout('warn', 'warn', 'Tidak ada ' + (B.who === 'g:f' ? 'terapis perempuan' : (B.who === 'g:m' ? 'terapis laki-laki' : 'terapis yang dipilih')) + ' yang bertugas pada ' + esc(bkLong(B.date)) + '. Pilih hari lain atau terapis lain.'); }
+        else { main = B.view === 'list' ? listHtml(ths) : (ths.length > 1 ? '<p class="notes bk-hint">Geser ke samping untuk melihat terapis lain, atau pilih satu nama terapis di atas.</p>' : '') + calHtml(ths); }
+
+        var body =
+          (B.last ? callout('good', 'check', esc(B.last)) : '') + req +
+          '<div class="bk-top"><div class="row" style="gap:4px"><button type="button" class="btn sm" data-bkwk="-1" aria-label="Minggu sebelumnya">' + ic('left') + '</button><b class="num" style="min-width:120px;text-align:center">' + esc(fdate(B.wk).slice(4)) + ' - ' + esc(fdate(isoAdd(B.wk, 6)).slice(4)) + '</b><button type="button" class="btn sm" data-bkwk="1" aria-label="Minggu berikutnya">' + ic('right') + '</button></div>' +
+          '<button type="button" class="btn sm" data-act="today">Hari ini</button></div>' + strip +
+          chips +
+          '<div class="bk-top">' + seg('bkview', [['cal', 'Kalender'], ['list', 'Daftar']], B.view) + '<button type="button" class="btn primary" data-act="new">' + ic('plus') + ' Booking baru</button></div>' +
+          '<div class="grid3"><div class="tile"><div class="l">Janji</div><div class="v num">' + act.length + '</div></div>' +
+          '<div class="tile"><div class="l">Perlu konfirmasi</div><div class="v num">' + pend + '</div></div>' +
+          '<div class="tile"><div class="l">Jam kosong</div><div class="v num" style="font-size:18px">' + hoursText(freeMin) + '</div></div></div>' +
+          (cats.length ? '<p class="notes">Kategori pasien hari ini: ' + cats.map(function (x) { return esc(BK_CATS[x[0]].n) + ' ' + x[1]; }).join(' · ') + '. Masuk laporan harian.</p>' : '') +
+          (orphans.length ? callout('warn', 'warn', '<b>' + orphans.length + ' janji di luar jam kerja</b> karena jadwal shift berubah. Pindahkan: ' + orphans.map(function (b) { return '<button type="button" class="btn sm" data-bk="' + b.id + '">' + esc(b.name) + ' ' + fromMin(b.t) + '</button>'; }).join(' ')) : '') +
+          main +
+          '<div class="bk-legend"><span>' + stSw('PENDING') + 'Menunggu konfirmasi</span><span>' + stSw('CONFIRMED') + 'Terkonfirmasi</span><span>' + stSw('CHECKED_IN') + 'Sudah datang</span><span>' + stSw('DONE') + 'Selesai</span><span>' + stSw('NO_SHOW') + 'Tidak datang</span></div>' +
+          '<p class="notes">Janji hanya per 30 menit, dan durasi sesuai SOP adalah 60 menit. Jadwal shift hanya memberi rentang jam kerja, sedangkan pasien dapat jam berapa diatur front desk. Bila ada terapis yang menangani lebih lama, misalnya terapis pemula yang masih memakai alat lebih lama, front desk mengubah durasinya per janji, dan janji yang bertumpuk tampil berdampingan. Angka kecil di bawah tanggal adalah jumlah janji. ' + (isToday ? 'Garis merah menunjukkan waktu sekarang. ' : '') +
+          'Ubah jadwal di Jadwal periode, lalu kalender ini ikut berubah. <button type="button" class="btn sm" data-act="reset">Ulangi contoh</button></p>';
+        el.innerHTML = frame('Jadwal pasien', 'Front desk', body, 'wide');
+        var sc2 = $('.bk-scroll', el); if (sc2 && keep) { sc2.scrollTop = keep[0] || 0; sc2.scrollLeft = keep[1] || 0; }
+      };
+
+      /* ----- Formulir: booking baru, ubah, dan status ----- */
+      var openForm = function (o) {
+        var ex = o.id ? bkFind(o.id) : null, id = ex ? ex.id : null;
+        var f = ex ? { date: ex.date, th: ex.th, t: ex.t, dur: ex.dur, name: ex.name, wa: ex.wa, sv: ex.sv, st: ex.st, cat: ex.cat, disc: ex.disc || BK_DISC_MAX } :
+          { date: o.date || B.date, th: o.th || (B.who.indexOf('t:') === 0 ? B.who.slice(2) : ''), t: o.t == null ? -1 : o.t, dur: BK_SERVICES[o.sv || 'reg'].min, name: o.name || '', wa: o.wa || '', sv: o.sv || 'reg', st: 'PENDING', cat: 'umum', disc: BK_DISC_MAX };
+        var durTouched = !!ex && ex.dur !== BK_SERVICES[ex.sv].min;
+        var reqMin = o.req == null ? null : o.req;
+        var fix = function () {
+          var ws = bkTherapists(f.date);
+          if (!ws.length) { f.th = ''; return; }
+          if (!ws.some(function (w) { return w.p.id === f.th; })) { f.th = ws[0].p.id; }
+          var starts = bkStarts(f.date, f.th);
+          if (starts.length && starts.indexOf(f.t) < 0) {
+            var nxt = starts.filter(function (m) { return m >= f.t; })[0];
+            f.t = nxt != null ? nxt : starts[starts.length - 1];
+          }
+        };
+        var dateOpts = function () {
+          var a = [], i = 0, d;
+          do { d = isoAdd(BK_TODAY, i++); a.push(d); } while (d < BK_PERIOD_END);
+          if (a.indexOf(f.date) < 0) { a.push(f.date); a.sort(); }
+          return a;
+        };
+        var body = function () {
+          fix();
+          var ws = bkTherapists(f.date), starts = f.th ? bkStarts(f.date, f.th) : [], hint = '', warn = '', w0 = f.th ? bkWindow(byId(f.th), f.date) : null;
+          if (reqMin != null && reqMin % BK_SLOT !== 0) {
+            var lo = reqMin - reqMin % BK_SLOT;
+            hint = callout('info', 'clock', 'Pasien meminta jam <b>' + fromMin(reqMin) + '</b>. Jadwal berjalan per 30 menit, jadi pilihannya <b>' + fromMin(lo) + '</b> atau <b>' + fromMin(lo + BK_SLOT) + '</b>. Tawarkan salah satunya ke pasien.');
+          }
+          if (!ws.length) { warn = callout('warn', 'warn', 'Belum ada terapis bertugas pada ' + esc(bkLong(f.date)) + (f.date > BK_PERIOD_END ? '. Jadwal shift periode berikutnya belum disusun leader.' : '.')); }
+          else {
+            var chk = bkCheck(f, id);
+            chk.warns.forEach(function (x) { warn += callout('warn', 'warn', esc(x)); });
+            chk.notes.forEach(function (x) { warn += callout('info', 'clock', esc(x)); });
+          }
+          var timeOpts = starts.map(function (m) {
+            var tag = bkClashes(f.date, f.th, m, f.dur, id).length ? ' · terisi' : '';
+            return '<option value="' + m + '"' + (m === f.t ? ' selected' : '') + '>' + fromMin(m) + ' - ' + fromMin(m + f.dur) + tag + '</option>';
+          }).join('');
+          var stIds = ex ? BK_ST_ORDER : ['PENDING', 'CONFIRMED'];
+          var catExtra = '';
+          if (f.cat === 'teman') {
+            catExtra = '<div class="field"><label for="bkf-disc">Diskon teman owner (persen, paling besar ' + BK_DISC_MAX + ', batas diatur owner)</label><input type="number" id="bkf-disc" min="1" max="' + BK_DISC_MAX + '" value="' + (f.disc || '') + '"></div>';
+          } else if (f.cat === 'gratis') {
+            catExtra = callout('info', 'check', 'Untuk pasien yang kartu bonusnya sudah penuh (10 kunjungan, Masalah 7). Di sistem sungguhan kategori ini muncul otomatis dan sekaligus memakai bonusnya. Sesi gratis tidak dihitung di kartu baru.');
+          } else if (f.cat === 'warrior') {
+            catExtra = callout('info', 'check', 'Pasien warrior (atlet) dicatat sebagai kategori sendiri di laporan harian untuk evaluasi bulanan owner.');
+          }
+          return hint +
+            '<div class="grid2 bk-stack"><div class="field"><label for="bkf-date">Hari</label><select id="bkf-date">' + dateOpts().map(function (d) { return '<option value="' + d + '"' + (d === f.date ? ' selected' : '') + '>' + esc(bkLong(d)) + '</option>'; }).join('') + '</select></div>' +
+            '<div class="field"><label for="bkf-sv">Layanan</label><select id="bkf-sv">' + BK_SV_ORDER.map(function (k) { return '<option value="' + k + '"' + (k === f.sv ? ' selected' : '') + '>' + esc(BK_SERVICES[k].n) + ' (' + BK_SERVICES[k].min + ' menit)</option>'; }).join('') + '</select></div></div>' +
+            '<div class="grid2"><div class="field"><label for="bkf-th">Terapis</label><select id="bkf-th"' + (ws.length ? '' : ' disabled') + '>' + ws.map(function (w) { return '<option value="' + w.p.id + '"' + (w.p.id === f.th ? ' selected' : '') + '>' + esc(w.p.n) + ' (' + (w.p.g === 'f' ? 'P' : 'L') + ')' + (w.p.lv ? ' pemula' : '') + '</option>'; }).join('') + '</select></div>' +
+            '<div class="field"><label for="bkf-t">Jam (per 30 menit)</label><select id="bkf-t"' + (starts.length ? '' : ' disabled') + '>' + timeOpts + '</select></div></div>' +
+            '<div class="grid2 bk-stack"><div class="field"><label for="bkf-dur">Durasi (bisa diubah)</label><select id="bkf-dur">' + BK_DUR.map(function (m) { return '<option value="' + m + '"' + (m === f.dur ? ' selected' : '') + '>' + m + ' menit</option>'; }).join('') + '</select></div>' +
+            '<div class="field"><label for="bkf-cat">Kategori pasien</label><select id="bkf-cat">' + BK_CAT_ORDER.map(function (k) { return '<option value="' + k + '"' + (k === f.cat ? ' selected' : '') + '>' + esc(BK_CATS[k].n) + '</option>'; }).join('') + '</select></div></div>' + catExtra + warn +
+            (w0 ? '<p class="notes">' + esc(w0.p.n) + ' masuk ' + fromMin(w0.s) + ' dan pulang ' + fromMin(w0.e) + '. Front desk yang mengatur jam pasiennya.</p>' : '') +
+            '<div class="field"><label for="bkf-name">Nama pasien</label><input type="text" id="bkf-name" autocomplete="off" value="' + esc(f.name) + '"></div>' +
+            '<div class="field"><label for="bkf-wa">Nomor WhatsApp</label><input type="tel" id="bkf-wa" inputmode="tel" autocomplete="off" value="' + esc(f.wa) + '"></div>' +
+            '<div class="field"><label for="bkf-st">Status</label><select id="bkf-st">' + stIds.map(function (k) { return '<option value="' + k + '"' + (k === f.st ? ' selected' : '') + '>' + esc(BK_STATUS[k].n) + '</option>'; }).join('') + '</select></div>' +
+            '<div id="bkf-err"></div>';
+        };
+        var detail = function () {
+          if (!ex) { return '<p class="sub">Isi data pasien. Jam hanya per 30 menit, dan front desk bebas mengatur jam serta durasinya.</p>'; }
+          var p = byId(ex.th), stt = BK_STATUS[ex.st], cc = catChip(ex);
+          var quick = BK_ST_ORDER.filter(function (k) { return k !== ex.st; }).map(function (k) {
+            return '<button type="button" class="btn sm' + (BK_NEXT[ex.st] === k ? ' primary' : '') + '" data-qs="' + k + '">' + esc(BK_STATUS[k].n) + '</button>';
+          }).join('');
+          var logs = ['Dibuat oleh ' + ex.by].concat(ex.log.map(function (l) { return l.txt + ' · ' + l.by + ' ' + l.at; }));
+          return '<div class="row" style="justify-content:space-between;align-items:flex-start"><div><b>' + esc(bkLong(ex.date)) + ' · ' + fromMin(ex.t) + '-' + fromMin(ex.t + ex.dur) + '</b><div class="muted" style="font-size:12px">' + esc(BK_SERVICES[ex.sv].n) + ' · Terapis ' + esc(p.n) + (p.lv ? ' (pemula)' : '') + ' · ' + esc(ex.wa) + '</div></div>' + chip(stKind(ex.st), stt.n) + '</div>' +
+            (cc ? '<div class="row">' + cc + (ex.cat === 'teman' ? '<span class="muted" style="font-size:12px">Masuk laporan sebagai penjualan di bawah harga normal</span>' : '') + '</div>' : '') +
+            '<div><div class="lbl" style="margin-bottom:6px">Ubah status</div><div class="row" style="gap:6px">' + quick + '</div></div>' +
+            '<div class="row" style="justify-content:space-between"><span class="sub" style="font-size:13px">Durasi ' + ex.dur + ' menit. Layanan lebih lama dari rencana?</span><button type="button" class="btn sm" data-ext="1">Perpanjang 30 menit</button></div>' +
+            '<p class="notes">' + logs.map(esc).join('<br>') + '</p>';
+        };
+        var inner = '<h3>' + (ex ? esc(ex.name) : 'Booking baru') + '</h3>' + detail() +
+          (ex ? '<details><summary class="bk-more">Ubah data atau pindah jadwal</summary><div id="bkf" style="display:flex;flex-direction:column;gap:10px;margin-top:8px">' + body() + '</div></details>' : '<div id="bkf" style="display:flex;flex-direction:column;gap:10px">' + body() + '</div>') +
+          '<div class="row" style="justify-content:flex-end"><button type="button" class="btn" data-close="1">Tutup</button><button type="button" class="btn primary" id="bkf-save">' + (ex ? 'Simpan perubahan' : 'Simpan booking') + '</button></div>';
+        modal(inner, function (ov, close) {
+          var read = function () {
+            var g = function (k, def, empty) { var x = $('#' + k, ov); return x && x.value !== undefined && (x.value !== '' || empty) ? x.value : def; };
+            f.date = g('bkf-date', f.date); f.sv = g('bkf-sv', f.sv); f.th = g('bkf-th', f.th); f.cat = g('bkf-cat', f.cat);
+            var tv = parseInt(g('bkf-t', f.t), 10); if (!isNaN(tv)) { f.t = tv; }
+            var dv = parseInt(g('bkf-dur', f.dur), 10); if (!isNaN(dv)) { f.dur = dv; }
+            var cv = parseInt(g('bkf-disc', f.disc, true), 10); f.disc = isNaN(cv) ? 0 : cv;
+            f.name = g('bkf-name', f.name, true); f.wa = g('bkf-wa', f.wa, true); f.st = g('bkf-st', f.st);
+          };
+          ov.addEventListener('change', function (e) {
+            var k = e.target.id;
+            if (k === 'bkf-date' || k === 'bkf-sv' || k === 'bkf-th' || k === 'bkf-t' || k === 'bkf-dur' || k === 'bkf-cat') {
+              read();
+              if (k === 'bkf-dur') { durTouched = true; }
+              if (k === 'bkf-sv' && !durTouched) { f.dur = BK_SERVICES[f.sv].min; }
+              if (f.cat === 'teman' && !f.disc) { f.disc = BK_DISC_MAX; }
+              $('#bkf', ov).innerHTML = body();
+            }
+          });
+          ov.addEventListener('click', function (e) {
+            var t = e.target.closest ? e.target.closest('button') : null; if (!t) { return; }
+            var qs = t.getAttribute('data-qs');
+            if (qs && ex) { var m = bkSetStatus(ex.id, qs); close(); render(); toast(m); return; }
+            if (t.getAttribute('data-ext') && ex) { var m2 = bkExtend(ex.id); close(); render(); toast(m2); return; }
+            if (t.id === 'bkf-save') {
+              read();
+              var err = bkValidate(f, id);
+              if (err) { $('#bkf-err', ov).innerHTML = callout('bad', 'warn', esc(err)); return; }
+              var res = bkSave(f, id);
+              close();
+              B.date = f.date; B.wk = bkMonday(f.date); B.last = res.msg;
+              if (o.fromReq) { B.reqDone = true; }
+              render(); toast(res.msg);
+            }
+          });
+        });
+      };
+
+      render();
       el.addEventListener('click', function (e) {
         var t = e.target.closest ? e.target.closest('button') : null; if (!t) { return; }
-        if (t.getAttribute('data-seg') === 'pref') { B.pref = t.getAttribute('data-v'); $$('[data-seg="pref"]', el).forEach(function (b) { b.setAttribute('aria-pressed', String(b === t)); }); $('#cards', el).innerHTML = cardsHtml(); return; }
-        var key = t.getAttribute('data-slot');
-        if (key) {
-          B.taken[key] = true; var p = byId(t.getAttribute('data-p'));
-          B.last = 'Booking dibuat: ' + DAYS_FULL[B.day] + ' ' + t.getAttribute('data-t') + ' bersama ' + p.n + '. Pengingat WhatsApp masuk ke daftar reminder.';
-          $('#bk-msg', el).innerHTML = callout('good', 'check', B.last); $('#cards', el).innerHTML = cardsHtml();
+        var v;
+        if (t.getAttribute('data-seg') === 'bkview') { B.view = t.getAttribute('data-v'); render(); return; }
+        if ((v = t.getAttribute('data-bkday'))) { B.date = v; B.last = ''; render(); return; }
+        if ((v = t.getAttribute('data-bkwk'))) {
+          var step = parseInt(v, 10), nw = isoAdd(B.wk, 7 * step);
+          if (nw >= BK_WEEK_MIN && nw <= BK_WEEK_MAX) { var k = Math.round((new Date(B.date + 'T00:00:00Z') - new Date(B.wk + 'T00:00:00Z')) / 86400000); B.wk = nw; B.date = isoAdd(nw, k); B.last = ''; render(); }
+          return;
+        }
+        if ((v = t.getAttribute('data-who'))) { B.who = v; B.last = ''; render(); return; }
+        if ((v = t.getAttribute('data-bk'))) { openForm({ id: v }); return; }
+        if ((v = t.getAttribute('data-new'))) { var pm = v.split(':'); openForm({ th: pm[0], t: parseInt(pm[1], 10) }); return; }
+        v = t.getAttribute('data-act');
+        if (v === 'today') { B.wk = bkMonday(BK_TODAY); B.date = BK_TODAY; B.last = ''; render(); return; }
+        if (v === 'new') { openForm({}); return; }
+        if (v === 'req') {
+          B.date = '2026-11-18'; B.wk = bkMonday(B.date); B.who = 't:b'; B.last = ''; render();
+          openForm({ date: B.date, th: 'b', t: 480, req: 495, name: 'Ibu Sinta', wa: '0812-0000-0101', sv: 'baru', fromReq: true });
+          return;
+        }
+        if (v === 'reset') {
+          B.list = seedBookings(); B.seq = 1000; B.date = BK_TODAY; B.wk = bkMonday(BK_TODAY); B.who = 'all'; B.view = 'cal'; B.last = ''; B.reqDone = false;
+          render(); toast('Contoh diulang dari awal.');
         }
       });
     }
   });
 
-  /* M11: Kas kecil */
-  add({
-    id: 'm11', title: 'Kas kecil rapi, tidak lagi di Excel',
-    now: 'Kas kecil dicatat di Excel tanpa kategori, bukti, atau hitung fisik. Saldo bisa negatif tanpa penjelasan.',
-    with: 'Setiap pengeluaran punya kategori, pencatat, dan bukti. Saldo dihitung otomatis, dan hitung fisik mencatat selisihnya.',
-    who: ['Front desk', 'Finance', 'Owner'],
-    build: function (el) {
-      var saldo = function () { return S.kasOpen + S.kas.reduce(function (a, x) { return a + x.amt; }, 0); };
-      var ledger = function () {
-        var run = S.kasOpen;
-        var rows = S.kas.map(function (x) {
-          run += x.amt;
-          return '<tr><td>' + x.d + '</td><td style="white-space:normal;min-width:130px"><b>' + esc(x.ket) + '</b><div class="muted" style="font-size:11px">' + esc(x.cat) + ' · ' + esc(x.by) + (x.talang ? ' · ditalangi ' + esc(x.talang) : '') + '</div></td><td class="r num">' + (x.amt >= 0 ? '+' : '') + fmt(x.amt) + '<div class="muted" style="font-size:11px">saldo ' + fmt(run) + '</div></td></tr>';
-        });
-        return '<div class="tablewrap"><table><thead><tr><th>Tgl</th><th>Keterangan</th><th class="r">Jumlah dan saldo</th></tr></thead><tbody><tr><td colspan="2" class="muted">Saldo awal</td><td class="r num">' + fmt(S.kasOpen) + '</td></tr>' + rows.reverse().join('') + '</tbody></table></div>';
-      };
-      var bycat = function () {
-        var m = {}; S.kas.forEach(function (x) { if (x.amt < 0) { m[x.cat] = (m[x.cat] || 0) - x.amt; } });
-        var arr = Object.keys(m).map(function (k) { return [k, m[k]]; }).sort(function (a, b) { return b[1] - a[1]; });
-        var mx = arr.length ? arr[0][1] : 1;
-        return arr.map(function (r) { return '<div class="hbar"><span style="overflow-wrap:anywhere">' + esc(r[0]) + '</span><span class="trk"><i style="width:' + (r[1] / mx * 100) + '%"></i></span><span class="num">' + rp(r[1]) + '</span></div>'; }).join('');
-      };
-      var head = function () {
-        var s = saldo();
-        return '<div class="panel"><div class="lbl">Saldo kas kecil</div><div class="hero-fig num" style="font-size:40px">' + rp(s) + '</div>' +
-          (s < 0 ? '<div style="margin-top:8px">' + callout('warn', 'warn', 'Saldo negatif karena belanja dulu. Pengeluaran ditandai ditalangi sampai top-up masuk.') + '</div>' : '') + '</div>';
-      };
-      var form =
-        '<div class="panel"><div class="sec-title" style="margin-bottom:8px">Catat pengeluaran</div><div class="grid2">' +
-        '<div class="field"><label for="k-cat">Kategori</label><select id="k-cat">' + CATS.map(function (c) { return '<option>' + c + '</option>'; }).join('') + '</select></div>' +
-        '<div class="field"><label for="k-amt">Jumlah</label>' + money('k-amt', 65000) + '</div></div>' +
-        '<div class="field" style="margin-top:10px"><label for="k-ket">Keterangan</label><input type="text" id="k-ket" value="Galon dan es batu"></div>' +
-        '<label class="chk"><input type="checkbox" id="k-tal"> Ditalangi (belanja dulu, uang diganti nanti)</label>' +
-        '<div class="row" style="margin-top:8px">' + chip('', 'Foto bukti', 'camera') + chip('', 'Dicatat oleh Kirana') + '</div>' +
-        '<div class="row" style="margin-top:10px"><button type="button" class="btn primary" data-act="exp">Simpan pengeluaran</button><button type="button" class="btn" data-act="top">Top-up Rp1.000.000 (finance)</button></div></div>' +
-        '<div class="panel"><div class="sec-title" style="margin-bottom:8px">Hitung fisik (finance)</div><div class="field"><label for="k-fis">Uang fisik di laci</label>' + money('k-fis', 0) + '</div>' +
-        '<div id="fis-res" style="margin-top:8px"></div><div class="row" style="margin-top:8px"><button type="button" class="btn" data-act="fis">Bandingkan dan catat selisih</button></div></div>';
-      var render = function () {
-        $('#kas-head', el).innerHTML = head();
-        $('#kas-led', el).innerHTML = ledger();
-        $('#kas-cat', el).innerHTML = bycat();
-      };
-      el.innerHTML = frame('Kas kecil', 'Front desk', '<div id="kas-head"></div>' + form +
-        '<div><div class="sec-title" style="margin-bottom:6px">Buku kas</div><div id="kas-led"></div></div>' +
-        '<div><div class="sec-title" style="margin-bottom:6px">Pengeluaran per kategori</div><div id="kas-cat"></div></div>' +
-        '<p class="notes">Pengeluaran dan top-up yang salah dibatalkan dengan alasan, tidak dihapus.</p>', 'wide');
-      render();
-      var fisInput = $('#k-fis', el); if (fisInput) { fisInput.value = String(saldo()); }
-      el.addEventListener('click', function (e) {
-        var t = e.target.closest ? e.target.closest('button') : null; if (!t) { return; }
-        var act = t.getAttribute('data-act');
-        if (act === 'exp') {
-          var amt = parseFloat($('#k-amt', el).value) || 0; if (amt <= 0) { toast('Isi jumlah pengeluaran.'); return; }
-          var ent = { d: '17 Nov', t: 'EXPENSE', cat: $('#k-cat', el).value, ket: $('#k-ket', el).value || '(tanpa keterangan)', amt: -amt, by: 'Kirana' };
-          if ($('#k-tal', el).checked) { ent.talang = 'Kirana'; }
-          S.kas.push(ent); render(); toast('Pengeluaran tercatat. Saldo ' + rp(saldo()) + '.');
-        }
-        if (act === 'top') { S.kas.push({ d: '17 Nov', t: 'TOPUP', cat: 'Top-up dari owner', ket: 'Top-up kas kecil', amt: 1000000, by: 'Finance' }); render(); toast('Top-up tercatat oleh finance.'); }
-        if (act === 'fis') {
-          var phys = parseFloat($('#k-fis', el).value) || 0, diff = phys - saldo(), box = $('#fis-res', el);
-          if (diff === 0) { box.innerHTML = callout('good', 'check', 'Uang fisik cocok dengan saldo sistem.'); return; }
-          S.kas.push({ d: '17 Nov', t: 'ADJUSTMENT', cat: 'Lain-lain', ket: 'Selisih hitung fisik: ' + (diff > 0 ? 'lebih' : 'kurang'), amt: diff, by: 'Finance' });
-          box.innerHTML = callout('warn', 'warn', 'Selisih ' + rp(diff) + ' dicatat sebagai koreksi beserta pencatatnya.'); render();
-        }
-      });
-    }
-  });
+  // ==== Kas kecil ditunda dari MVP (lihat BUSINESS-FLOW.md bagian 5.8). Buang awalan "// [DITUNDA] " untuk mengaktifkannya lagi. ====
+// [DITUNDA]   /* M11: Kas kecil */
+// [DITUNDA]   add({
+// [DITUNDA]     id: 'm11', title: 'Kas kecil rapi, tidak lagi di Excel',
+// [DITUNDA]     now: 'Kas kecil dicatat di Excel: tidak ada nota, tidak jelas siapa yang memegang uang, top-up tidak menentu, dan selisih baru ketahuan belakangan.',
+// [DITUNDA]     with: 'Setiap uang keluar punya pencatat, pemegang uang, dan foto nota. Verifikasi dilakukan finance, bukan orang yang memegang uangnya. Rekening dan tunai dicek, dan finance diberi lonceng sebelum saldo habis.',
+// [DITUNDA]     who: ['Front desk', 'Karyawan', 'Finance', 'Owner'],
+// [DITUNDA]     build: function (el) {
+// [DITUNDA]       var view = 'fd';
+// [DITUNDA]       var ME = 'Kirana', STAFF = 'Citra';
+// [DITUNDA]       var K = { view: 'month', y: 2026, m: 11, d: KAS_TODAY, basis: 'cal', q: '', qd: '', cat: '', who: '', st: '', kant: '', preset: '', lim: 30 };
+// [DITUNDA]       var F = null;
+// [DITUNDA]       var resetF = function () { F = { holder: STAFF, amt: 80000, cat: CATS[0], ket: 'Galon dan es batu', src: 'tun', nota: 'foto', fotoFd: false, foto: {}, tarik: 500000, msg: '', topup: '', mb: '', mbTouched: false }; };
+// [DITUNDA]       resetF();
+// [DITUNDA]       var cfg = function () { return S.kasCfg; };
+// [DITUNDA]       var PK = { tun: 'Tunai', rek: 'Rekening', muka: 'Dari uang muka', arsip: 'Arsip' };
+// [DITUNDA]       var val = function (id, def) { var n = $('#' + id, el); var v = n ? n.value : ''; return (v === '' || v === undefined || v === null) ? def : v; };
+// [DITUNDA]       var num = function (id, def) { var v = parseFloat(val(id, def)); return isNaN(v) ? 0 : v; };
+// [DITUNDA]       var byId = function (id) { id = parseInt(id, 10); return S.kas.filter(function (x) { return x.id === id; })[0]; };
+// [DITUNDA]       var nowT = function () { S.kasN++; return fromMin(Math.min(1190, 960 + S.kasN * 4)); };
+// [DITUNDA]       var addE = function (t, o) { var e = kasEntry(KAS_TODAY, nowT(), t, o); e.id = ++S.kasSeq; S.kas.push(e); return e; };
+// [DITUNDA]       var bell = function (to, text) { S.kasBell.push({ to: to, text: text, at: S.kas[S.kas.length - 1].time }); };
+// [DITUNDA]       var tanpaToday = function () { return S.kas.filter(function (e) { return e.date === KAS_TODAY && e.nota === 'tanpa'; }).reduce(function (a, e) { return a + e.amt; }, 0); };
+// [DITUNDA]       var openAdv = function (holder) { return S.kas.filter(function (e) { return e.t === 'ADVANCE' && !e.closed && (!holder || e.holder === holder); }); };
+// [DITUNDA]       var keepForm = function () { F.amt = num('k-amt', F.amt); F.ket = String(val('k-ket', F.ket)); F.tarik = num('k-tarik', F.tarik); };
+// [DITUNDA]       var notaCheck = function (amt) {
+// [DITUNDA]         var c = cfg(), used = tanpaToday();
+// [DITUNDA]         if (amt > c.noNotaItem) { return 'Tanpa nota hanya sampai ' + rp(c.noNotaItem) + ' per pengeluaran. Lampirkan foto nota.'; }
+// [DITUNDA]         if (used + amt > c.noNotaDay) { return 'Batas tanpa nota hari ini ' + rp(c.noNotaDay) + ', sudah terpakai ' + rp(used) + '. Lampirkan foto nota.'; }
+// [DITUNDA]         return '';
+// [DITUNDA]       };
+// [DITUNDA]       var balNote = function () { var s = kasState(); return ' Saldo ' + rp(s.tot) + (s.tot <= cfg().warn ? ' (di bawah batas, finance menerima lonceng).' : '.'); };
+// [DITUNDA]       var doCount = function (kind, who, counted) {
+// [DITUNDA]         var exp = kasState().tun, diff = counted - exp;
+// [DITUNDA]         var label = kind === 'kunci' ? 'saat kunci laporan harian' : (kind === 'serah' ? 'saat serah terima shift' : 'pada hitung dadakan');
+// [DITUNDA]         if (diff !== 0) {
+// [DITUNDA]           addE('ADJ', { pk: 'tun', amt: diff, cat: 'Koreksi', ket: 'Selisih hitung tunai ' + label, by: who });
+// [DITUNDA]           bell('owner', 'Selisih hitung tunai ' + rp(diff) + ' ' + label + ', dicatat atas nama ' + who + '.');
+// [DITUNDA]           return callout('warn', 'warn', 'Selisih ' + rp(diff) + ' dicatat sebagai koreksi atas nama ' + esc(who) + '. Lonceng terkirim ke owner.');
+// [DITUNDA]         }
+// [DITUNDA]         addE('COUNT', { pk: 'tun', amt: counted, ket: 'Hitung tunai cocok ' + label, by: who });
+// [DITUNDA]         return callout('good', 'check', 'Tunai cocok: ' + rp(counted) + '.');
+// [DITUNDA]       };
+
+// [DITUNDA]       /* ---- Tampilan bersama ---- */
+// [DITUNDA]       var stChip = function (e) {
+// [DITUNDA]         var c = [];
+// [DITUNDA]         if (e.t === 'ADVANCE') { c.push(e.closed ? chip('good', 'Sudah dilaporkan', 'check') : chip('warn', 'Menunggu nota', 'clock')); }
+// [DITUNDA]         else if (e.nota === 'tanpa') { c.push(chip('', 'Tanpa nota')); }
+// [DITUNDA]         else if (e.nota === 'foto') { c.push(e.st === 'ok' ? chip('good', 'Terverifikasi', 'check') : (e.st === 'ask' ? chip('warn', 'Ditanyakan', 'warn') : chip('info', 'Menunggu verifikasi', 'clock'))); }
+// [DITUNDA]         else if (e.nota === 'arsip') { c.push(chip('', 'Arsip')); }
+// [DITUNDA]         if (e.flag) { c.push(chip('warn', 'Harga tidak wajar', 'warn')); }
+// [DITUNDA]         return c.join('');
+// [DITUNDA]       };
+// [DITUNDA]       var signed = function (n) { return (n > 0 ? '+' : (n < 0 ? '-' : '')) + rp(Math.abs(n)); };
+// [DITUNDA]       var rowOf = function (e, run, withDate) {
+// [DITUNDA]         var a = e.amt, title = esc(e.ket), sub = [], right = '', good = false, ch = stChip(e);
+// [DITUNDA]         var carried = e.holder && e.holder !== e.by ? ' · dibawa ' + esc(e.holder) : '';
+// [DITUNDA]         if (e.t === 'OPEN') { title = 'Saldo awal sistem'; sub.push('Rekening ' + rp(e.rek) + ', tunai ' + rp(e.tun)); ch = chip('info', 'Mulai dipakai'); }
+// [DITUNDA]         else if (e.t === 'TOPUP') { sub.push(e.pk === 'arsip' ? KAS_ARSIP : 'Rekening · ' + esc(e.by)); right = '+' + rp(a); good = true; ch = e.pk === 'arsip' ? chip('', 'Arsip') : chip('good', 'Bukti transfer terlampir', 'check'); }
+// [DITUNDA]         else if (e.t === 'WITHDRAW') { sub.push('Pindah dari rekening ke tunai · ' + esc(e.by)); right = rp(a); ch = chip('', 'Pindah kantong', 'repeat'); }
+// [DITUNDA]         else if (e.t === 'EXPENSE') {
+// [DITUNDA]           if (e.pk === 'arsip') { sub.push(KAS_ARSIP + ' · Excel lama'); } else { sub.push(esc(e.cat) + ' · ' + esc(e.by) + carried + ' · ' + PK[e.pk]); }
+// [DITUNDA]           right = '-' + rp(a);
+// [DITUNDA]         }
+// [DITUNDA]         else if (e.t === 'ADVANCE') { title = 'Uang muka: ' + esc(e.ket); sub.push('Dibawa ' + esc(e.holder) + ' · diberikan ' + esc(e.by)); right = '-' + rp(a); }
+// [DITUNDA]         else if (e.t === 'RETURN') { title = 'Sisa uang muka kembali: ' + esc(e.ket); sub.push(esc(e.holder) + ' mengembalikan ke tunai'); right = '+' + rp(a); good = true; ch = ''; }
+// [DITUNDA]         else if (e.t === 'ADJ') { sub.push('Koreksi ' + PK[e.pk].toLowerCase() + ' · ' + esc(e.by)); right = signed(a); ch = chip('warn', 'Koreksi', 'warn'); }
+// [DITUNDA]         else if (e.t === 'COUNT') { sub.push(esc(e.by) + ' · ' + rp(a)); ch = chip('good', 'Cocok', 'check'); }
+// [DITUNDA]         if (e.st === 'ask' && e.note) { sub.push('Pertanyaan finance: ' + esc(e.note)); }
+// [DITUNDA]         return '<div class="li" style="align-items:flex-start"><div class="t"><b>' + title + '</b><small>' + (withDate ? fdate(e.date, true) + ' · ' : '') + e.time + ' · ' + sub.join(' · ') + '</small>' +
+// [DITUNDA]           (ch ? '<div class="row" style="gap:4px;margin-top:4px">' + ch + '</div>' : '') + '</div>' +
+// [DITUNDA]           '<div style="text-align:right;flex:none"><div class="num" style="font-weight:700' + (good ? ';color:var(--good-ink)' : '') + '">' + right + '</div>' +
+// [DITUNDA]           (run === null ? '' : '<small class="muted num" style="font-size:11px">saldo ' + fmt(run) + '</small>') + '</div></div>';
+// [DITUNDA]       };
+// [DITUNDA]       var balanceHead = function () {
+// [DITUNDA]         var s = kasState();
+// [DITUNDA]         return '<div class="panel"><div class="lbl">Saldo kas kecil (rekening + tunai)</div><div class="hero-fig num" style="font-size:40px">' + rp(s.tot) + '</div>' +
+// [DITUNDA]           '<div class="grid2" style="margin-top:10px"><div class="tile"><div class="l">Rekening (kartu ATM)</div><div class="v num" style="font-size:18px">' + rp(s.rek) + '</div></div>' +
+// [DITUNDA]           '<div class="tile"><div class="l">Tunai di laci</div><div class="v num" style="font-size:18px">' + rp(s.tun) + '</div></div></div>' +
+// [DITUNDA]           (s.muka ? '<p class="notes" style="margin-top:8px">Sedang dibawa karyawan, belum dilaporkan: <b>' + rp(s.muka) + '</b></p>' : '') + '</div>';
+// [DITUNDA]       };
+// [DITUNDA]       var flow = '<div class="row" style="gap:6px">' + chip('info', '1 Catat uang keluar') + chip('info', '2 Nota dari yang belanja') + chip('info', '3 Finance verifikasi') + chip('info', '4 Top-up saat lonceng') + '</div>';
+// [DITUNDA]       var msgBox = function () { return F.msg ? '<div>' + F.msg + '</div>' : ''; };
+// [DITUNDA]       var resultBtns = function (goId, label) { return '<div class="row" style="justify-content:flex-end"><button type="button" class="btn" data-close>Batal</button><button type="button" class="btn primary" id="' + goId + '">' + label + '</button></div>'; };
+
+// [DITUNDA]       /* ---- Front desk ---- */
+// [DITUNDA]       var fdHtml = function () {
+// [DITUNDA]         var s = kasState(), c = cfg(), self = F.holder === 'self';
+// [DITUNDA]         var catOpts = CATS.map(function (x) { return '<option' + (x === F.cat ? ' selected' : '') + '>' + esc(x) + '</option>'; }).join('');
+// [DITUNDA]         var holderOpts = '<option value="' + STAFF + '"' + (!self ? ' selected' : '') + '>' + STAFF + ' (uang muka)</option><option value="self"' + (self ? ' selected' : '') + '>Saya sendiri (' + ME + ')</option>';
+// [DITUNDA]         var srcOpts = '<option value="tun"' + (F.src === 'tun' ? ' selected' : '') + '>Tunai</option><option value="rek"' + (F.src === 'rek' ? ' selected' : '') + '>Rekening (debit atau transfer)</option>';
+// [DITUNDA]         var notaPart = self
+// [DITUNDA]           ? '<div class="field" style="margin-top:10px"><label for="k-src">Dibayar dari</label><select id="k-src">' + srcOpts + '</select></div>' +
+// [DITUNDA]             '<div style="margin-top:10px">' + seg('nota', [['foto', 'Foto nota'], ['tanpa', 'Tanpa nota']], F.nota) + '</div>' +
+// [DITUNDA]             (F.nota === 'foto'
+// [DITUNDA]               ? '<div class="row" style="margin-top:8px"><button type="button" class="btn sm" data-act="foto-fd">' + ic('camera') + ' ' + (F.fotoFd ? 'Foto nota terlampir' : 'Ambil foto nota') + '</button>' + (F.fotoFd ? chip('good', 'Siap dicatat', 'check') : chip('warn', 'Foto belum diambil', 'warn')) + '</div>'
+// [DITUNDA]               : '<p class="notes" style="margin-top:8px">Maksimal ' + rp(c.noNotaItem) + ' per pengeluaran. Hari ini terpakai ' + rp(tanpaToday()) + ' dari ' + rp(c.noNotaDay) + '.</p>')
+// [DITUNDA]           : '<div style="margin-top:10px">' + callout('info', 'camera', 'Uang diberikan sebagai <b>uang muka</b>. ' + STAFF + ' mengunggah foto nota dari HP-nya dan mengembalikan sisa uang. Tidak perlu persetujuan, supaya cepat.') + '</div>';
+// [DITUNDA]         var form = '<div class="panel"><div class="sec-title" style="margin-bottom:8px">Catat uang keluar</div>' +
+// [DITUNDA]           '<div class="grid2"><div class="field"><label for="k-holder">Siapa yang membawa uang?</label><select id="k-holder">' + holderOpts + '</select></div>' +
+// [DITUNDA]           '<div class="field"><label for="k-amt">' + (self ? 'Jumlah' : 'Uang yang diberikan') + '</label>' + money('k-amt', F.amt) + '</div></div>' +
+// [DITUNDA]           '<div class="grid2" style="margin-top:10px"><div class="field"><label for="k-cat">Kategori</label><select id="k-cat">' + catOpts + '</select></div>' +
+// [DITUNDA]           '<div class="field"><label for="k-ket">Keperluan</label><input type="text" id="k-ket" value="' + esc(F.ket) + '"></div></div>' + notaPart +
+// [DITUNDA]           '<div class="row" style="margin-top:12px"><button type="button" class="btn primary" data-act="catat">' + (self ? 'Catat pengeluaran' : 'Berikan uang muka') + '</button></div>' +
+// [DITUNDA]           '<p class="notes" style="margin-top:8px">Pencatat terisi otomatis dari akun: ' + ME + '. Coba jumlah Rp170.000 pada Galon dan es batu: sistem menandai harga tidak wajar untuk finance.</p></div>';
+// [DITUNDA]         var advs = openAdv().map(function (e) {
+// [DITUNDA]           return '<div class="li"><div class="t"><b>' + esc(e.holder) + ' · ' + esc(e.ket) + '</b><small>Diberikan ' + e.time + ' oleh ' + esc(e.by) + '</small></div>' + chip('warn', 'Menunggu nota', 'clock') + '<b class="num">' + rp(e.amt) + '</b></div>';
+// [DITUNDA]         }).join('');
+// [DITUNDA]         var mine = S.kas.filter(function (e) { return e.date === KAS_TODAY && e.by === ME && (e.t === 'EXPENSE' || e.t === 'ADVANCE'); }).reverse().map(function (e) {
+// [DITUNDA]           var lockBtn = (e.nota === 'foto' && e.st === 'wait') ? '<button type="button" class="btn sm" disabled title="Pencatat tidak bisa memverifikasi pengeluarannya sendiri">' + ic('lock') + ' Verifikasi</button>' : '';
+// [DITUNDA]           return '<div class="li" style="align-items:flex-start"><div class="t"><b>' + esc(e.ket) + '</b><small>' + e.time + ' · ' + rp(e.amt) + '</small><div class="row" style="gap:4px;margin-top:4px">' + stChip(e) + '</div></div>' + lockBtn + '</div>';
+// [DITUNDA]         }).join('');
+// [DITUNDA]         var asks = S.kas.filter(function (e) { return e.st === 'ask' && (e.by === ME || e.holder === ME); }).map(function (e) {
+// [DITUNDA]           return '<div class="li" style="align-items:flex-start"><div class="t"><b>' + esc(e.ket) + ' ' + rp(e.amt) + '</b><small>' + fdate(e.date) + ' · Pertanyaan finance: ' + esc(e.note) + '</small></div><button type="button" class="btn sm" data-act="reupload" data-id="' + e.id + '">Kirim foto nota baru</button></div>';
+// [DITUNDA]         }).join('');
+// [DITUNDA]         var ask = S.kasAsk ? callout('warn', 'bell', '<b>Finance meminta hitung tunai sekarang</b> (lewat WhatsApp). Hitung uang di laci, lalu kirim hasilnya beserta foto uang.') : '';
+// [DITUNDA]         var count = '<div class="panel"><div class="sec-title" style="margin-bottom:8px">Hitung tunai</div>' +
+// [DITUNDA]           '<p class="sub" style="margin-bottom:8px">Tunai menurut sistem: <b>' + rp(s.tun) + '</b>. Hitung uang di laci, lalu ketik hasilnya. Wajib sebelum laporan harian dikunci.</p>' +
+// [DITUNDA]           '<div class="field"><label for="k-hitung">Tunai yang dihitung</label>' + money('k-hitung', s.tun) + '</div>' +
+// [DITUNDA]           '<div class="row" style="margin-top:10px"><button type="button" class="btn primary" data-act="hitung">' + (S.kasAsk ? 'Hitung dan kirim dengan foto uang' : 'Hitung dan catat') + '</button><button type="button" class="btn" data-act="serah">Serah terima shift ke Laras</button></div>' +
+// [DITUNDA]           '<p class="notes" style="margin-top:8px">Serah terima kartu ATM mewajibkan penerima menghitung tunai bila tunai di atas ' + rp(c.serah) + '. Setelah hitung tunai, kirim laporan harian (lihat Masalah 9).</p></div>';
+// [DITUNDA]         return flow + ask + (asks ? '<div class="panel"><div class="sec-title" style="margin-bottom:6px">Pertanyaan dari finance</div><div class="list">' + asks + '</div></div>' : '') + balanceHead() + form + msgBox() +
+// [DITUNDA]           '<div class="panel"><div class="sec-title" style="margin-bottom:8px">Tarik tunai di ATM</div><div class="field"><label for="k-tarik">Jumlah</label>' + money('k-tarik', F.tarik) + '</div>' +
+// [DITUNDA]           '<div class="row" style="margin-top:10px"><button type="button" class="btn" data-act="tarik">Catat tarik tunai</button></div>' +
+// [DITUNDA]           '<p class="notes" style="margin-top:8px">Memindahkan uang dari rekening ke tunai, bukan pengeluaran. Setiap tarikan harus dicatat. Tarikan ' + rp(c.tarik) + ' atau lebih mengirim lonceng ke finance.</p></div>' +
+// [DITUNDA]           (advs ? '<div><div class="sec-title" style="margin-bottom:6px">Dibawa karyawan, belum dilaporkan</div><div class="list">' + advs + '</div></div>' : '') +
+// [DITUNDA]           count +
+// [DITUNDA]           '<div><div class="sec-title" style="margin-bottom:6px">Catatan saya hari ini</div><div class="list">' + (mine || '<p class="notes">Belum ada catatan hari ini.</p>') + '</div>' +
+// [DITUNDA]           '<p class="notes" style="margin-top:6px">Pencatat dan pemegang uang tidak bisa memverifikasi pengeluarannya sendiri. Verifikasi dilakukan finance, atau owner bila finance tidak ada.</p></div>' +
+// [DITUNDA]           '<div class="row"><button type="button" class="btn sm" data-act="reset">Ulangi contoh</button></div>';
+// [DITUNDA]       };
+
+// [DITUNDA]       /* ---- Karyawan yang membawa uang muka ---- */
+// [DITUNDA]       var karHtml = function () {
+// [DITUNDA]         var advs = openAdv(STAFF), c = cfg();
+// [DITUNDA]         var cards = advs.map(function (e) {
+// [DITUNDA]           var def = Math.max(1000, e.amt - 15000), ok = !!F.foto[e.id];
+// [DITUNDA]           return '<div class="panel"><div class="lbl">Uang yang saya bawa</div><div class="hero-fig num" style="font-size:32px">' + rp(e.amt) + '</div>' +
+// [DITUNDA]             '<p class="sub" style="margin:6px 0 10px">' + esc(e.ket) + ' · diberikan ' + esc(e.by) + ' pukul ' + e.time + '</p>' +
+// [DITUNDA]             '<div class="field"><label for="k-nota-' + e.id + '">Nominal di nota</label>' + money('k-nota-' + e.id, def) + '</div>' +
+// [DITUNDA]             '<div class="row" style="margin-top:10px"><button type="button" class="btn sm" data-act="foto-adv" data-id="' + e.id + '">' + ic('camera') + ' ' + (ok ? 'Foto nota terlampir' : 'Ambil foto nota') + '</button>' + (ok ? chip('good', 'Siap dikirim', 'check') : chip('warn', 'Foto belum diambil', 'warn')) + '</div>' +
+// [DITUNDA]             '<div class="row" style="margin-top:12px"><button type="button" class="btn primary" data-act="lapor" data-id="' + e.id + '">Kirim nota dan laporan</button></div>' +
+// [DITUNDA]             '<p class="notes" style="margin-top:8px">Sisa uang dikembalikan ke front desk. Bila nota lebih besar dari uang muka, kekurangan diganti dari kas kecil. Tanpa nota hanya untuk pengeluaran sampai ' + rp(c.noNotaItem) + '.</p></div>';
+// [DITUNDA]         }).join('');
+// [DITUNDA]         var hist = S.kas.filter(function (e) { return e.holder === STAFF && e.t !== 'ADVANCE'; }).slice(-6).reverse().map(function (e) { return rowOf(e, null, true); }).join('');
+// [DITUNDA]         return flow + (cards || callout('good', 'check', 'Tidak ada uang yang perlu dilaporkan. Di tab Front desk, berikan uang muka ke ' + STAFF + ' untuk mencobanya.')) + msgBox() +
+// [DITUNDA]           '<div><div class="sec-title" style="margin-bottom:6px">Riwayat saya</div><div class="list">' + (hist || '<p class="notes">Belum ada riwayat.</p>') + '</div></div>';
+// [DITUNDA]       };
+
+// [DITUNDA]       /* ---- Finance ---- */
+// [DITUNDA]       var payR = payRange(2026, 11);
+// [DITUNDA]       var pending = function () { return S.kas.filter(function (e) { return e.pk !== 'arsip' && e.nota === 'foto' && (e.st === 'wait' || e.st === 'ask') && e.date >= payR[0] && e.date <= payR[1]; }); };
+// [DITUNDA]       var avgWeek = function () {
+// [DITUNDA]         var from = isoAdd(KAS_TODAY, -27), t = 0;
+// [DITUNDA]         S.kas.forEach(function (e) { if (e.date >= from && e.date <= KAS_TODAY) { t += kasEff(e).keluar; } });
+// [DITUNDA]         return t / 4;
+// [DITUNDA]       };
+// [DITUNDA]       var attention = function () {
+// [DITUNDA]         var items = [], c = cfg(), by = {};
+// [DITUNDA]         S.kas.forEach(function (e) { if (e.flag && e.st !== 'ok') { items.push('<b>' + esc(e.ket) + ' ' + rp(e.amt) + '</b> (' + fdate(e.date) + ', ' + esc(e.by) + '): harga di atas kebiasaan.'); } });
+// [DITUNDA]         var mr = monthRange(2026, 11), perDay = {};
+// [DITUNDA]         S.kas.forEach(function (e) { if (e.nota === 'tanpa' && e.date >= mr[0] && e.date <= mr[1]) { var k = e.by + '|' + e.date; perDay[k] = (perDay[k] || 0) + e.amt; } });
+// [DITUNDA]         Object.keys(perDay).forEach(function (k) { if (perDay[k] >= 0.8 * c.noNotaDay) { var n = k.split('|')[0]; by[n] = (by[n] || 0) + 1; } });
+// [DITUNDA]         Object.keys(by).forEach(function (n) { if (by[n] >= c.ulang) { items.push('<b>' + esc(n) + '</b>: ' + by[n] + ' hari mendekati batas tanpa nota bulan ini.'); } });
+// [DITUNDA]         return items;
+// [DITUNDA]       };
+// [DITUNDA]       var finHtml = function () {
+// [DITUNDA]         var s = kasState(), c = cfg(), fin = [], own = [];
+// [DITUNDA]         if (s.tot <= c.warn) { fin.push(callout('bad', 'bell', '<b>Saldo kas kecil tinggal ' + rp(s.tot) + '</b> (batas peringatan ' + rp(c.warn) + '). Segera top-up, tanpa menunggu front desk meminta.')); }
+// [DITUNDA]         S.kasBell.forEach(function (b) { (b.to === 'owner' ? own : fin).push(callout('warn', 'bell', esc(b.text) + ' <span class="muted">(' + b.at + ')</span>')); });
+// [DITUNDA]         var bells = '<div class="panel"><div class="sec-title" style="margin-bottom:8px">Lonceng untuk finance</div><div style="display:flex;flex-direction:column;gap:6px">' + (fin.join('') || '<p class="notes">Tidak ada lonceng.</p>') + '</div>' +
+// [DITUNDA]           '<div class="sec-title" style="margin:12px 0 8px">Lonceng untuk owner</div><div style="display:flex;flex-direction:column;gap:6px">' + (own.join('') || '<p class="notes">Tidak ada lonceng.</p>') + '</div></div>';
+// [DITUNDA]         var topup = '<div class="panel"><div class="sec-title" style="margin-bottom:8px">Top-up</div>' +
+// [DITUNDA]           '<p class="sub" style="margin-bottom:8px">Rata-rata pengeluaran 4 minggu terakhir: <b>' + rp(avgWeek()) + ' per minggu</b>. Nominal top-up bebas, ini hanya patokan.</p>' +
+// [DITUNDA]           '<div class="field"><label for="k-topup">Nominal top-up (transfer dari mbanking)</label>' + money('k-topup', F.topup === '' ? 1500000 : F.topup) + '</div>' +
+// [DITUNDA]           '<div class="field" style="margin-top:10px"><label for="k-mb">Saldo rekening di mbanking sesudah transfer</label>' + money('k-mb', F.mbTouched ? F.mb : s.rek + (F.topup === '' ? 1500000 : (parseFloat(F.topup) || 0))) + '</div>' +
+// [DITUNDA]           '<div class="row" style="margin-top:10px"><button type="button" class="btn primary" data-act="topup">Catat top-up dan cocokkan rekening</button></div>' +
+// [DITUNDA]           '<p class="notes" style="margin-top:8px">Sistem membandingkan saldo mbanking dengan hitungannya sendiri. Ubah angkanya untuk melihat bila ada selisih.</p></div>';
+// [DITUNDA]         var pend = pending(), total = S.kas.filter(function (e) { return e.pk !== 'arsip' && e.nota === 'foto' && e.date >= payR[0] && e.date <= payR[1]; }).length, done = total - pend.length;
+// [DITUNDA]         pend.sort(function (a, b) { return (b.flag ? 1 : 0) - (a.flag ? 1 : 0) || (a.date < b.date ? -1 : 1); });
+// [DITUNDA]         var plain = pend.filter(function (e) { return !e.flag && e.st === 'wait'; }).length;
+// [DITUNDA]         var vrows = pend.slice(0, 8).map(function (e) {
+// [DITUNDA]           return '<div class="li" style="align-items:flex-start"><div class="t"><b>' + esc(e.ket) + '</b><small>' + fdate(e.date) + ' · ' + esc(e.cat) + ' · ' + esc(e.by) + (e.holder && e.holder !== e.by ? ' · dibawa ' + esc(e.holder) : '') + '</small><div class="row" style="gap:4px;margin-top:4px">' + chip('', 'Foto nota', 'camera') + stChip(e) + '</div></div>' +
+// [DITUNDA]             '<div style="text-align:right;flex:none"><div class="num"><b>' + rp(e.amt) + '</b></div><div class="row" style="justify-content:flex-end;margin-top:6px"><button type="button" class="btn sm primary" data-act="ver" data-id="' + e.id + '">Verifikasi</button><button type="button" class="btn sm" data-act="ask" data-id="' + e.id + '">Tanyakan</button></div></div></div>';
+// [DITUNDA]         }).join('');
+// [DITUNDA]         var verif = '<div class="panel"><div class="sec-title" style="margin-bottom:6px">Verifikasi nota per periode</div>' +
+// [DITUNDA]           '<p class="sub" style="margin-bottom:8px">Periode gaji ' + fdate(payR[0]) + ' sampai ' + fdate(payR[1], true) + ': <b>' + done + ' dari ' + total + '</b> terverifikasi. Boleh dikerjakan kapan saja, termasuk sekaligus sebelum gajian.</p>' +
+// [DITUNDA]           '<div class="hbar" style="grid-template-columns:minmax(0,1fr) auto"><span class="trk" style="height:10px;background:var(--surface-2);border-radius:5px"><i style="width:' + (total ? done / total * 100 : 0) + '%;border-radius:5px"></i></span><span class="num">' + (total ? Math.round(done / total * 100) : 0) + '%</span></div>' +
+// [DITUNDA]           (pend.length ? '<div class="list" style="margin-top:6px">' + vrows + '</div>' + (pend.length > 8 ? '<p class="notes">Dan ' + (pend.length - 8) + ' catatan lainnya.</p>' : '') +
+// [DITUNDA]             '<div class="row" style="margin-top:10px"><button type="button" class="btn" data-act="ver-all"' + (plain ? '' : ' disabled') + '>Verifikasi semua yang tidak bertanda (' + plain + ')</button></div>'
+// [DITUNDA]             : '<div style="margin-top:8px">' + callout('good', 'check', 'Semua nota periode ini sudah terverifikasi.') + '</div>') + '</div>';
+// [DITUNDA]         var att = attention();
+// [DITUNDA]         var attn = '<div class="panel"><div class="sec-title" style="margin-bottom:8px">Perlu perhatian</div>' + (att.length ? att.map(function (x) { return '<div style="margin-bottom:6px">' + callout('warn', 'warn', x) + '</div>'; }).join('') : '<p class="notes">Tidak ada yang perlu diperhatikan.</p>') + '</div>';
+// [DITUNDA]         var dad = '<div class="panel"><div class="sec-title" style="margin-bottom:6px">Hitung tunai dadakan</div><p class="sub" style="margin-bottom:8px">Finance atau owner bisa meminta front desk menghitung tunai saat itu juga dan mengirim foto uangnya. Waktunya tidak bisa ditebak.</p>' +
+// [DITUNDA]           '<div class="row"><button type="button" class="btn" data-act="minta"' + (S.kasAsk ? ' disabled' : '') + '>Minta hitung tunai sekarang</button>' + (S.kasAsk ? chip('info', 'Sudah diminta, menunggu front desk', 'clock') : '') + '</div></div>';
+// [DITUNDA]         var field = function (id, label, v, step) { return '<div class="field"><label for="' + id + '">' + label + '</label><div class="rp"><span>' + (step ? '' : 'Rp') + '</span><input type="number" inputmode="numeric" min="0" step="' + (step || 1000) + '" id="' + id + '" value="' + v + '"></div></div>'; };
+// [DITUNDA]         var setting = '<div class="panel"><div class="sec-title" style="margin-bottom:8px">Pengaturan (diatur finance)</div><div class="grid2">' +
+// [DITUNDA]           field('c-item', 'Tanpa nota, per pengeluaran', c.noNotaItem) + field('c-day', 'Tanpa nota, per hari', c.noNotaDay) +
+// [DITUNDA]           field('c-warn', 'Lonceng saat saldo total sisa', c.warn) + field('c-serah', 'Hitung saat serah terima bila tunai di atas', c.serah) +
+// [DITUNDA]           field('c-tarik', 'Lonceng tarikan tunai besar', c.tarik) + field('c-ulang', 'Tandai bila mendekati batas tanpa nota (hari per bulan)', c.ulang, 1) + '</div>' +
+// [DITUNDA]           '<div class="row" style="margin-top:10px"><button type="button" class="btn primary" data-act="cfg">Simpan pengaturan</button></div>' +
+// [DITUNDA]           '<p class="notes" style="margin-top:8px">Coba naikkan batas lonceng saldo menjadi Rp1.000.000 untuk melihat lonceng muncul.</p></div>';
+// [DITUNDA]         return flow + balanceHead() + bells + msgBox() + topup + verif + attn + dad + setting;
+// [DITUNDA]       };
+
+// [DITUNDA]       /* ---- Buku kas ---- */
+// [DITUNDA]       var runsFor = function (date) { var acc = 0, out = {}; S.kas.forEach(function (e) { acc += kasEff(e).tot; if (e.date === date) { out[e.id] = acc; } }); return out; };
+// [DITUNDA]       var tiles = function (r) {
+// [DITUNDA]         var parts = ['saldo awal', '+ masuk', '- keluar'];
+// [DITUNDA]         if (r.kor) { parts.push('± koreksi'); }
+// [DITUNDA]         if (r.muka) { parts.push('- uang muka belum lapor'); }
+// [DITUNDA]         var t = function (l, v) { return '<div class="tile"><div class="l">' + l + '</div><div class="v num" style="font-size:16px">' + v + '</div></div>'; };
+// [DITUNDA]         return '<div class="grid2">' + t('Saldo awal', rp(r.awal)) + t('Uang masuk', '+' + rp(r.masuk)) + t('Uang keluar', '-' + rp(r.keluar)) + t('Saldo akhir', rp(r.akhir)) + '</div>' +
+// [DITUNDA]           '<p class="notes" style="margin-top:6px">Cara membaca: ' + parts.join(' ') + ' = saldo akhir.' + (r.muka ? ' Uang muka belum dilaporkan: ' + rp(-r.muka) + '.' : '') + (r.kor ? ' Koreksi: ' + signed(r.kor) + '.' : '') + ' Tarik tunai hanya memindahkan uang, tidak dihitung.</p>';
+// [DITUNDA]       };
+// [DITUNDA]       var catBars = function (from, to) {
+// [DITUNDA]         var m = {}, tot = 0;
+// [DITUNDA]         S.kas.forEach(function (e) { if (e.t === 'EXPENSE' && e.date >= from && e.date <= to) { m[e.cat] = (m[e.cat] || 0) + e.amt; tot += e.amt; } });
+// [DITUNDA]         var arr = Object.keys(m).map(function (k) { return [k, m[k]]; }).sort(function (a, b) { return b[1] - a[1]; });
+// [DITUNDA]         if (!arr.length) { return ''; }
+// [DITUNDA]         var mx = arr[0][1], unc = m[KAS_ARSIP] || 0;
+// [DITUNDA]         return '<div><div class="sec-title" style="margin-bottom:6px">Pengeluaran per kategori</div>' +
+// [DITUNDA]           arr.map(function (r) { return '<div class="hbar"><span style="overflow-wrap:anywhere">' + esc(r[0]) + '</span><span class="trk"><i style="width:' + (r[1] / mx * 100) + '%"></i></span><span class="num">' + rp(r[1]) + '</span></div>'; }).join('') +
+// [DITUNDA]           (unc > 0 && unc / tot > 0.5 ? '<p class="notes">Riwayat Excel lama tidak punya kategori, jadi tampil "' + KAS_ARSIP + '". Kategorinya bisa ditebak otomatis dari keterangan, lalu dirapikan finance.</p>' : '') + '</div>';
+// [DITUNDA]       };
+// [DITUNDA]       var active = function () { return !!(K.q || K.cat || K.who || K.st || K.kant || K.preset); };
+// [DITUNDA]       var match = function (e) {
+// [DITUNDA]         if (e.t === 'OPEN') { return false; }
+// [DITUNDA]         if (K.q && (e.ket + ' ' + e.cat + ' ' + e.by + ' ' + e.holder).toLowerCase().indexOf(K.q.toLowerCase()) < 0) { return false; }
+// [DITUNDA]         if (K.cat && e.cat !== K.cat) { return false; }
+// [DITUNDA]         if (K.who && e.by !== K.who && e.holder !== K.who) { return false; }
+// [DITUNDA]         if (K.kant && e.pk !== K.kant) { return false; }
+// [DITUNDA]         var waiting = e.nota === 'foto' && (e.st === 'wait' || e.st === 'ask');
+// [DITUNDA]         if (K.st === 'tunggu' && !(e.t === 'ADVANCE' && !e.closed)) { return false; }
+// [DITUNDA]         if (K.st === 'wait' && !(e.nota === 'foto' && e.st === 'wait')) { return false; }
+// [DITUNDA]         if (K.st === 'ask' && e.st !== 'ask') { return false; }
+// [DITUNDA]         if (K.st === 'ok' && !(e.nota === 'foto' && e.st === 'ok')) { return false; }
+// [DITUNDA]         if (K.st === 'tanpa' && e.nota !== 'tanpa') { return false; }
+// [DITUNDA]         if (K.preset === 'verif' && !waiting) { return false; }
+// [DITUNDA]         if (K.preset === 'tanpa' && e.nota !== 'tanpa') { return false; }
+// [DITUNDA]         if (K.preset === 'harga' && !e.flag) { return false; }
+// [DITUNDA]         if (K.preset === 'koreksi' && e.t !== 'ADJ') { return false; }
+// [DITUNDA]         return true;
+// [DITUNDA]       };
+// [DITUNDA]       var sel = function (id, label, opts, cur) { return '<div class="field"><label for="' + id + '">' + label + '</label><select id="' + id + '"><option value="">Semua</option>' + opts.map(function (o) { return '<option value="' + esc(o[0]) + '"' + (o[0] === cur ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select></div>'; };
+// [DITUNDA]       var filterHtml = function () {
+// [DITUNDA]         var pre = [['verif', 'Perlu diverifikasi'], ['tanpa', 'Tanpa nota'], ['harga', 'Harga tidak wajar'], ['koreksi', 'Koreksi']];
+// [DITUNDA]         return '<div class="panel soft"><div class="field"><label for="k-q">Cari di seluruh riwayat (keterangan, kategori, nama)</label><div class="row" style="flex-wrap:nowrap"><input type="text" id="k-q" value="' + esc(K.qd) + '" placeholder="Contoh: galon, bensin, Laras" style="flex:1 1 auto"><button type="button" class="btn primary sm" data-act="cari">Cari</button></div></div>' +
+// [DITUNDA]           '<div class="row" style="margin-top:8px;gap:6px">' + pre.map(function (p) { return '<button type="button" class="btn sm' + (K.preset === p[0] ? ' primary' : '') + '" data-preset="' + p[0] + '" aria-pressed="' + (K.preset === p[0]) + '">' + p[1] + '</button>'; }).join('') +
+// [DITUNDA]           (active() ? '<button type="button" class="btn sm" data-act="hapus">Hapus filter</button>' : '') + '</div>' +
+// [DITUNDA]           '<details style="margin-top:8px"' + (K.cat || K.who || K.st || K.kant ? ' open' : '') + '><summary style="cursor:pointer;font-size:13px;color:var(--ink-2)">Filter lainnya: kategori, orang, status, kantong</summary>' +
+// [DITUNDA]           '<div class="grid2" style="margin-top:8px">' + sel('f-cat', 'Kategori', CATS.concat([KAS_ARSIP]).map(function (x) { return [x, x]; }), K.cat) +
+// [DITUNDA]           sel('f-who', 'Pencatat atau pembawa uang', [['Kirana', 'Kirana'], ['Laras', 'Laras'], ['Citra', 'Citra'], ['Finance', 'Finance']], K.who) +
+// [DITUNDA]           sel('f-st', 'Status', [['tunggu', 'Menunggu nota'], ['wait', 'Menunggu verifikasi'], ['ask', 'Ditanyakan'], ['ok', 'Terverifikasi'], ['tanpa', 'Tanpa nota']], K.st) +
+// [DITUNDA]           sel('f-kant', 'Kantong', [['rek', 'Rekening'], ['tun', 'Tunai']], K.kant) + '</div></details></div>';
+// [DITUNDA]       };
+// [DITUNDA]       var searchHtml = function () {
+// [DITUNDA]         var hits = [], i;
+// [DITUNDA]         for (i = S.kas.length - 1; i >= 0; i--) { if (match(S.kas[i])) { hits.push(S.kas[i]); } }
+// [DITUNDA]         var keluar = hits.reduce(function (a, e) { return a + kasEff(e).keluar; }, 0), masuk = hits.reduce(function (a, e) { return a + kasEff(e).masuk; }, 0);
+// [DITUNDA]         var rows = hits.slice(0, K.lim).map(function (e) { return rowOf(e, null, true); }).join('');
+// [DITUNDA]         return '<div class="sec-title">Hasil pencarian</div><p class="sub"><b>' + hits.length + '</b> catatan cocok · masuk ' + rp(masuk) + ' · keluar ' + rp(keluar) + '</p>' +
+// [DITUNDA]           (rows ? '<div class="list">' + rows + '</div>' : callout('info', 'warn', 'Tidak ada catatan yang cocok. Coba kata kunci lain atau hapus filter.')) +
+// [DITUNDA]           (hits.length > K.lim ? '<div class="row"><button type="button" class="btn" data-act="more">Tampilkan lebih banyak</button></div>' : '');
+// [DITUNDA]       };
+// [DITUNDA]       var yearHtml = function () {
+// [DITUNDA]         var r = kasSum(K.y + '-01-01', K.y + '-12-31'), rows = [], m, rg, s;
+// [DITUNDA]         for (m = 12; m >= 1; m--) {
+// [DITUNDA]           rg = monthRange(K.y, m); s = kasSum(rg[0], rg[1]);
+// [DITUNDA]           if (!s.n) { continue; }
+// [DITUNDA]           rows.push('<button type="button" class="rowbtn" data-ym="' + K.y + '-' + pad2(m) + '"><span class="rb-main"><b>' + MON_FULL[m - 1] + '</b><small>Masuk ' + rp(s.masuk) + ' · Keluar ' + rp(s.keluar) + ' · ' + s.n + ' catatan</small></span><span class="num" style="text-align:right"><b>' + rp(s.akhir) + '</b><small class="muted" style="display:block;font-size:11px">saldo akhir</small></span>' + ic('right') + '</button>');
+// [DITUNDA]         }
+// [DITUNDA]         return '<div>' + seg('yr', [[2022, '2022'], [2023, '2023'], [2024, '2024'], [2025, '2025'], [2026, '2026']], K.y) + '</div>' +
+// [DITUNDA]           '<div class="sec-title">Tahun ' + K.y + '</div>' + tiles(r) + catBars(K.y + '-01-01', K.y + '-12-31') +
+// [DITUNDA]           '<div><div class="sec-title" style="margin-bottom:6px">Per bulan (ketuk untuk membuka)</div><div class="list" style="gap:8px">' + rows.join('') + '</div></div>' +
+// [DITUNDA]           '<p class="notes">Data 2022 sampai Oktober 2026 berasal dari Excel lama yang diimpor sebagai arsip, tanpa kategori dan pencatat. Mulai November 2026 semuanya dicatat di sistem.</p>';
+// [DITUNDA]       };
+// [DITUNDA]       var monthHtml = function () {
+// [DITUNDA]         var rg = K.basis === 'gaji' ? payRange(K.y, K.m) : monthRange(K.y, K.m), s = kasSum(rg[0], rg[1]);
+// [DITUNDA]         var label = K.basis === 'gaji' ? 'Periode gaji ' + fdate(rg[0]) + ' sampai ' + fdate(rg[1], true) : MON_FULL[K.m - 1] + ' ' + K.y;
+// [DITUNDA]         var byDay = {}, acc = 0;
+// [DITUNDA]         S.kas.forEach(function (e) {
+// [DITUNDA]           var z = kasEff(e); acc += z.tot;
+// [DITUNDA]           if (e.date >= rg[0] && e.date <= rg[1]) {
+// [DITUNDA]             var b = byDay[e.date] || (byDay[e.date] = { masuk: 0, keluar: 0, n: 0, akhir: 0 });
+// [DITUNDA]             b.masuk += z.masuk; b.keluar += z.keluar; if (e.t !== 'OPEN' && e.t !== 'COUNT') { b.n++; } b.akhir = acc;
+// [DITUNDA]           }
+// [DITUNDA]         });
+// [DITUNDA]         var rows = Object.keys(byDay).sort().reverse().map(function (d) {
+// [DITUNDA]           var b = byDay[d];
+// [DITUNDA]           return '<button type="button" class="rowbtn" data-day="' + d + '"><span class="rb-main"><b>' + fdate(d) + '</b><small>' + b.n + ' catatan · masuk ' + rp(b.masuk) + ' · keluar ' + rp(b.keluar) + '</small></span><span class="num" style="text-align:right"><b>' + rp(b.akhir) + '</b><small class="muted" style="display:block;font-size:11px">saldo akhir</small></span>' + ic('right') + '</button>';
+// [DITUNDA]         }).join('');
+// [DITUNDA]         var waiting = S.kas.filter(function (e) { return e.pk !== 'arsip' && e.nota === 'foto' && (e.st === 'wait' || e.st === 'ask') && e.date >= rg[0] && e.date <= rg[1]; }).length;
+// [DITUNDA]         return '<div class="row" style="justify-content:space-between"><div>' + seg('basis', [['cal', 'Bulan kalender'], ['gaji', 'Periode gaji 26-25']], K.basis) + '</div></div>' +
+// [DITUNDA]           '<div class="row" style="justify-content:space-between"><button type="button" class="btn sm" data-nav="-1" aria-label="Sebelumnya">' + ic('left') + '</button><b>' + label + '</b><button type="button" class="btn sm" data-nav="1" aria-label="Berikutnya">' + ic('right') + '</button></div>' +
+// [DITUNDA]           tiles(s) + (waiting ? '<div>' + chip('info', waiting + ' catatan menunggu verifikasi', 'clock') + '</div>' : '') + catBars(rg[0], rg[1]) +
+// [DITUNDA]           '<div><div class="sec-title" style="margin-bottom:6px">Per hari (ketuk untuk membuka)</div><div class="list" style="gap:8px">' + (rows || '<p class="notes">Belum ada catatan.</p>') + '</div></div>';
+// [DITUNDA]       };
+// [DITUNDA]       var dayHtml = function () {
+// [DITUNDA]         var s = kasSum(K.d, K.d), runs = runsFor(K.d);
+// [DITUNDA]         var rows = S.kas.filter(function (e) { return e.date === K.d; }).map(function (e) { return rowOf(e, runs[e.id], false); }).join('');
+// [DITUNDA]         return '<div class="row" style="justify-content:space-between"><button type="button" class="btn sm" data-nav="-1" aria-label="Hari sebelumnya">' + ic('left') + '</button><b>' + fdate(K.d, true) + '</b><button type="button" class="btn sm" data-nav="1" aria-label="Hari berikutnya"' + (K.d >= KAS_TODAY ? ' disabled' : '') + '>' + ic('right') + '</button></div>' +
+// [DITUNDA]           tiles(s) + '<div class="list">' + (rows || '<p class="notes">Tidak ada catatan pada hari ini.</p>') + '</div>';
+// [DITUNDA]       };
+// [DITUNDA]       var bukuHtml = function () {
+// [DITUNDA]         var crumb = '<div class="row" style="justify-content:space-between">' + seg('kv', [['year', 'Tahunan'], ['month', 'Bulanan'], ['day', 'Harian']], K.view) + '</div>';
+// [DITUNDA]         return crumb + filterHtml() + (active() ? searchHtml() : (K.view === 'year' ? yearHtml() : (K.view === 'month' ? monthHtml() : dayHtml())));
+// [DITUNDA]       };
+
+// [DITUNDA]       var render = function () {
+// [DITUNDA]         var roles = { fd: 'Front desk', kar: 'Karyawan', fin: 'Finance', buku: 'Finance dan owner' };
+// [DITUNDA]         var body = '<div>' + seg('view', [['fd', 'Front desk'], ['kar', 'Karyawan'], ['fin', 'Finance'], ['buku', 'Buku kas']], view) + '</div>' +
+// [DITUNDA]           (view === 'fd' ? fdHtml() : (view === 'kar' ? karHtml() : (view === 'fin' ? finHtml() : bukuHtml())));
+// [DITUNDA]         el.innerHTML = frame('Kas kecil', roles[view], body, 'wide');
+// [DITUNDA]       };
+// [DITUNDA]       render();
+
+// [DITUNDA]       el.addEventListener('change', function (e) {
+// [DITUNDA]         var id = e.target.id, v = e.target.value;
+// [DITUNDA]         if (id === 'k-q') { K.qd = v; return; }
+// [DITUNDA]         if (id === 'f-cat') { K.cat = v; K.lim = 30; render(); return; }
+// [DITUNDA]         if (id === 'f-who') { K.who = v; K.lim = 30; render(); return; }
+// [DITUNDA]         if (id === 'f-st') { K.st = v; K.lim = 30; render(); return; }
+// [DITUNDA]         if (id === 'f-kant') { K.kant = v; K.lim = 30; render(); return; }
+// [DITUNDA]         if (id === 'k-holder' || id === 'k-cat' || id === 'k-src') {
+// [DITUNDA]           keepForm();
+// [DITUNDA]           if (id === 'k-holder') { F.holder = v; } else if (id === 'k-cat') { F.cat = v; } else { F.src = v; }
+// [DITUNDA]           F.msg = ''; render(); return;
+// [DITUNDA]         }
+// [DITUNDA]         if (id === 'k-topup') { F.topup = v; var mbEl = $('#k-mb', el); if (mbEl && !F.mbTouched) { mbEl.value = String(kasState().rek + (parseFloat(v) || 0)); } return; }
+// [DITUNDA]         if (id === 'k-mb') { F.mbTouched = true; F.mb = v; }
+// [DITUNDA]       });
+// [DITUNDA]       el.addEventListener('keydown', function (e) {
+// [DITUNDA]         if (e.key === 'Enter' && e.target && e.target.id === 'k-q') { K.q = String(e.target.value || '').trim(); K.qd = e.target.value; K.lim = 30; render(); }
+// [DITUNDA]       });
+// [DITUNDA]       el.addEventListener('click', function (e) {
+// [DITUNDA]         var t = e.target.closest ? e.target.closest('button') : null; if (!t || t.disabled) { return; }
+// [DITUNDA]         var sg = t.getAttribute('data-seg'), v = t.getAttribute('data-v');
+// [DITUNDA]         if (sg === 'view') { view = v; F.msg = ''; render(); return; }
+// [DITUNDA]         if (sg === 'kv') { K.view = v; render(); return; }
+// [DITUNDA]         if (sg === 'basis') { K.basis = v; render(); return; }
+// [DITUNDA]         if (sg === 'yr') { K.y = parseInt(v, 10); render(); return; }
+// [DITUNDA]         if (sg === 'nota') { keepForm(); F.nota = v; F.msg = ''; render(); return; }
+// [DITUNDA]         var pr = t.getAttribute('data-preset');
+// [DITUNDA]         if (pr) { K.preset = K.preset === pr ? '' : pr; K.lim = 30; render(); return; }
+// [DITUNDA]         var ym = t.getAttribute('data-ym');
+// [DITUNDA]         if (ym) { K.y = parseInt(ym.slice(0, 4), 10); K.m = parseInt(ym.slice(5), 10); K.view = 'month'; render(); return; }
+// [DITUNDA]         var dy = t.getAttribute('data-day');
+// [DITUNDA]         if (dy) { K.d = dy; K.view = 'day'; render(); return; }
+// [DITUNDA]         var nv = t.getAttribute('data-nav');
+// [DITUNDA]         if (nv) {
+// [DITUNDA]           var step = parseInt(nv, 10);
+// [DITUNDA]           if (K.view === 'day') { var nd = isoAdd(K.d, step); if (nd <= KAS_TODAY && nd >= '2022-01-01') { K.d = nd; } }
+// [DITUNDA]           else { var mm = K.m + step, yy = K.y; if (mm < 1) { mm = 12; yy--; } if (mm > 12) { mm = 1; yy++; } if (yy >= 2022 && (yy < 2026 || (yy === 2026 && mm <= 11))) { K.m = mm; K.y = yy; } }
+// [DITUNDA]           render(); return;
+// [DITUNDA]         }
+// [DITUNDA]         var act = t.getAttribute('data-act'); if (!act) { return; }
+// [DITUNDA]         F.msg = '';
+// [DITUNDA]         if (act === 'cari') { K.q = String(val('k-q', K.qd)).trim(); K.qd = K.q; K.lim = 30; render(); return; }
+// [DITUNDA]         if (act === 'hapus') { K.q = ''; K.qd = ''; K.cat = ''; K.who = ''; K.st = ''; K.kant = ''; K.preset = ''; K.lim = 30; render(); return; }
+// [DITUNDA]         if (act === 'more') { K.lim += 30; render(); return; }
+// [DITUNDA]         if (act === 'reset') { S.kas = seedKas(); S.kasSeq = S.kas.length; S.kasN = 0; S.kasBell = []; S.kasAsk = null; S.kasCfg = kasCfgDefault(); resetF(); render(); toast('Contoh diulang dari awal.'); return; }
+// [DITUNDA]         if (act === 'foto-fd') { keepForm(); F.fotoFd = !F.fotoFd; render(); return; }
+// [DITUNDA]         if (act === 'foto-adv') { var fid = parseInt(t.getAttribute('data-id'), 10); F.foto[fid] = !F.foto[fid]; render(); return; }
+// [DITUNDA]         if (act === 'tarik') {
+// [DITUNDA]           var ta = num('k-tarik', F.tarik), s1 = kasState();
+// [DITUNDA]           if (ta <= 0) { toast('Isi jumlah tarik tunai.'); return; }
+// [DITUNDA]           if (ta > s1.rek) { toast('Saldo rekening tidak cukup (' + rp(s1.rek) + ').'); return; }
+// [DITUNDA]           addE('WITHDRAW', { pk: 'rek', amt: ta, ket: 'Tarik tunai di ATM', by: ME });
+// [DITUNDA]           var big = ta >= cfg().tarik; if (big) { bell('finance', 'Tarikan tunai besar ' + rp(ta) + ' oleh ' + ME + '.'); }
+// [DITUNDA]           F.tarik = ta; render(); toast('Tarik tunai ' + rp(ta) + ' tercatat.' + (big ? ' Lonceng terkirim ke finance.' : '')); return;
+// [DITUNDA]         }
+// [DITUNDA]         if (act === 'catat') {
+// [DITUNDA]           keepForm();
+// [DITUNDA]           var amt = F.amt, ket = String(F.ket).trim() || '(tanpa keterangan)', cat = val('k-cat', F.cat), holder = val('k-holder', F.holder), s0 = kasState();
+// [DITUNDA]           if (amt <= 0) { toast('Isi jumlah pengeluaran.'); return; }
+// [DITUNDA]           if (holder !== 'self') {
+// [DITUNDA]             if (amt > s0.tun) { toast('Tunai tidak cukup (' + rp(s0.tun) + '). Tarik tunai di ATM dulu.'); return; }
+// [DITUNDA]             addE('ADVANCE', { pk: 'tun', amt: amt, ket: ket, cat: cat, by: ME, holder: holder, nota: 'tunggu', st: 'none' });
+// [DITUNDA]             render(); toast('Uang muka ' + rp(amt) + ' diberikan ke ' + holder + ', menunggu nota.' + balNote()); return;
+// [DITUNDA]           }
+// [DITUNDA]           var src = val('k-src', F.src), have = src === 'rek' ? s0.rek : s0.tun;
+// [DITUNDA]           if (amt > have) { toast((src === 'rek' ? 'Saldo rekening' : 'Tunai') + ' tidak cukup (' + rp(have) + ').'); return; }
+// [DITUNDA]           if (F.nota === 'tanpa') { var why = notaCheck(amt); if (why) { toast(why); return; } }
+// [DITUNDA]           else if (!F.fotoFd) { toast('Lampirkan foto nota, atau pilih Tanpa nota untuk pengeluaran kecil.'); return; }
+// [DITUNDA]           var ent = addE('EXPENSE', { pk: src, amt: amt, ket: ket, cat: cat, by: ME, nota: F.nota === 'tanpa' ? 'tanpa' : 'foto', st: F.nota === 'tanpa' ? 'none' : 'wait' });
+// [DITUNDA]           if (ent.nota === 'foto') { ent.flag = kasPriceFlag(S.kas.filter(function (x) { return x !== ent; }), ket, amt); }
+// [DITUNDA]           F.fotoFd = false; render();
+// [DITUNDA]           toast('Pengeluaran ' + rp(amt) + ' tercatat.' + (ent.flag ? ' Harga di atas kebiasaan, ditandai untuk finance.' : '') + balNote()); return;
+// [DITUNDA]         }
+// [DITUNDA]         if (act === 'lapor') {
+// [DITUNDA]           var id = parseInt(t.getAttribute('data-id'), 10), adv = byId(id); if (!adv || adv.closed) { return; }
+// [DITUNDA]           var na = num('k-nota-' + id, Math.max(1000, adv.amt - 15000)), foto = !!F.foto[id];
+// [DITUNDA]           if (na <= 0) { toast('Isi nominal di nota.'); return; }
+// [DITUNDA]           if (!foto) { var why2 = notaCheck(na); if (why2) { toast(why2); return; } }
+// [DITUNDA]           var spend = Math.min(na, adv.amt), sisa = adv.amt - spend, kurang = na - spend;
+// [DITUNDA]           if (kurang > kasState().tun) { toast('Kekurangan ' + rp(kurang) + ' diganti dari tunai, tetapi tunai tidak cukup. Tarik tunai dulu.'); return; }
+// [DITUNDA]           var e1 = addE('EXPENSE', { pk: 'muka', amt: spend, ket: adv.ket, cat: adv.cat, by: adv.holder, holder: adv.holder, nota: foto ? 'foto' : 'tanpa', st: foto ? 'wait' : 'none', adv: adv.id });
+// [DITUNDA]           if (foto) { e1.flag = kasPriceFlag(S.kas.filter(function (x) { return x !== e1; }), adv.ket, spend); }
+// [DITUNDA]           if (sisa > 0) { addE('RETURN', { pk: 'tun', amt: sisa, ket: adv.ket, cat: adv.cat, by: adv.holder, holder: adv.holder, adv: adv.id }); }
+// [DITUNDA]           if (kurang > 0) { addE('EXPENSE', { pk: 'tun', amt: kurang, ket: adv.ket + ' (kekurangan, diganti kas kecil)', cat: adv.cat, by: adv.holder, holder: adv.holder, nota: foto ? 'foto' : 'tanpa', st: foto ? 'wait' : 'none', adv: adv.id }); }
+// [DITUNDA]           adv.closed = true; delete F.foto[id]; render();
+// [DITUNDA]           toast('Nota ' + rp(na) + ' terkirim.' + (sisa > 0 ? ' Sisa ' + rp(sisa) + ' kembali ke tunai.' : '') + (kurang > 0 ? ' Kekurangan ' + rp(kurang) + ' diganti kas kecil.' : '') + (e1.flag ? ' Harga ditandai untuk finance.' : '')); return;
+// [DITUNDA]         }
+// [DITUNDA]         if (act === 'hitung') {
+// [DITUNDA]           var cnt = num('k-hitung', kasState().tun), kind = S.kasAsk ? 'dadakan' : 'kunci';
+// [DITUNDA]           F.msg = doCount(kind, ME, cnt); S.kasAsk = null; render(); return;
+// [DITUNDA]         }
+// [DITUNDA]         if (act === 'serah') {
+// [DITUNDA]           var exp = kasState().tun, c = cfg();
+// [DITUNDA]           if (exp <= c.serah) {
+// [DITUNDA]             addE('COUNT', { pk: 'tun', amt: exp, ket: 'Serah terima kartu ATM ' + ME + ' ke Laras (tunai di bawah ' + rp(c.serah) + ', tidak dihitung)', by: 'Laras' });
+// [DITUNDA]             F.msg = callout('info', 'check', 'Serah terima tercatat. Tunai ' + rp(exp) + ' di bawah batas ' + rp(c.serah) + ', jadi tidak perlu dihitung.'); render(); return;
+// [DITUNDA]           }
+// [DITUNDA]           modal('<h3>Serah terima ke Laras</h3><p class="sub">Tunai menurut sistem ' + rp(exp) + ' melebihi batas ' + rp(c.serah) + '. Laras menghitung dulu sebelum menerima kartu ATM.</p>' +
+// [DITUNDA]             '<div class="field"><label for="sh-amt">Tunai yang dihitung Laras</label>' + money('sh-amt', exp) + '</div>' + resultBtns('sh-go', 'Terima kartu dan tunai'),
+// [DITUNDA]             function (o, close) {
+// [DITUNDA]               $('#sh-go', o).addEventListener('click', function () {
+// [DITUNDA]                 var cc = parseFloat($('#sh-amt', o).value); if (isNaN(cc)) { cc = exp; }
+// [DITUNDA]                 F.msg = doCount('serah', 'Laras', cc); close(); render();
+// [DITUNDA]               });
+// [DITUNDA]             });
+// [DITUNDA]           return;
+// [DITUNDA]         }
+// [DITUNDA]         if (act === 'reupload') { var re = byId(t.getAttribute('data-id')); if (re) { re.st = 'wait'; re.note = ''; render(); toast('Foto nota baru terkirim ke finance.'); } return; }
+// [DITUNDA]         if (act === 'topup') {
+// [DITUNDA]           var tp = num('k-topup', 1500000), mbRaw = val('k-mb', ''), mb = mbRaw === '' ? NaN : parseFloat(mbRaw);
+// [DITUNDA]           if (tp <= 0) { toast('Isi nominal top-up.'); return; }
+// [DITUNDA]           addE('TOPUP', { pk: 'rek', amt: tp, ket: 'Top-up dari owner', cat: 'Top-up', by: 'Finance', nota: '-', st: 'none' });
+// [DITUNDA]           var rekNow = kasState().rek;
+// [DITUNDA]           if (isNaN(mb)) { F.msg = callout('info', 'check', 'Top-up ' + rp(tp) + ' tercatat. Isi saldo mbanking untuk mencocokkan rekening.'); }
+// [DITUNDA]           else if (mb !== rekNow) {
+// [DITUNDA]             var dif = mb - rekNow;
+// [DITUNDA]             addE('ADJ', { pk: 'rek', amt: dif, cat: 'Koreksi', ket: 'Selisih saldo rekening (cek mbanking)', by: 'Finance' });
+// [DITUNDA]             bell('owner', 'Selisih saldo rekening ' + rp(dif) + ' saat finance mencocokkan dengan mbanking.');
+// [DITUNDA]             F.msg = callout('warn', 'warn', 'Top-up tercatat. Saldo mbanking ' + rp(mb) + ' berbeda dari hitungan sistem ' + rp(rekNow) + '. Selisih ' + rp(dif) + ' dicatat sebagai koreksi, lonceng terkirim ke owner.');
+// [DITUNDA]           } else {
+// [DITUNDA]             addE('COUNT', { pk: 'rek', amt: mb, ket: 'Saldo rekening cocok dengan mbanking', by: 'Finance' });
+// [DITUNDA]             F.msg = callout('good', 'check', 'Top-up ' + rp(tp) + ' tercatat. Saldo rekening cocok dengan mbanking: ' + rp(mb) + '.');
+// [DITUNDA]           }
+// [DITUNDA]           F.topup = ''; F.mb = ''; F.mbTouched = false; render(); return;
+// [DITUNDA]         }
+// [DITUNDA]         if (act === 'ver') {
+// [DITUNDA]           var ve = byId(t.getAttribute('data-id')); if (!ve) { return; }
+// [DITUNDA]           if (ve.by === 'Finance' || ve.holder === 'Finance') { toast('Pencatat atau pemegang uang tidak bisa memverifikasi sendiri.'); return; }
+// [DITUNDA]           ve.st = 'ok'; ve.ver = 'Finance'; ve.note = ''; render(); toast('Terverifikasi oleh Finance.'); return;
+// [DITUNDA]         }
+// [DITUNDA]         if (act === 'ver-all') {
+// [DITUNDA]           var n = 0; pending().forEach(function (x) { if (!x.flag && x.st === 'wait') { x.st = 'ok'; x.ver = 'Finance'; n++; } });
+// [DITUNDA]           render(); toast(n + ' catatan terverifikasi. Yang bertanda tetap menunggu.'); return;
+// [DITUNDA]         }
+// [DITUNDA]         if (act === 'ask') {
+// [DITUNDA]           var ae = byId(t.getAttribute('data-id')); if (!ae) { return; }
+// [DITUNDA]           modal('<h3>Tanyakan: ' + esc(ae.ket) + '</h3><p class="sub">Pertanyaan masuk ke ' + esc(ae.by) + ' dan tampil di catatannya.</p>' +
+// [DITUNDA]             '<div class="field"><label for="ask-txt">Catatan</label><textarea id="ask-txt">Mohon kirim ulang foto nota yang jelas.</textarea></div>' + resultBtns('ask-go', 'Kirim pertanyaan'),
+// [DITUNDA]             function (o, close) {
+// [DITUNDA]               $('#ask-go', o).addEventListener('click', function () {
+// [DITUNDA]                 ae.st = 'ask'; ae.note = String($('#ask-txt', o).value || '').trim() || 'Mohon dijelaskan.';
+// [DITUNDA]                 close(); render(); toast('Pertanyaan terkirim ke ' + ae.by + '.');
+// [DITUNDA]               });
+// [DITUNDA]             });
+// [DITUNDA]           return;
+// [DITUNDA]         }
+// [DITUNDA]         if (act === 'minta') { S.kasAsk = { by: 'Finance' }; render(); toast('Permintaan hitung tunai dikirim ke front desk lewat WhatsApp.'); return; }
+// [DITUNDA]         if (act === 'cfg') {
+// [DITUNDA]           var cf = cfg(), pos = function (id, d) { var x = num(id, d); return x >= 0 ? Math.round(x) : d; };
+// [DITUNDA]           cf.noNotaItem = pos('c-item', cf.noNotaItem); cf.noNotaDay = pos('c-day', cf.noNotaDay); cf.warn = pos('c-warn', cf.warn);
+// [DITUNDA]           cf.serah = pos('c-serah', cf.serah); cf.tarik = pos('c-tarik', cf.tarik); cf.ulang = Math.max(1, pos('c-ulang', cf.ulang));
+// [DITUNDA]           render(); toast('Pengaturan disimpan.'); return;
+// [DITUNDA]         }
+// [DITUNDA]       });
+// [DITUNDA]     }
+// [DITUNDA]   });
 
   /* ---------- Urutan presentasi: satu periode kerja, dengan satu hari penuh di tengahnya ---------- */
   var BAB = [
     { t: 'Awal periode', d: 'Sebelum periode jadwal berjalan, leader menyusun jadwal shift untuk semua karyawan.', ids: ['m2'], w: { m2: 'Sebelum periode dimulai' } },
-    { t: 'Satu hari di klinik: Selasa, 17 November', d: 'Dari karyawan masuk di pagi hari sampai laporan dikirim di malam hari. Semua yang terjadi hari ini tercatat sendiri di sistem.', ids: ['m2b', 'm8', 'm10', 'm1', 'm6', 'm7', 'm11', 'm4', 'm3'],
-      w: { m2b: '07:30 · Karyawan masuk', m8: '08:00 · Pengingat untuk pasien hari ini', m10: '09:00 · Pasien baru menghubungi klinik', m1: '11:20 · Owner membuka HP', m6: '14:00 · Pasien selesai terapi', m7: '14:30 · Bonus kunjungan pasien', m11: '16:00 · Kebutuhan operasional', m4: '19:30 · Penutupan hari dan laporan harian', m3: '20:00 · Owner melihat pemasukan hari ini' } },
+    { t: 'Satu hari di klinik: Selasa, 17 November', d: 'Dari karyawan masuk di pagi hari sampai laporan dikirim di malam hari. Semua yang terjadi hari ini tercatat sendiri di sistem.', ids: ['m2b', 'm8', 'm10', 'm1', 'm6', 'm7', /* 'm11', */ 'm4', 'm3'],
+      w: { m2b: '07:30 · Karyawan masuk', m8: '08:00 · Pengingat untuk pasien hari ini', m10: '09:00 · Pasien baru menghubungi klinik', m1: '11:20 · Owner membuka HP', m6: '14:00 · Pasien selesai terapi', m7: '14:30 · Bonus kunjungan pasien', /* m11: '16:00 · Kebutuhan operasional', */ m4: '19:30 · Penutupan hari dan laporan harian', m3: '20:00 · Owner melihat pemasukan hari ini' } },
     { t: 'Akhir periode dan akhir bulan', d: 'Semua laporan harian yang sudah final menjadi dasar gaji dan laporan bulanan.', ids: ['m5', 'm9'], w: { m5: '25 November · Hari gajian', m9: '30 November · Akhir bulan' } }
   ];
   (function () {
