@@ -392,6 +392,77 @@
   @media (prefers-reduced-motion: reduce) {
     .switch button::after { transition: none; }
   }
+
+  /* Peta 4 tahap (halaman depan) */
+  .peta-sum { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 16px; }
+  .tahap { margin-top: 20px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); overflow: hidden; }
+  .tahap > header { display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; padding: 14px 16px; background: var(--surface-2); border-bottom: 1px solid var(--line); }
+  .tahap > header h2 { font-size: 18px; line-height: 1.25; }
+  .tahap > header .n { font-size: 12px; font-weight: 600; color: var(--accent-text); letter-spacing: 0.06em; text-transform: uppercase; }
+  .tahap > header p { margin-top: 2px; font-size: 13px; color: var(--ink-2); max-width: 62ch; }
+  .pitem { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 10px 16px; border-bottom: 1px solid var(--line); }
+  .pitem:last-child { border-bottom: 0; }
+  .pitem .k { width: 28px; height: 28px; border-radius: 50%; background: var(--accent-soft); color: var(--accent-text); display: grid; place-items: center; font-size: 12px; font-weight: 600; }
+  .pitem .tx { min-width: 0; overflow-wrap: anywhere; }
+  .pitem .go { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+  .plink { display: inline-flex; align-items: center; min-height: 32px; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); font-size: 12.5px; text-decoration: none; color: var(--accent-text); font-weight: 500; }
+  .plink:hover { border-color: var(--accent); background: var(--accent-soft); }
+  .plink.main { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+  .plink.main:hover { filter: brightness(1.08); }
+  @media (max-width: 600px) { .pitem { grid-template-columns: 30px minmax(0, 1fr); } .pitem .go { grid-column: 2; justify-content: flex-start; } }
+  .box.pdf small { color: var(--accent-text); }
+  .box.pdf ul { margin: 0; padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 4px; font-size: 13px; }
+  .box.pdf li b { display: inline-block; min-width: 24px; color: var(--accent-text); }
+  .scroll-y { max-height: 420px; overflow: auto; border: 1px solid var(--line); border-radius: 12px; }
+  .scroll-y table { min-width: 560px; }
+  .scroll-y thead th { position: sticky; top: 0; background: var(--surface); z-index: 1; }
+  tr.hl td { background: var(--good-soft); }
+  td.wrap, th.wrap { white-space: normal; }
+  .ctrl { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end; }
+  .ctrl .field { min-width: 140px; flex: 1 1 140px; }
+  .notif { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); font-size: 13px; }
+  .notif svg { width: 18px; height: 18px; flex: none; margin-top: 2px; color: var(--accent-text); }
+  .notif b { display: block; }
+  .tgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 16px; align-items: start; }
+  .tgrid > div { min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+  .tchk { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 4px 10px; }
+  .tchk .chk { flex-wrap: wrap; }
+  .minibar { height: 8px; background: var(--surface-2); border-radius: 999px; overflow: hidden; min-width: 70px; }
+  .minibar > i { display: block; height: 100%; border-radius: 999px; background: var(--good); }
+  .minibar > i.warn { background: var(--warn); }
+  .minibar > i.bad { background: var(--bad); }
+
+  /* Kuitansi (meniru formulir Tanda Terima Pembayaran klinik) */
+  .receipt { background: #fff4f8; color: #2b1b22; border: 1px solid #f1c6d6; border-radius: 12px; padding: 16px; font-size: 13px; line-height: 1.5; }
+  .receipt h4 { margin: 0; text-align: center; font-family: var(--font-display); font-size: 15px; letter-spacing: 0.05em; }
+  .receipt .it { text-align: center; font-style: italic; margin-bottom: 8px; }
+  .receipt .dt { text-align: right; font-size: 12px; margin-bottom: 6px; }
+  .receipt .ln { display: grid; grid-template-columns: 96px 8px minmax(0, 1fr); gap: 4px; padding: 3px 0; border-bottom: 1px dotted #d9a9bd; }
+  .receipt .cbs { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 8px 0; }
+  .receipt .cb { display: inline-flex; gap: 5px; align-items: center; }
+  .receipt .cb i { width: 12px; height: 12px; border: 1.5px solid #2b1b22; border-radius: 50%; display: inline-block; position: relative; flex: none; }
+  .receipt .cb.sq i { border-radius: 2px; }
+  .receipt .cb.on i::after { content: ""; position: absolute; inset: 2px; background: #2b1b22; border-radius: inherit; }
+  .receipt .tot { margin-top: 10px; border: 2px solid #2b1b22; border-radius: 8px; padding: 8px 12px; font-weight: 700; font-size: 16px; display: flex; justify-content: space-between; gap: 8px; }
+  .receipt .sig { margin-top: 14px; text-align: right; font-size: 12px; }
+  .receipt .sig span { display: inline-block; min-width: 150px; border-top: 1px solid #2b1b22; padding-top: 2px; text-align: center; }
+  .receipt .ft { margin-top: 10px; text-align: center; font-style: italic; font-weight: 600; letter-spacing: 0.06em; font-size: 12px; }
+  .invoice { border: 1px solid var(--line); border-radius: 12px; padding: 14px; background: var(--surface); }
+  .invoice .hd { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; font-size: 13px; }
+  @media print {
+    body.printing .wrap, body.printing .toast, body.printing .noprint { display: none !important; }
+    body.printing { background: #fff; }
+    body.printing .overlay { position: static; background: none; padding: 0; display: block; }
+    body.printing .modal { box-shadow: none; max-height: none; width: 100%; padding: 0; }
+  }
+
+  /* Layar laporan: penjelasan di atas, tabel selebar halaman */
+  .scene.full { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  .scene.full .story { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; align-items: start; }
+  .scene.full .story > .tag, .scene.full .story > .muted, .scene.full .story > h2, .scene.full .story > .row { grid-column: 1 / -1; }
+  .scene.full .app th { white-space: normal; }
+  .scroll-y th, .scroll-y td { padding: 8px; }
+  @media (max-width: 460px) { .grid3 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 </style>
 
 <div class="wrap" id="root"></div>
@@ -1077,7 +1148,7 @@
   /* M2: Jadwal periode, cuti, dan absen. Dua adegan memakai kode yang sama. */
   var buildSchedule = function (startTab, tabs, title, role) {
     return function (el) {
-      var tab = startTab;
+      var tab = (START.tab && tabs.some(function (t) { return t[0] === START.tab; })) ? START.tab : startTab;
       var cellLabel = function (p, i) {
         var c = p.days[i];
         if (c === 'R') { return resolve(p, i) + '↻'; }
@@ -1339,7 +1410,7 @@
         'Sel 10 Nov': [['Laras', 'P'], ['Kirana', 'S']], 'Rab 11 Nov': [['Kirana', 'P'], ['Laras', 'S']], 'Kam 12 Nov': [['Laras', 'P'], ['Kirana', 'S']],
         'Jum 13 Nov': [['Laras', 'L']], 'Sab 14 Nov': [['Laras', 'L']], 'Sel 17 Nov': [['Kirana', 'P'], ['Laras', 'S']]
       };
-      var PRIOR = 3120000;
+      var PRIOR = 2306000;
       var locked = function () { return S.gaji.stage >= 2; };
       var adjSum = function () { return S.claims.filter(function (c) { return c.status === 'Diterima'; }).reduce(function (a, c) { return a + c.adj; }, 0); };
       var dayTotal = function (x) { return x.uh * R.uh + x.p * R.pasien + x.hv * R.hv; };
@@ -1605,25 +1676,7 @@
     who: ['Finance', 'Owner'],
     build: function (el) {
       var G = S.gaji;
-      var calc = function () {
-        var rate = G.gp / 173;
-        var over = Math.max(0, G.menit - G.batas * 60);
-        var lembur = Math.floor(over / 60 * rate / 1000) * 1000;
-        var earn = [{ n: 'Gaji pokok', det: 'Data gaji', amt: G.gp }];
-        earn.push({ n: 'Lembur', det: hm(G.menit) + ' jam kerja, batas ' + G.batas + ' jam, lebih ' + hm(over) + ' × ' + rp(rate) + '/jam (dibulatkan ke bawah ke ribuan)', amt: lembur });
-        G.tunj.forEach(function (t) {
-          var amt = t.perHari || t.src !== 'tetap' ? t.rate * t.qty : t.rate;
-          var det = t.src === 'tetap' ? 'Tetap bulanan' : rp(t.rate) + ' × ' + t.qty + ' ' + t.unit + ' (otomatis dari ' + t.src + ')';
-          if (t.src === 'absen' && !t.perHari) { amt = t.rate; det = 'Tetap bulanan (tanpa pengali hari hadir)'; }
-          earn.push({ n: t.n, det: det, amt: amt });
-        });
-        var ded = [];
-        var N = S.lateCount;
-        ded.push({ n: 'Potongan keterlambatan', det: N + ' kejadian: ' + Math.min(N, 3) + '× Rp20.000' + (N > 3 ? ' + ' + (N - 3) + '× Rp40.000' : ''), amt: lateTotal(N) });
-        G.pot.forEach(function (p) { ded.push({ n: p.n || '(tanpa nama)', det: 'Potongan tetap', amt: p.v }); });
-        var te = earn.reduce(function (a, x) { return a + x.amt; }, 0), td = ded.reduce(function (a, x) { return a + x.amt; }, 0);
-        return { earn: earn, ded: ded, te: te, td: td, net: te - td };
-      };
+        var calc = function () { return gajiCalcFor(G, S.lateCount); };
       var outHtml = function () {
         var c = calc();
         var row = function (x, minus) {
@@ -2819,6 +2872,1195 @@
 // [DITUNDA]     }
 // [DITUNDA]   });
 
+
+  /* =====================================================================
+     PERMINTAAN OWNER: dokumen "Aplikasi Klinik Physiopreneur - Finance Dept." (4 tahap).
+     Tiap poin dipetakan ke layar yang menjawabnya. Format poin: [kode, teks dokumen, layar utama 'id:tab', [layar pendukung]].
+     ===================================================================== */
+  var START = { tab: '' };
+  var TAHAP = [
+    { no: 1, t: 'Jadwal Klinik', d: 'Jam kerja shift, absensi, cuti, lembur, dan telat, sampai laporannya.', items: [
+      ['1a', 'Jam kerja shift (Pagi / Sore)', 'm2:jadwal'],
+      ['1b', 'Perhitungan absensi', 'm2b', ['t1r:absensi']],
+      ['1c', 'Perhitungan cuti', 'm2:cuti', ['t1r:cuti']],
+      ['1d', 'Perhitungan lembur bagi front desk', 't1r:lembur'],
+      ['1e', 'Perhitungan telat absensi', 'm2b', ['t1r:lembur']],
+      ['1f', 'Laporan list booking pasien', 't1r:booking', ['m10']],
+      ['1g', 'Laporan absensi', 't1r:absensi'],
+      ['1h', 'Laporan cuti', 't1r:cuti'],
+      ['1i', 'Laporan pasien pending / cancel / dll', 't1r:pending']
+    ] },
+    { no: 2, t: 'Pelayanan dan Pembayaran Pasien', d: 'Dari pasien datang, jenis layanan dan paket, invoice, pembayaran, dan kuitansi, sampai laporan penjualan dan insentif.', items: [
+      ['2a', 'List penjualan layanan, dibagi pasien baru dan pasien regular', 't2a', ['t2r:penjualan']],
+      ['2b', 'Paket layanan: Single Visit, Paket 3, Paket 6, dan Paket 12', 't2a', ['m6']],
+      ['2c', 'Jenis layanan / pengobatan sakit (diagnosa)', 't2a'],
+      ['2d', 'Pembuatan invoice, penerimaan pembayaran, dan pencetakan kuitansi', 't2a'],
+      ['2e', 'Laporan penjualan layanan', 't2r:penjualan'],
+      ['2f', 'Laporan insentif fisio', 't2r:fisio', ['m4']],
+      ['2g', 'Laporan insentif front desk', 't2r:fd', ['m4']],
+      ['2h', 'Laporan per rekening penerimaan', 't2r:rekening', ['m3']],
+      ['2i', 'Laporan per layanan (Single Visit, Paket, dan Home Visit)', 't2r:layanan'],
+      ['2j', 'Notifikasi penerimaan pembayaran dari pasien (notif suara)', 't2a']
+    ] },
+    { no: 3, t: 'Pemakaian Alat, Obat, dan Perlengkapan Fisioterapi', d: 'Pembelian alat, obat, dan perlengkapan, pemakaiannya, dan stok yang tersisa.', items: [
+      ['3a', 'List pembelian, dibagi alat, obat, dan perlengkapan', 't3a:beli'],
+      ['3b', 'Laporan pembelian', 't3r:beli'],
+      ['3c', 'Laporan pemakaian', 't3r:pakai', ['t3a:pakai']],
+      ['3d', 'Laporan stok (persediaan)', 't3r:stok', ['t3a:stok']]
+    ] },
+    { no: 4, t: 'Perhitungan Gaji Karyawan', d: 'Gaji tiap karyawan dari absensi, cuti, insentif, dan lembur.', items: [
+      ['4a', 'Laporan absensi', 't4r:absensi'],
+      ['4b', 'Laporan cuti', 't4r:cuti'],
+      ['4c', 'Laporan insentif', 't4r:insentif', ['m5']],
+      ['4d', 'Laporan lembur', 't4r:lembur', ['m5']],
+      ['4e', 'Laporan gaji per karyawan', 't4r:gaji', ['m5']]
+    ] }
+  ];
+  var SHORT = {
+    m2: 'Jadwal shift dan cuti', m2b: 'Absen dan telat', m10: 'Jadwal pasien', t1r: 'Laporan Tahap 1',
+    t2a: 'Layanan sampai kuitansi', m6: 'Paket dan sisa paket', m4: 'Insentif harian', m3: 'Pemasukan', t2r: 'Laporan Tahap 2',
+    t3a: 'Beli, pakai, stok', t3r: 'Laporan Tahap 3', t4r: 'Laporan gaji', m5: 'Slip gaji dan persetujuan'
+  };
+  var TABS = {
+    m2: [['jadwal', 'Jadwal periode'], ['cuti', 'Cuti']],
+    t1r: [['booking', 'Booking'], ['pending', 'Pending dan batal'], ['absensi', 'Absensi'], ['cuti', 'Cuti'], ['lembur', 'Lembur dan telat']],
+    t2r: [['penjualan', 'Penjualan layanan'], ['fisio', 'Insentif fisio'], ['fd', 'Insentif front desk'], ['rekening', 'Per rekening'], ['layanan', 'Per layanan']],
+    t3a: [['beli', 'Pembelian'], ['pakai', 'Pemakaian'], ['stok', 'Stok']],
+    t3r: [['beli', 'Pembelian'], ['pakai', 'Pemakaian'], ['stok', 'Stok']],
+    t4r: [['absensi', 'Absensi'], ['cuti', 'Cuti'], ['insentif', 'Insentif'], ['lembur', 'Lembur'], ['gaji', 'Gaji per karyawan']]
+  };
+  var ORDER_T = ['m2', 'm2b', 'm10', 't1r', 't2a', 'm6', 'm4', 'm3', 't2r', 't3a', 't3r', 't4r', 'm5', 'm1', 'm9', 'm7', 'm8'];
+  var TH_OF = { m2: 1, m2b: 1, m10: 1, t1r: 1, t2a: 2, m6: 2, m4: 2, m3: 2, t2r: 2, t3a: 3, t3r: 3, t4r: 4, m5: 4 };
+  var TAHAP_ONLY = ['t1r', 't2a', 't2r', 't3a', 't3r', 't4r'];
+  var SC_ITEMS = {};
+  TAHAP.forEach(function (th) {
+    th.items.forEach(function (it) {
+      [it[2]].concat(it[3] || []).forEach(function (spec) {
+        var id = spec.split(':')[0];
+        SC_ITEMS[id] = SC_ITEMS[id] || [];
+        if (SC_ITEMS[id].indexOf(it[0]) < 0) { SC_ITEMS[id].push(it[0]); }
+      });
+    });
+  });
+  function pdfItem(key) {
+    var r = null;
+    TAHAP.forEach(function (th) { th.items.forEach(function (it) { if (it[0] === key) { r = { k: it[0], n: it[1] }; } }); });
+    return r;
+  }
+  function tabLabel(id, tab) {
+    var t = (TABS[id] || []).filter(function (x) { return x[0] === tab; })[0];
+    return t ? t[1] : '';
+  }
+  function linkLabel(spec) {
+    var p = spec.split(':'), l = tabLabel(p[0], p[1] || '');
+    return SHORT[p[0]] + (l ? ' / ' + l : '');
+  }
+  function linkHref(spec) {
+    var p = spec.split(':');
+    return '#' + p[0] + '?o=t' + (p[1] ? '&tab=' + p[1] : '');
+  }
+
+  /* ---------- Util baru ---------- */
+  var PERIOD_START = '2026-10-26', PERIOD_END = '2026-11-25';
+  function isoRange(a, b) { var out = [], d = a; while (d <= b) { out.push(d); d = isoAdd(d, 1); } return out; }
+  function terbilang(n) {
+    var s = ['', 'satu', 'dua', 'tiga', 'empat', 'lima', 'enam', 'tujuh', 'delapan', 'sembilan', 'sepuluh', 'sebelas'];
+    n = Math.floor(n);
+    if (n === 0) { return 'nol'; }
+    if (n < 12) { return s[n]; }
+    if (n < 20) { return terbilang(n - 10) + ' belas'; }
+    if (n < 100) { return terbilang(Math.floor(n / 10)) + ' puluh' + (n % 10 ? ' ' + terbilang(n % 10) : ''); }
+    if (n < 200) { return 'seratus' + (n % 100 ? ' ' + terbilang(n % 100) : ''); }
+    if (n < 1000) { return terbilang(Math.floor(n / 100)) + ' ratus' + (n % 100 ? ' ' + terbilang(n % 100) : ''); }
+    if (n < 2000) { return 'seribu' + (n % 1000 ? ' ' + terbilang(n % 1000) : ''); }
+    if (n < 1000000) { return terbilang(Math.floor(n / 1000)) + ' ribu' + (n % 1000 ? ' ' + terbilang(n % 1000) : ''); }
+    if (n < 1000000000) { return terbilang(Math.floor(n / 1000000)) + ' juta' + (n % 1000000 ? ' ' + terbilang(n % 1000000) : ''); }
+    return String(n);
+  }
+  var AC = null;
+  function chime() {
+    try {
+      var Ctx = window.AudioContext || window.webkitAudioContext;
+      if (!Ctx) { return false; }
+      AC = AC || new Ctx();
+      if (AC.state === 'suspended') { AC.resume(); }
+      [[880, 0], [1175, 0.2]].forEach(function (n) {
+        var o = AC.createOscillator(), g = AC.createGain(), t0 = AC.currentTime + n[1];
+        o.type = 'sine'; o.frequency.value = n[0]; o.connect(g); g.connect(AC.destination);
+        g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(0.25, t0 + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.5);
+        o.start(t0); o.stop(t0 + 0.55);
+      });
+      return true;
+    } catch (e) { return false; }
+  }
+  function speak(text) {
+    try {
+      if (!('speechSynthesis' in window)) { return false; }
+      window.speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(text); u.lang = 'id-ID'; u.rate = 0.95;
+      var v = window.speechSynthesis.getVoices().filter(function (x) { return /^id/i.test(x.lang); })[0];
+      if (v) { u.voice = v; }
+      setTimeout(function () { window.speechSynthesis.speak(u); }, 700);
+      return true;
+    } catch (e) { return false; }
+  }
+  /* ---------- Unduh .xlsx sungguhan (tanpa pustaka): zip tanpa kompresi + OOXML minimal ---------- */
+  var CRC_T = (function () { var t = [], c, n, k; for (n = 0; n < 256; n++) { c = n; for (k = 0; k < 8; k++) { c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1); } t[n] = c >>> 0; } return t; })();
+  function crc32(u8) { var c = 0xFFFFFFFF, i; for (i = 0; i < u8.length; i++) { c = CRC_T[(c ^ u8[i]) & 255] ^ (c >>> 8); } return (c ^ 0xFFFFFFFF) >>> 0; }
+  function zipStore(files) {
+    var enc = new TextEncoder(), parts = [], cen = [], off = 0;
+    var le = function (n, b) { var a = [], i; for (i = 0; i < b; i++) { a.push((n >>> (8 * i)) & 255); } return a; };
+    files.forEach(function (f) {
+      var nm = enc.encode(f[0]), data = enc.encode(f[1]), crc = crc32(data);
+      var lh = [].concat(le(0x04034b50, 4), le(20, 2), le(0x0800, 2), le(0, 2), le(0, 2), le(0x21, 2), le(crc, 4), le(data.length, 4), le(data.length, 4), le(nm.length, 2), le(0, 2));
+      parts.push(new Uint8Array(lh), nm, data);
+      cen.push({ nm: nm, crc: crc, len: data.length, off: off });
+      off += lh.length + nm.length + data.length;
+    });
+    var cstart = off, csize = 0;
+    cen.forEach(function (c) {
+      var ch = [].concat(le(0x02014b50, 4), le(20, 2), le(20, 2), le(0x0800, 2), le(0, 2), le(0, 2), le(0x21, 2), le(c.crc, 4), le(c.len, 4), le(c.len, 4), le(c.nm.length, 2), le(0, 2), le(0, 2), le(0, 2), le(0, 2), le(0, 4), le(c.off, 4));
+      parts.push(new Uint8Array(ch), c.nm); csize += ch.length + c.nm.length;
+    });
+    parts.push(new Uint8Array([].concat(le(0x06054b50, 4), le(0, 2), le(0, 2), le(cen.length, 2), le(cen.length, 2), le(csize, 4), le(cstart, 4), le(0, 2))));
+    return new Blob(parts, { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  }
+  function xlCol(i) { var s = ''; i += 1; while (i > 0) { var m = (i - 1) % 26; s = String.fromCharCode(65 + m) + s; i = Math.floor((i - 1) / 26); } return s; }
+  function xlEsc(v) { return String(v).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  /* Angka dan rupiah ditulis sebagai angka sungguhan supaya bisa dijumlah di Excel. */
+  function xlCell(v) {
+    var s = String(v == null ? '' : v), m;
+    if ((m = /^(-?)Rp(\d{1,3}(?:\.\d{3})*|\d+)$/.exec(s))) { return { n: (m[1] ? -1 : 1) * Number(m[2].replace(/\./g, '')), f: 'rp' }; }
+    if (/^-?(0|[1-9]\d{0,14})$/.test(s)) { return { n: Number(s), f: '' }; }
+    if ((m = /^(\d{1,3})%$/.exec(s))) { return { n: Number(m[1]) / 100, f: 'pc' }; }
+    return { s: s };
+  }
+  function xlsxBlob(rows, hasTotal) {
+    var wid = [], X = 'xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"', R = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n';
+    var body = rows.map(function (row, ri) {
+      var bold = ri === 0 || (hasTotal && ri === rows.length - 1);
+      return '<row r="' + (ri + 1) + '">' + row.map(function (v, ci) {
+        var c = xlCell(v), ref = xlCol(ci) + (ri + 1), len = String(v == null ? '' : v).length;
+        wid[ci] = Math.max(wid[ci] || 8, Math.min(46, len + 2));
+        var st = ri === 0 ? 1 : (c.f === 'rp' ? (bold ? 5 : 2) : (c.f === 'pc' ? 3 : (bold ? 4 : 0)));
+        if (c.s !== undefined) { if (c.s === '') { return ''; } return '<c r="' + ref + '" t="inlineStr"' + (st ? ' s="' + st + '"' : '') + '><is><t xml:space="preserve">' + xlEsc(c.s) + '</t></is></c>'; }
+        return '<c r="' + ref + '"' + (st ? ' s="' + st + '"' : '') + '><v>' + c.n + '</v></c>';
+      }).join('') + '</row>';
+    }).join('');
+    var cols = '<cols>' + wid.map(function (w, i) { return '<col min="' + (i + 1) + '" max="' + (i + 1) + '" width="' + w + '" customWidth="1"/>'; }).join('') + '</cols>';
+    var sheet = R + '<worksheet ' + X + '><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>' + cols + '<sheetData>' + body + '</sheetData></worksheet>';
+    var styles = R + '<styleSheet ' + X + '><numFmts count="1"><numFmt numFmtId="164" formatCode="&quot;Rp&quot;#,##0;\\-&quot;Rp&quot;#,##0"/></numFmts>' +
+      '<fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts>' +
+      '<fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFE8F1EE"/></patternFill></fill></fills>' +
+      '<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>' +
+      '<cellXfs count="6"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>' +
+      '<xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/>' +
+      '<xf numFmtId="164" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/>' +
+      '<xf numFmtId="9" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/>' +
+      '<xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/>' +
+      '<xf numFmtId="164" fontId="1" fillId="0" borderId="0" xfId="0" applyNumberFormat="1" applyFont="1"/></cellXfs>' +
+      '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
+    var REL = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+    return zipStore([
+      ['[Content_Types].xml', R + '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>'],
+      ['_rels/.rels', R + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="' + REL + '/officeDocument" Target="xl/workbook.xml"/></Relationships>'],
+      ['xl/workbook.xml', R + '<workbook ' + X + ' xmlns:r="' + REL + '"><sheets><sheet name="Laporan" sheetId="1" r:id="rId1"/></sheets></workbook>'],
+      ['xl/_rels/workbook.xml.rels', R + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="' + REL + '/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="' + REL + '/styles" Target="styles.xml"/></Relationships>'],
+      ['xl/styles.xml', styles],
+      ['xl/worksheets/sheet1.xml', sheet]
+    ]);
+  }
+  function downloadXlsx(name, rows) {
+    try {
+      var blob = xlsxBlob(rows, !!rows.hasTotal);
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 600);
+      toast('File ' + name + ' terunduh. Buka dengan Excel.');
+    } catch (e) { toast('Unduh tidak didukung di browser ini.'); }
+  }
+  /* Laporan = { head: [...], rows: [[...]], num: [indeks kolom angka], total: [...] }. Sel boleh {html, text}. */
+  function repTable(rep, scroll) {
+    var num = rep.num || [];
+    var cell = function (c) { return c && typeof c === 'object' ? c.html : esc(c == null ? '' : c); };
+    var th = rep.head.map(function (h, i) { return '<th' + (num.indexOf(i) > -1 ? ' class="r"' : '') + '>' + esc(h) + '</th>'; }).join('');
+    var tr = function (r, cls) {
+      return '<tr' + (cls ? ' class="' + cls + '"' : '') + '>' + r.map(function (c, i) { return '<td' + (num.indexOf(i) > -1 ? ' class="r num"' : '') + '>' + cell(c) + '</td>'; }).join('') + '</tr>';
+    };
+    var t = '<div class="tablewrap"><table><thead><tr>' + th + '</tr></thead><tbody>' + (rep.rows.length ? rep.rows.map(function (r) { return tr(r, ''); }).join('') : '<tr><td colspan="' + rep.head.length + '" class="muted">Tidak ada data untuk pilihan ini.</td></tr>') + (rep.total ? tr(rep.total, 'total') : '') + '</tbody></table></div>';
+    return scroll ? '<div class="scroll-y">' + t + '</div>' : t;
+  }
+  function repRows(rep) {
+    var txt = function (c) { return c && typeof c === 'object' ? (c.text || '') : c; };
+    var rows = [rep.head].concat(rep.rows.map(function (r) { return r.map(txt); }));
+    if (rep.total) { rows.push(rep.total.map(txt)); rows.hasTotal = true; }
+    return rows;
+  }
+  function dlBtn(key, label) { return '<button type="button" class="btn sm" data-xl="' + key + '">' + esc(label || 'Unduh Excel (.xlsx)') + '</button>'; }
+  function tile(label, val, sub) { return '<div class="tile"><div class="l">' + esc(label) + '</div><div class="v num">' + val + '</div>' + (sub ? '<div class="l">' + sub + '</div>' : '') + '</div>'; }
+  function sumBy(arr, fn) { return arr.reduce(function (a, x) { return a + fn(x); }, 0); }
+  function pct(a, b) { return b ? Math.round(a / b * 100) + '%' : '0%'; }
+  function initTab(id, def) {
+    var ok = (TABS[id] || []).some(function (t) { return t[0] === START.tab; });
+    return ok ? START.tab : def;
+  }
+
+  /* ---------- Jadwal dasar (tidak ikut berubah saat contoh cuti disimulasikan) ---------- */
+  var BASE_DAYS = {};
+  PEOPLE.forEach(function (p) { BASE_DAYS[p.id] = p.days.slice(); });
+  function shiftOn(p, iso) {
+    var c = BASE_DAYS[p.id][bkDow(iso)];
+    if (c === 'R') {
+      var wk = Math.round((Date.parse(bkMonday(iso)) - Date.parse('2026-10-26')) / 604800000);
+      return (((wk + p.phase) % 2) + 2) % 2 === 0 ? 'P' : 'S';
+    }
+    return c;
+  }
+  var K_LATE_DAYS = ['2026-10-28', '2026-11-03', '2026-11-05', '2026-11-10', '2026-11-11', '2026-11-15', '2026-11-16', '2026-10-27', '2026-10-29', '2026-11-02'];
+  var LATE_MIN = [12, 14, 21, 15, 19, 33, 11, 18, 14, 25];
+  var LATE_OTHERS = [{ id: 'c', iso: '2026-11-06', m: 14 }, { id: 'd', iso: '2026-11-12', m: 12 }, { id: 'j', iso: '2026-10-28', m: 11 }, { id: 'j', iso: '2026-11-09', m: 17 }, { id: 'l', iso: '2026-11-04', m: 13 }, { id: 'l', iso: '2026-11-13', m: 22 }];
+  /* Kejadian terlambat (lebih dari 10 menit). Kejadian milik Kirana mengikuti hitungan di adegan Absen, supaya sama dengan slip gaji. */
+  function lateEvents(from, to) {
+    var out = [];
+    K_LATE_DAYS.slice(0, Math.min(S.lateCount, K_LATE_DAYS.length)).sort().forEach(function (iso, i) { out.push({ id: 'k', iso: iso, m: LATE_MIN[i % LATE_MIN.length] }); });
+    LATE_OTHERS.forEach(function (e) { out.push({ id: e.id, iso: e.iso, m: e.m }); });
+    out = out.filter(function (e) { return e.iso >= from && e.iso <= to; });
+    out.sort(function (a, b) { return a.iso === b.iso ? (a.id < b.id ? -1 : 1) : (a.iso < b.iso ? -1 : 1); });
+    var cnt = {};
+    out.forEach(function (e) {
+      var c = shiftOn(byId(e.id), e.iso), sh = SHIFTS[c] || SHIFTS.P;
+      e.sched = sh.s; e.at = fromMin(toMin(sh.s) + e.m);
+      cnt[e.id] = (cnt[e.id] || 0) + 1; e.nth = cnt[e.id]; e.pot = tier(e.nth);
+    });
+    return out;
+  }
+  var CUTI_QUOTA = 12;
+  var CUTI_BEFORE = { b: 1, c: 2, d: 3, e: 2, f: 0, g: 1, h: 1, i: 2, j: 0, k: 3, l: 2 };
+  var CUTI_EVENTS = [{ id: 'e', iso: '2026-11-12', sub: 'a' }, { id: 'h', iso: '2026-11-03', sub: 'a' }];
+  var IZIN_EVENTS = [{ id: 'b', iso: '2026-11-04', why: 'Sakit' }, { id: 'f', iso: '2026-11-10', why: 'Izin keluarga' }, { id: 'k', iso: '2026-11-12', why: 'Sakit' }];
+  function cutiApplies(p) { return p.st === 'Tetap' || p.st === 'Kontrak'; }
+  /* Cuti yang baru disetujui lewat adegan Jadwal (tahap 3) ikut tercatat di sini. */
+  function liveCuti() {
+    var c = S.cuti;
+    if (c.stage !== 3 || !c.sub) { return []; }
+    return [{ id: c.who, iso: isoAdd('2026-11-22', c.day), sub: c.sub, live: true }];
+  }
+  function cutiEvents() { return CUTI_EVENTS.concat(liveCuti()); }
+  function attendRows(from, to, full) {
+    var days = isoRange(from, to), cuti = cutiEvents(), lates = lateEvents(from, to);
+    return PEOPLE.map(function (p) {
+      var sched = 0, mins = 0, nIzin = 0, nCuti = 0;
+      days.forEach(function (iso) {
+        var c = shiftOn(p, iso);
+        if (!isWork(c) || !SHIFTS[c]) { return; }
+        sched++;
+        var isIzin = IZIN_EVENTS.some(function (e) { return e.id === p.id && e.iso === iso; });
+        var isCuti = cuti.some(function (e) { return e.id === p.id && e.iso === iso; });
+        if (isIzin) { nIzin++; } else if (isCuti) { nCuti++; } else { mins += toMin(SHIFTS[c].e) - toMin(SHIFTS[c].s); }
+      });
+      var my = lates.filter(function (e) { return e.id === p.id; });
+      var lateMin = sumBy(my, function (e) { return e.m; });
+      mins -= lateMin;
+      if (full && p.id === 'k') { mins = S.gaji.menit; }
+      if (full && p.id === 'l') { mins = G_LARAS.menit; }
+      return { p: p, sched: sched, hadir: sched - nIzin - nCuti, izin: nIzin, cuti: nCuti, late: my.length, lateMin: lateMin, mins: mins, pot: lateTotal(my.length) };
+    });
+  }
+  function cutiUsed(p) {
+    var inLog = cutiEvents().filter(function (e) { return e.id === p.id; }).length;
+    return { before: CUTI_BEFORE[p.id] || 0, now: inLog, sisa: CUTI_QUOTA - (CUTI_BEFORE[p.id] || 0) - inLog };
+  }
+
+  /* ---------- Gaji (satu rumus untuk adegan Penggajian dan semua laporan) ---------- */
+  var G_LARAS = {
+    gp: 4200000, batas: 173, menit: 10560,
+    tunj: [
+      { n: 'Uang harian', rate: 40000, perHari: true, qty: 22, unit: 'hari hadir', src: 'absen' },
+      { n: 'Insentif pasien baru', rate: 15000, perHari: false, qty: 22, unit: 'pasien baru', src: 'kunjungan' },
+      { n: 'Insentif paket 3x', rate: 30000, perHari: false, qty: 5, unit: 'paket', src: 'penjualan' },
+      { n: 'Insentif paket 6x', rate: 50000, perHari: false, qty: 4, unit: 'paket', src: 'penjualan' },
+      { n: 'Insentif paket 12x', rate: 90000, perHari: false, qty: 2, unit: 'paket', src: 'penjualan' },
+      { n: 'Insentif tapping', rate: 10000, perHari: false, qty: 9, unit: 'unit', src: 'penjualan' },
+      { n: 'Tunjangan kost', rate: 300000, perHari: false, qty: 1, unit: 'tetap', src: 'tetap' },
+      { n: 'Tunjangan BPJS', rate: 150000, perHari: false, qty: 1, unit: 'tetap', src: 'tetap' }
+    ],
+    pot: []
+  };
+  function tunjAmt(t) {
+    if (t.src === 'absen' && !t.perHari) { return t.rate; }
+    return (t.perHari || t.src !== 'tetap') ? t.rate * t.qty : t.rate;
+  }
+  function gajiCalcFor(G, lateN) {
+    var rate = G.gp / 173;
+    var over = Math.max(0, G.menit - G.batas * 60);
+    var lembur = Math.floor(over / 60 * rate / 1000) * 1000;
+    var earn = [{ n: 'Gaji pokok', det: 'Data gaji', amt: G.gp }];
+    earn.push({ n: 'Lembur', det: hm(G.menit) + ' jam kerja, batas ' + G.batas + ' jam, lebih ' + hm(over) + ' × ' + rp(rate) + '/jam (dibulatkan ke bawah ke ribuan)', amt: lembur });
+    G.tunj.forEach(function (t) {
+      var amt = tunjAmt(t);
+      var det = t.src === 'tetap' ? 'Tetap bulanan' : rp(t.rate) + ' × ' + t.qty + ' ' + t.unit + ' (otomatis dari ' + t.src + ')';
+      if (t.src === 'absen' && !t.perHari) { det = 'Tetap bulanan (tanpa pengali hari hadir)'; }
+      earn.push({ n: t.n, det: det, amt: amt });
+    });
+    var ded = [];
+    ded.push({ n: 'Potongan keterlambatan', det: lateN + ' kejadian: ' + Math.min(lateN, 3) + '× Rp20.000' + (lateN > 3 ? ' + ' + (lateN - 3) + '× Rp40.000' : ''), amt: lateTotal(lateN) });
+    G.pot.forEach(function (p) { ded.push({ n: p.n || '(tanpa nama)', det: 'Potongan tetap', amt: p.v }); });
+    var te = sumBy(earn, function (x) { return x.amt; }), td = sumBy(ded, function (x) { return x.amt; });
+    return { earn: earn, ded: ded, te: te, td: td, net: te - td, lembur: lembur, over: over, rate: rate };
+  }
+  function lateCountFor(id) { return lateEvents(PERIOD_START, PERIOD_END).filter(function (e) { return e.id === id; }).length; }
+  function fdGaji() {
+    return [
+      { p: byId('k'), G: S.gaji, late: S.lateCount, calc: gajiCalcFor(S.gaji, S.lateCount) },
+      { p: byId('l'), G: G_LARAS, late: lateCountFor('l'), calc: gajiCalcFor(G_LARAS, lateCountFor('l')) }
+    ];
+  }
+  /* Insentif terapis: uang harian, per pasien, dan home visit. Baris Citra sama dengan layar Insentif harian. */
+  var TER_R = { uh: 75000, pasien: 32000, hv: 60000 };
+  function claimsAdj() { return sumBy(S.claims.filter(function (c) { return c.status === 'Diterima'; }), function (c) { return c.adj; }); }
+  function terapisRows(full) {
+    var ar = attendRows(PERIOD_START, full ? PERIOD_END : BK_TODAY, full).filter(function (r) { return r.p.role === 'T'; });
+    return ar.map(function (r, i) {
+      var p, hv;
+      if (r.p.id === 'c') { p = 74 + (full ? 5 * (r.hadir - 16) : 0) + Math.round(claimsAdj() / TER_R.pasien); hv = full ? 5 : 4; }
+      else { p = Math.round(r.hadir * (4.1 + ((i * 5) % 7) * 0.2)); hv = (i * 3) % 5 + (full ? 1 : 0); }
+      var uh = r.hadir * TER_R.uh, ps = p * TER_R.pasien, hr = hv * TER_R.hv;
+      return { r: r, p: p, hv: hv, uh: uh, ps: ps, hr: hr, total: uh + ps + hr };
+    });
+  }
+  var STAF_RATE = 15000;
+
+  /* ---------- Penjualan layanan (Tahap 2) ---------- */
+  var PRICE = { sv: 375000, hv: 550000, p3: 1000000, p6: 1900000, p12: 3600000, tape: 60000, eswt: 250000, massage: 200000 };
+  var KIND = { sv: 'Single Visit', p3: 'Paket 3', p6: 'Paket 6', p12: 'Paket 12', hv: 'Home Visit' };
+  var KIND_ORDER = ['sv', 'p3', 'p6', 'p12', 'hv'];
+  var PAY = { tunai: 'Tunai', bca: 'Kartu BCA', mandiri: 'Kartu Mandiri', bni: 'Kartu BNI', transfer: 'Transfer', qris: 'QRIS', loan: 'Loan (piutang)' };
+  var PAY_ORDER = ['tunai', 'bca', 'mandiri', 'bni', 'transfer', 'qris', 'loan'];
+  var PAY_NOTE = { tunai: 'Masuk laci kas front desk', bca: 'Mesin kartu BCA, cocokkan dengan settlement', mandiri: 'Mesin kartu Mandiri', bni: 'Mesin kartu BNI', transfer: 'Cocokkan dengan mutasi rekening', qris: 'Cocokkan dengan mutasi QRIS', loan: 'Belum diterima, ditagih kemudian' };
+  var TINDAKAN = [['fe', 'Functional Exercise', 0], ['ir', 'Infrared', 0], ['us', 'Ultrasound', 0], ['tens', 'TENS', 0], ['tape', 'Kinesiotape', PRICE.tape], ['eswt', 'ESWT', PRICE.eswt], ['massage', 'Sport massage', PRICE.massage], ['other', 'Lainnya', 0]];
+  function tindName(k) { var d = TINDAKAN.filter(function (x) { return x[0] === k; })[0]; return d ? d[1] : ''; }
+  function seedSales() {
+    var mk = function (id, time, name, type, pkg, hv, tind, dx, th, fd, pay, total) { return { id: id, time: time, name: name, type: type, pkg: pkg, hv: hv, tind: tind, dx: dx, th: th, fd: fd, pay: pay, total: total, live: false }; };
+    return [
+      mk('s1', '08:35', 'Ibu Wulan S.', 'reg', '1', false, ['fe', 'ir', 'tens'], 'lbp', 'Bella', 'Kirana', 'bca', 375000),
+      mk('s2', '09:50', 'Bpk. Rudi H.', 'reg', '1', false, ['fe', 'us', 'tens'], 'knee', 'Hendra', 'Kirana', 'qris', 375000),
+      mk('s3', '10:40', 'Ibu Maya P.', 'baru', '6', false, ['fe', 'ir', 'tape'], 'neck', 'Dina', 'Kirana', 'mandiri', 1860000),
+      mk('s4', '11:30', 'Bpk. Agus T.', 'reg', '1', false, ['fe', 'ir', 'tape'], 'shoulder', 'Citra', 'Kirana', 'tunai', 435000),
+      mk('s5', '12:15', 'Ibu Dewi K.', 'reg', '1', true, ['fe', 'tens'], 'hnp', 'Elsa', 'Kirana', 'transfer', 550000),
+      mk('s6', '13:20', 'Ibu Nadia R.', 'baru', '1', false, ['fe', 'ir', 'us', 'tens'], 'lbp', 'Farah', 'Laras', 'bni', 375000)
+    ];
+  }
+  function saleKind(s) { return s.hv ? 'hv' : (s.pkg === '1' ? 'sv' : 'p' + s.pkg); }
+  function emptyMatrix() { var m = {}; KIND_ORDER.forEach(function (k) { m[k] = { baru: { n: 0, rp: 0 }, reg: { n: 0, rp: 0 } }; }); return m; }
+  function todayAgg() {
+    var m = emptyMatrix(), pay = {}, tind = {}, total = 0, nVisit = 0;
+    PAY_ORDER.forEach(function (k) { pay[k] = 0; });
+    S.svc.sales.forEach(function (s) {
+      var c = m[saleKind(s)][s.type]; c.n++; c.rp += s.total; pay[s.pay] += s.total; total += s.total; nVisit++;
+      s.tind.forEach(function (t) { tind[t] = (tind[t] || 0) + 1; });
+    });
+    return { matrix: m, pay: pay, tind: tind, total: total, visits: nVisit };
+  }
+  /* Bulan berjalan (1-17 Nov) dari angka yang sama dengan layar Pemasukan dan Laporan. */
+  function monthAgg() {
+    var kas = 0, paket = 0, hv = 0, baru = 0, vis = 0, d;
+    for (d = 1; d <= 17; d++) {
+      var v = d === 17 ? 9 : visitsOf(d);
+      kas += (d === 17 ? REV_TODAY : REV[d - 1]) * 1000000; paket += PKG_SALE[d - 1] * 1000000;
+      hv += d % 4 === 0 ? 2 : (d % 3 === 0 ? 1 : 0); baru += Math.max(1, Math.round(v * 0.16)); vis += v;
+    }
+    kas = Math.round(kas); paket = Math.round(paket);
+    var hvRp = hv * PRICE.hv, svRp = kas - paket - hvRp, svN = Math.round(svRp / PRICE.sv);
+    var cnt = { p3: 8, p6: 5, p12: 3 }, listTot = cnt.p3 * PRICE.p3 + cnt.p6 * PRICE.p6 + cnt.p12 * PRICE.p12;
+    var pk = {};
+    ['p3', 'p6', 'p12'].forEach(function (k) { pk[k] = Math.round(paket * (cnt[k] * PRICE[k]) / listTot / 1000) * 1000; });
+    pk.p12 += paket - (pk.p3 + pk.p6 + pk.p12);
+    var tot = { sv: { n: svN, rp: svRp }, p3: { n: cnt.p3, rp: pk.p3 }, p6: { n: cnt.p6, rp: pk.p6 }, p12: { n: cnt.p12, rp: pk.p12 }, hv: { n: hv, rp: hvRp } };
+    var baruN = { sv: baru - 4, hv: 1, p3: 2, p6: 1, p12: 0 };
+    var m = emptyMatrix();
+    KIND_ORDER.forEach(function (k) {
+      var bn = Math.min(baruN[k], tot[k].n), brp = tot[k].n ? Math.round(tot[k].rp * bn / tot[k].n / 1000) * 1000 : 0;
+      m[k].baru = { n: bn, rp: brp }; m[k].reg = { n: tot[k].n - bn, rp: tot[k].rp - brp };
+    });
+    var share = { tunai: 0.09, bca: 0.30, mandiri: 0.17, bni: 0.10, transfer: 0.16, qris: 0.12, loan: 0.06 }, pay = {}, acc = 0;
+    PAY_ORDER.forEach(function (k) { pay[k] = Math.round(kas * share[k] / 1000) * 1000; acc += pay[k]; });
+    pay.bca += kas - acc;
+    return { matrix: m, pay: pay, tind: { fe: vis, ir: Math.round(vis * 0.8), us: Math.round(vis * 0.35), tens: Math.round(vis * 0.55), tape: 21, eswt: 9, massage: 14, other: 6 }, total: kas, visits: vis };
+  }
+
+  /* ---------- Stok alat, obat, perlengkapan (Tahap 3) ---------- */
+  var STOK_KAT = { alat: 'Alat', obat: 'Obat', perlengkapan: 'Perlengkapan' };
+  var STOK_KEYS = ['alat', 'obat', 'perlengkapan'];
+  var STOK_BY = ['Kirana', 'Laras', 'Finance'];
+  /* [id, jenis, nama, satuan, stok awal 1 Nov, harga satuan, stok minimum, pembelian [[tanggal, jumlah]], total pemakaian] */
+  var STOK_SEED = [
+    ['a1', 'alat', 'Pad TENS', 'pcs', 55, 7500, 40, [[1, 60]], 68],
+    ['a2', 'alat', 'Kinesiotape 5 x 5 m', 'roll', 0, 23000, 15, [[1, 35]], 22],
+    ['a3', 'alat', 'Jarum dry needling 0,30 x 25', 'pcs', 468, 550, 200, [[4, 200]], 136],
+    ['a4', 'alat', 'Jarum dry needling 0,30 x 40', 'pcs', 0, 550, 200, [[4, 600]], 340],
+    ['a5', 'alat', 'Jarum dry needling 0,30 x 75', 'pcs', 213, 550, 150, [[4, 400]], 85],
+    ['a6', 'alat', 'Tape rigid 5 cm x 13,7 m', 'roll', 4, 37000, 6, [], 4],
+    ['a7', 'alat', 'Face shield', 'pcs', 7, 18000, 5, [], 0],
+    ['o1', 'obat', 'Gel US', 'jerigen', 2, 176000, 2, [[1, 2]], 3],
+    ['o2', 'obat', 'Cream massage Bali Alus', 'pot', 6, 47635, 2, [], 3],
+    ['o3', 'obat', 'Cream massage kiloan', 'bks', 0, 95000, 1, [[6, 1], [11, 2]], 1],
+    ['o4', 'obat', 'Ethylcloride spray', 'botol', 3, 92000, 2, [], 3],
+    ['o5', 'obat', 'Es kompres', 'bks', 30, 13000, 10, [], 22],
+    ['o6', 'obat', 'Desinfektan 5 L', 'jerigen', 1, 152000, 1, [[2, 1]], 0],
+    ['o7', 'obat', 'Hand sanitizer 5 L', 'jerigen', 1, 127000, 1, [[2, 1]], 1],
+    ['p1', 'perlengkapan', 'Sarung tangan size S', 'box', 2, 38999, 2, [[1, 4]], 3],
+    ['p2', 'perlengkapan', 'Sarung tangan size M', 'box', 1, 38999, 2, [[1, 5]], 4],
+    ['p3', 'perlengkapan', 'Masker', 'box', 2, 20000, 2, [[11, 6]], 3],
+    ['p4', 'perlengkapan', 'Air mineral (dus isi 24)', 'dus', 0, 47000, 1, [[2, 2]], 1],
+    ['p5', 'perlengkapan', 'Tisu basah', 'bks', 1, 22000, 3, [[1, 10]], 7],
+    ['p6', 'perlengkapan', 'Tisu US', 'bks', 0, 5538, 10, [[1, 40]], 22],
+    ['p7', 'perlengkapan', 'Sabun cuci tangan', 'bks', 4, 14000, 2, [], 2]
+  ];
+  var STOK_TODAY_USE = { a1: 6, a2: 2, o5: 3 };
+  function seedStok() {
+    var rnd = mulberry(20261117), items = [], buys = [], uses = [], nb = 0, nu = 0;
+    var ters = ['Dina', 'Citra', 'Elsa', 'Hendra', 'Bella', 'Galih'];
+    STOK_SEED.forEach(function (r) {
+      items.push({ id: r[0], kat: r[1], n: r[2], unit: r[3], awal: r[4], harga: r[5], min: r[6] });
+      r[7].forEach(function (b) { buys.push({ id: 'b' + (++nb), d: b[0], it: r[0], qty: b[1], harga: r[5], by: STOK_BY[nb % 3] }); });
+      var T = r[8];
+      if (!T) { return; }
+      var today = STOK_TODAY_USE[r[0]] || 0, rest = T - today;
+      var parts = Math.min(rest, rest > 30 ? 8 : 5), days = [], i;
+      if (parts > 0) {
+        for (i = 0; i < parts; i++) { days.push(1 + Math.floor(rnd() * 16)); }
+        days.sort(function (a, b) { return a - b; });
+        for (i = 0; i < parts; i++) {
+          var q = Math.floor(rest / parts) + (i < rest % parts ? 1 : 0);
+          uses.push({ id: 'u' + (++nu), d: days[i], it: r[0], qty: q, ket: r[1] === 'perlengkapan' ? 'Operasional klinik' : (i % 4 === 3 ? 'Home visit' : 'Terapi pasien'), by: r[1] === 'perlengkapan' ? STOK_BY[i % 2] : ters[(i + nu) % ters.length] });
+        }
+      }
+      if (today > 0) { uses.push({ id: 'u' + (++nu), d: 17, it: r[0], qty: today, ket: 'Terapi pasien', by: ters[nu % ters.length] }); }
+    });
+    return { items: items, buys: buys, uses: uses, nb: nb, nu: nu };
+  }
+  function stokItem(id) { return S.stok.items.filter(function (x) { return x.id === id; })[0]; }
+  function stokBeli(id, from, to) { return sumBy(S.stok.buys.filter(function (b) { return b.it === id && b.d >= from && b.d <= to; }), function (b) { return b.qty; }); }
+  function stokPakai(id, from, to) { return sumBy(S.stok.uses.filter(function (u) { return u.it === id && u.d >= from && u.d <= to; }), function (u) { return u.qty; }); }
+  function stokNow(it) { return it.awal + stokBeli(it.id, 1, 31) - stokPakai(it.id, 1, 31); }
+  function stokStatus(it) {
+    var n = stokNow(it);
+    return n <= 0 ? { k: 'bad', t: 'Habis' } : (n <= it.min ? { k: 'warn', t: 'Menipis' } : { k: 'good', t: 'Cukup' });
+  }
+  var RECIPE = { tens: { n: 'TENS', use: { a1: 2 } }, tape: { n: 'Kinesiotape', use: { a2: 1 } }, dn: { n: 'Dry needling', use: { a4: 2 } } };
+
+  /* ---------- State tambahan ---------- */
+  S.svc = { step: 0, type: 'baru', name: 'Bapak Wawan', loc: 'klinik', tind: ['fe', 'ir', 'tens'], dx: 'Nyeri punggung bawah', note: '', th: 'Dina', pkg: '1', promo: '', pay: 'bca', ref: '', sound: true, inv: null, paid: null, filter: 'all', seq: 148, clock: 14 * 60 + 5, sales: seedSales() };
+  S.stok = seedStok();
+
+  /* =====================================================================
+     TAHAP 1: Laporan jadwal (booking, pending dan batal, absensi, cuti, lembur dan telat)
+     ===================================================================== */
+  add({
+    id: 't1r', title: 'Laporan jadwal: booking, pending, absensi, cuti, lembur, dan telat',
+    now: 'Daftar booking diunduh dari Setmore, absensi direkap dari mesin absen, cuti dan lembur front desk dihitung sendiri di Excel.',
+    with: 'Semua laporan Tahap 1 keluar dari data jadwal, booking, dan absen yang sama. Lembur front desk dan potongan telat sudah terhitung, dan semuanya bisa dilihat kapan saja lalu diunduh.',
+    who: ['Owner', 'Finance', 'Leader'],
+    build: function (el) {
+      var tab = initTab('t1r', 'booking');
+      var F = { range: 'today', th: 'all', pst: 'all' };
+      var reps = {};
+      var REASON = ['Pasien berhalangan', 'Minta pindah jadwal', 'Sedang sakit', 'Terapis berhalangan', 'Ada keperluan mendadak'];
+      var inRange = function (b) {
+        if (F.range === 'today') { return b.date === BK_TODAY; }
+        if (F.range === 'week') { return b.date >= '2026-11-16' && b.date <= '2026-11-22'; }
+        return true;
+      };
+      var rowBk = function (b) {
+        return [bkLong(b.date), fromMin(b.t) + '-' + fromMin(b.t + b.dur), b.name, BK_SERVICES[b.sv].n, byId(b.th).n, bkCatTag(b) || 'Umum', { html: bkBadge(b.st, true), text: BK_STATUS[b.st].n }];
+      };
+      var bySort = function (a, b) { return a.date === b.date ? a.t - b.t : (a.date < b.date ? -1 : 1); };
+
+      var bookingHtml = function () {
+        var list = S.booking.list.filter(function (b) { return inRange(b) && (F.th === 'all' || b.th === F.th); }).sort(bySort);
+        var c = function (st) { return list.filter(function (b) { return b.st === st; }).length; };
+        reps.booking = { name: 'laporan-booking.xlsx', rep: { head: ['Tanggal', 'Jam', 'Pasien', 'Layanan', 'Terapis', 'Kategori', 'Status'], rows: list.map(rowBk) } };
+        var ths = PEOPLE.filter(function (p) { return p.role === 'T'; });
+        return '<div class="ctrl">' + seg('range', [['today', 'Hari ini (17 Nov)'], ['week', '16-22 Nov'], ['all', '16-25 Nov']], F.range) +
+          '<div class="field"><label for="f-th">Terapis</label><select id="f-th"><option value="all">Semua terapis</option>' + ths.map(function (p) { return '<option value="' + p.id + '"' + (F.th === p.id ? ' selected' : '') + '>' + p.n + '</option>'; }).join('') + '</select></div></div>' +
+          '<div class="grid2">' + tile('Total janji', list.length) + tile('Menunggu / terkonfirmasi', c('PENDING') + c('CONFIRMED')) +
+          tile('Sudah datang / selesai', c('CHECKED_IN') + c('DONE')) + tile('Batal / tidak datang', c('CANCELED') + c('NO_SHOW')) + '</div>' +
+          repTable(reps.booking.rep, true) + '<div class="row">' + dlBtn('booking') + '</div>' +
+          '<p class="notes">Daftar ini diambil dari kalender jadwal pasien, jadi tidak ada input ulang. Status diperbarui front desk di kalender.</p>';
+      };
+
+      var pendingHtml = function () {
+        var want = F.pst === 'all' ? ['PENDING', 'CANCELED', 'NO_SHOW'] : [F.pst];
+        var list = S.booking.list.filter(function (b) { return want.indexOf(b.st) > -1; }).sort(bySort);
+        var all = S.booking.list;
+        var n = function (st) { return all.filter(function (b) { return b.st === st; }).length; };
+        var why = function (b) {
+          if (b.st === 'PENDING') { return 'Belum membalas konfirmasi'; }
+          if (b.st === 'NO_SHOW') { return 'Tidak datang, tanpa kabar'; }
+          return REASON[(parseInt(b.id.slice(1), 10) * 7) % REASON.length];
+        };
+        reps.pending = { name: 'laporan-pending-batal.xlsx', rep: { head: ['Tanggal', 'Jam', 'Pasien', 'WhatsApp', 'Terapis', 'Status', 'Keterangan', 'Tindak lanjut'], rows: list.map(function (b) {
+          return [bkLong(b.date), fromMin(b.t), b.name, b.wa, byId(b.th).n, { html: bkBadge(b.st, true), text: BK_STATUS[b.st].n }, why(b),
+            b.st === 'PENDING' ? { html: '<button type="button" class="btn sm" data-wa="' + b.id + '">Kirim pengingat</button>', text: 'Kirim pengingat' } : (b.st === 'CANCELED' ? 'Jam sudah kosong lagi' : 'Hubungi pasien')];
+        }) } };
+        return '<div class="grid3">' + tile('Menunggu konfirmasi', n('PENDING')) + tile('Batal', n('CANCELED')) + tile('Tidak datang', n('NO_SHOW')) + '</div>' +
+          '<div class="ctrl">' + seg('pst', [['all', 'Semua'], ['PENDING', 'Menunggu'], ['CANCELED', 'Batal'], ['NO_SHOW', 'Tidak datang']], F.pst) + '</div>' +
+          repTable(reps.pending.rep, true) + '<div class="row">' + dlBtn('pending') + '</div>' +
+          '<p class="notes">Ketuk Kirim pengingat untuk menyiapkan pesan WhatsApp ke pasien yang belum konfirmasi. Alasan batal dicatat front desk saat mengubah status.</p>';
+      };
+
+      var absenHtml = function () {
+        var rows = attendRows(PERIOD_START, BK_TODAY, false);
+        var sched = sumBy(rows, function (r) { return r.sched; }), hadir = sumBy(rows, function (r) { return r.hadir; });
+        reps.absensi = { name: 'laporan-absensi.xlsx', rep: { head: ['Nama', 'Jabatan', 'Terjadwal', 'Hadir', 'Cuti', 'Izin / sakit', 'Telat (kali)', 'Menit telat', 'Jam kerja'], num: [2, 3, 4, 5, 6, 7, 8],
+          rows: rows.map(function (r) { return [r.p.n, ROLE_NAME[r.p.role], r.sched, r.hadir, r.cuti || '-', r.izin || '-', r.late || '-', r.lateMin || '-', hm(r.mins)]; }),
+          total: ['Total', '', sched, hadir, sumBy(rows, function (r) { return r.cuti; }), sumBy(rows, function (r) { return r.izin; }), sumBy(rows, function (r) { return r.late; }), sumBy(rows, function (r) { return r.lateMin; }), hm(sumBy(rows, function (r) { return r.mins; }))] } };
+        return '<div class="sec-title">Absensi · 26 Okt-17 Nov 2026 (periode berjalan)</div>' +
+          '<div class="grid3">' + tile('Kehadiran', pct(hadir, sched)) + tile('Telat (kali)', sumBy(rows, function (r) { return r.late; })) + tile('Cuti / izin (hari)', sumBy(rows, function (r) { return r.cuti + r.izin; })) + '</div>' +
+          repTable(reps.absensi.rep, false) + '<div class="row">' + dlBtn('absensi') + '</div>' +
+          '<p class="notes">Absen lewat HP dengan lokasi dan selfie. Terlambat dihitung bila masuk lebih dari 10 menit dari jam shift. Jam kerja dikurangi menit terlambat.</p>';
+      };
+
+      var cutiHtml = function () {
+        var rows = PEOPLE.map(function (p) {
+          if (!cutiApplies(p)) { return [p.n, p.st, 'Tidak berlaku', '-', '-', '-']; }
+          var u = cutiUsed(p);
+          return [p.n, p.st, CUTI_QUOTA + ' hari', u.before, u.now || '-', { html: '<b>' + u.sisa + ' hari</b>', text: u.sisa + ' hari' }];
+        });
+        var log = cutiEvents().sort(function (a, b) { return a.iso < b.iso ? -1 : 1; });
+        reps.cuti = { name: 'laporan-cuti.xlsx', rep: { head: ['Karyawan', 'Status', 'Kuota', 'Terpakai sebelum periode', 'Periode ini', 'Sisa'], num: [3, 4, 5], rows: rows } };
+        reps.cutilog = { name: 'riwayat-cuti.xlsx', rep: { head: ['Tanggal cuti', 'Karyawan', 'Pengganti', 'Status'], rows: log.map(function (e) {
+          return [fdate(e.iso, true), byId(e.id).n, byId(e.sub).n, { html: chip('good', e.live ? 'Disetujui owner (baru)' : 'Disetujui owner', 'check'), text: 'Disetujui owner' }];
+        }) } };
+        return '<div class="sec-title">Saldo cuti per karyawan</div>' + repTable(reps.cuti.rep, false) + '<div class="row">' + dlBtn('cuti') + '</div>' +
+          '<div class="sec-title">Riwayat cuti periode ini</div>' + repTable(reps.cutilog.rep, false) + '<div class="row">' + dlBtn('cutilog', 'Unduh riwayat cuti (.xlsx)') + '</div>' +
+          callout('info', 'check', 'Kuota cuti ' + CUTI_QUOTA + ' hari per tahun untuk karyawan tetap dan kontrak. Cuti hanya bisa diajukan dengan pengganti yang sudah setuju, lalu disetujui owner. Saat disetujui, jadwal berubah dan uang harian shift itu pindah ke pengganti.') +
+          '<p class="notes">Coba ajukan dan setujui cuti di layar Jadwal shift dan cuti. Hasilnya langsung muncul di riwayat dan mengurangi sisa kuota di sini.</p>';
+      };
+
+      var lemburHtml = function () {
+        var fd = fdGaji();
+        reps.lembur = { name: 'laporan-lembur-frontdesk.xlsx', rep: { head: ['Front desk', 'Jam kerja', 'Batas jam', 'Kelebihan', 'Tarif per jam', 'Lembur'], num: [1, 2, 3, 4, 5],
+          rows: fd.map(function (x) { return [x.p.n, hm(x.G.menit), x.G.batas + ':00', hm(x.calc.over), rp(x.calc.rate), rp(x.calc.lembur)]; }),
+          total: ['Total', '', '', '', '', rp(sumBy(fd, function (x) { return x.calc.lembur; }))] } };
+        var ev = lateEvents(PERIOD_START, BK_TODAY);
+        reps.telat = { name: 'laporan-telat.xlsx', rep: { head: ['Tanggal', 'Karyawan', 'Jadwal masuk', 'Absen masuk', 'Terlambat (menit)', 'Kejadian ke-', 'Potongan'], num: [2, 3, 4, 5, 6],
+          rows: ev.map(function (e) { return [fdate(e.iso, false), byId(e.id).n, e.sched, e.at, e.m, e.nth, rp(e.pot)]; }),
+          total: ['Total', '', '', '', sumBy(ev, function (e) { return e.m; }), ev.length, rp(sumBy(ev, function (e) { return e.pot; }))] } };
+        return '<div class="sec-title">Lembur front desk · periode 26 Okt-25 Nov (draf)</div>' + repTable(reps.lembur.rep, false) + '<div class="row">' + dlBtn('lembur') + '</div>' +
+          '<p class="notes">Tarif per jam = gaji pokok ÷ 173. Lembur dihitung bila jam kerja satu periode melebihi batas jam yang diisi finance, dibulatkan ke bawah ke ribuan. Shift long (12 jam) otomatis menambah jam kerja. Angka Kirana sama dengan slip gajinya.</p>' +
+          '<div class="sec-title" style="margin-top:6px">Keterlambatan · 26 Okt-17 Nov</div>' + repTable(reps.telat.rep, false) + '<div class="row">' + dlBtn('telat') + '</div>' +
+          '<p class="notes">Toleransi 10 menit. Kejadian ke-1 sampai ke-3 dipotong Rp20.000, ke-4 dan seterusnya Rp40.000, dihitung per karyawan per periode. Tambah kejadian di layar Absen, lalu lihat di sini.</p>';
+      };
+
+      var render = function () {
+        var body = '<div>' + seg('tab', TABS.t1r, tab) + '</div>' +
+          (tab === 'booking' ? bookingHtml() : tab === 'pending' ? pendingHtml() : tab === 'absensi' ? absenHtml() : tab === 'cuti' ? cutiHtml() : lemburHtml());
+        el.innerHTML = frame('Laporan jadwal', 'Owner dan finance', body, 'wide');
+      };
+      render();
+      el.addEventListener('change', function (e) { if (e.target.id === 'f-th') { F.th = e.target.value; render(); } });
+      el.addEventListener('click', function (e) {
+        var t = e.target.closest ? e.target.closest('button') : null; if (!t) { return; }
+        var sg = t.getAttribute('data-seg');
+        if (sg === 'tab') { tab = t.getAttribute('data-v'); render(); return; }
+        if (sg === 'range') { F.range = t.getAttribute('data-v'); render(); return; }
+        if (sg === 'pst') { F.pst = t.getAttribute('data-v'); render(); return; }
+        var xl = t.getAttribute('data-xl');
+        if (xl && reps[xl]) { downloadXlsx(reps[xl].name, repRows(reps[xl].rep)); return; }
+        var wa = t.getAttribute('data-wa');
+        if (wa) { var b = bkFind(wa); toast('Pesan konfirmasi siap dikirim ke ' + b.name + ' (' + b.wa + '). Tercatat siapa dan kapan.'); }
+      });
+    }
+  });
+
+  /* =====================================================================
+     TAHAP 2a: Layanan, diagnosa, paket, invoice, pembayaran, kuitansi, notif suara
+     ===================================================================== */
+  var PKG_NAME = { '1': 'Single Visit', '3': 'Paket 3', '6': 'Paket 6', '12': 'Paket 12' };
+  var PROMO_T2 = { '3': [], '6': [{ id: 'p6', n: 'Promo awal bulan', off: 100000 }], '12': [{ id: 'p12', n: 'Promo November', off: 200000 }] };
+  var TERAPIS_PICK = ['Dina', 'Citra', 'Elsa', 'Hendra', 'Bella', 'Galih', 'Farah', 'Irfan'];
+  function doPrint() {
+    document.body.classList.add('printing');
+    var done = function () { document.body.classList.remove('printing'); window.removeEventListener('afterprint', done); };
+    window.addEventListener('afterprint', done);
+    try { window.print(); } catch (e) { done(); toast('Cetak tidak didukung di browser ini.'); }
+  }
+  function receiptHtml(r) {
+    var cb = function (on, label, sq) { return '<span class="cb' + (on ? ' on' : '') + (sq ? ' sq' : '') + '"><i></i>' + esc(label) + '</span>'; };
+    var line = function (k, v) { return '<div class="ln"><span>' + esc(k) + '</span><span>:</span><span>' + esc(v) + '</span></div>'; };
+    var card = r.pay === 'bca' || r.pay === 'mandiri' || r.pay === 'bni';
+    return '<div class="receipt"><h4>TANDA TERIMA PEMBAYARAN</h4><div class="it">Payment Receipt</div>' +
+      '<div class="dt">Date: ' + esc(r.date) + ' · ' + esc(r.no) + '</div>' +
+      line('Nama pasien', r.name + (r.type === 'baru' ? ' (pasien baru)' : '')) +
+      '<div class="cbs">' + TINDAKAN.map(function (t) { return cb(r.tind.indexOf(t[0]) > -1, t[1]); }).join('') + '</div>' +
+      line('Fisioterapis', r.th) + line('Note', r.note || '-') + line('Diagnosa', r.dx || '-') +
+      '<div class="cbs"><b>Pembayaran / Payment:</b>' + cb(r.pay === 'tunai', 'Cash') + cb(r.pay === 'transfer' || r.pay === 'qris', 'Transfer') + cb(card, 'Debit') + '</div>' +
+      '<div class="cbs">' + cb(r.pkg === '1' && !r.hv, 'Single Visit', true) + cb(r.pkg === '3', '3 Cares', true) + cb(r.pkg === '6', '6 Cares', true) + cb(r.pkg === '12', '12 Cares', true) + cb(r.hv, 'Home Visit', true) + '</div>' +
+      '<div class="tot"><span>Total</span><span class="num">' + rp(r.total) + '</span></div>' +
+      '<div class="sig">Salam Hormat / Yours Sincerely<br><br><br><span>Front desk ' + esc(r.fd) + '</span></div></div>';
+  }
+
+  add({
+    id: 't2a', title: 'Dari pasien datang sampai kuitansi, dan pembayaran masuk berbunyi',
+    now: 'Kuitansi ditulis tangan di formulir Tanda Terima Pembayaran, lalu penjualan diketik ulang ke Excel harian. Finance baru tahu rinciannya setelah laporan harian masuk.',
+    with: 'Satu alur di sistem: pilih pasien baru atau regular, jenis layanan dan diagnosa, paket, lalu invoice, pembayaran, dan kuitansi. Begitu pembayaran dicatat, notifikasi suara berbunyi dan penjualan langsung masuk ke daftar dan laporan.',
+    who: ['Front desk', 'Finance', 'Owner'],
+    build: function (el) {
+      var D = S.svc;
+      var invCalc = function () {
+        var hv = D.loc === 'hv', pk = hv ? '1' : D.pkg, lines = [];
+        if (hv) { lines.push({ n: 'Home visit (90 menit)', amt: PRICE.hv }); }
+        else if (pk === '1') { lines.push({ n: 'Single Visit (per kedatangan)', amt: PRICE.sv }); }
+        else { lines.push({ n: PKG_NAME[pk] + ', harga normal', amt: PRICE['p' + pk] }); }
+        D.tind.forEach(function (k) {
+          var t = TINDAKAN.filter(function (x) { return x[0] === k; })[0];
+          if (t && t[2]) { lines.push({ n: 'Tambahan: ' + t[1], amt: t[2] }); }
+        });
+        var promo = (!hv && pk !== '1') ? (PROMO_T2[pk].filter(function (p) { return p.id === D.promo; })[0] || null) : null;
+        var sub = sumBy(lines, function (l) { return l.amt; });
+        return { lines: lines, promo: promo, sub: sub, total: sub - (promo ? promo.off : 0), pk: pk, hv: hv };
+      };
+      var linesTable = function (c) {
+        return '<div class="tablewrap"><table><tbody>' + c.lines.map(function (l) { return '<tr><td class="wrap">' + esc(l.n) + '</td><td class="r num">' + rp(l.amt) + '</td></tr>'; }).join('') +
+          (c.promo ? '<tr><td class="wrap">' + esc(c.promo.n) + '</td><td class="r num">' + rp(-c.promo.off) + '</td></tr>' : '') +
+          '<tr class="total"><td>Total ditagih</td><td class="r num">' + rp(c.total) + '</td></tr></tbody></table></div>';
+      };
+      var stepper = function () {
+        var names = ['1 Pasien dan layanan', '2 Invoice', '3 Pembayaran', '4 Kuitansi'];
+        return '<div class="stepper">' + names.map(function (n, i) { return '<div class="' + (i < D.step ? 'done' : (i === D.step ? 'on' : '')) + '">' + n + '</div>'; }).join('') + '</div>';
+      };
+      var formHtml = function () {
+        var c = invCalc(), hv = D.loc === 'hv';
+        var left =
+          '<div class="panel"><div class="sec-title" style="margin-bottom:8px">Pasien</div>' +
+          seg('type', [['baru', 'Pasien baru'], ['reg', 'Pasien regular']], D.type) +
+          '<div class="grid2" style="margin-top:10px"><div class="field"><label for="sv-name">Nama pasien</label><input type="text" id="sv-name" value="' + esc(D.name) + '" autocomplete="off"></div>' +
+          '<div class="field"><label for="sv-th">Fisioterapis</label><select id="sv-th">' + TERAPIS_PICK.map(function (n) { return '<option' + (n === D.th ? ' selected' : '') + '>' + n + '</option>'; }).join('') + '</select></div></div>' +
+          '<p class="notes" style="margin-top:6px">' + (D.type === 'baru' ? 'Pasien baru dihitung sebagai New Pasien di laporan, dan insentif pasien baru masuk ke front desk yang bertugas.' : 'Pasien regular: riwayat kunjungan dan sisa paket sudah ada di sistem.') + '</p></div>' +
+          '<div class="panel"><div class="sec-title" style="margin-bottom:8px">Jenis layanan</div>' + seg('loc', [['klinik', 'Di klinik'], ['hv', 'Home visit']], D.loc) +
+          '<div class="tchk" style="margin-top:10px">' + TINDAKAN.map(function (t) {
+            return '<label class="chk"><input type="checkbox" data-tind="' + t[0] + '"' + (D.tind.indexOf(t[0]) > -1 ? ' checked' : '') + '> ' + esc(t[1]) + (t[2] ? ' <span class="muted">(+' + rp(t[2]) + ')</span>' : '') + '</label>';
+          }).join('') + '</div><p class="notes" style="margin-top:6px">Tindakan dasar sudah termasuk di tarif per kedatangan. Kinesiotape, ESWT, dan sport massage ditagih tambahan.</p></div>' +
+          '<div class="panel"><div class="sec-title" style="margin-bottom:8px">Note dan diagnosa</div>' +
+          '<div class="field"><label for="sv-note">Note</label><input type="text" id="sv-note" value="' + esc(D.note) + '" autocomplete="off"></div>' +
+          '<div class="field" style="margin-top:8px"><label for="sv-dx">Diagnosa</label><input type="text" id="sv-dx" value="' + esc(D.dx) + '" placeholder="Contoh: Nyeri punggung bawah" autocomplete="off"></div>' +
+          '<p class="notes" style="margin-top:6px">Dua baris ini sama seperti di formulir kuitansi sekarang (Note dan Diagnosa): diisi bebas, lalu tampil di kuitansi.</p></div>';
+        var right =
+          '<div class="panel"><div class="sec-title" style="margin-bottom:8px">Paket layanan</div>' +
+          seg('pkg', [['1', 'Single Visit'], ['3', 'Paket 3'], ['6', 'Paket 6'], ['12', 'Paket 12']], hv ? '1' : D.pkg) +
+          (hv ? '<p class="notes" style="margin-top:8px">Home visit dibayar per kunjungan, jadi paket tidak berlaku.</p>' : '') +
+          (!hv && D.pkg !== '1' ? '<div class="field" style="margin-top:10px"><label for="sv-promo">Promo yang berlaku</label><select id="sv-promo"><option value="">Tanpa promo (harga normal)</option>' +
+            PROMO_T2[D.pkg].map(function (p) { return '<option value="' + p.id + '"' + (p.id === D.promo ? ' selected' : '') + '>' + esc(p.n) + ' (potongan ' + rp(p.off) + ')</option>'; }).join('') + '</select>' +
+            (PROMO_T2[D.pkg].length ? '' : '<small class="muted">Tidak ada promo aktif untuk paket ini.</small>') + '</div>' : '') + '</div>' +
+          '<div class="panel"><div class="sec-title" style="margin-bottom:6px">Harga dari sistem</div>' + linesTable(c) +
+          '<p class="notes" style="margin-top:6px">Harga dan promo diambil dari daftar harga yang dibuat owner atau finance. Front desk tidak mengetik harga sendiri.</p>' +
+          '<div class="row" style="margin-top:10px"><button type="button" class="btn primary" data-act="mk-inv">Buat invoice</button></div></div>';
+        return '<div class="tgrid"><div>' + left + '</div><div>' + right + '</div></div>';
+      };
+      var invoiceHtml = function () {
+        var I = D.inv, c = I.calc;
+        return '<div class="invoice"><div class="hd"><div><b style="font-size:16px">INVOICE</b><div class="muted">' + esc(I.no) + '</div></div>' +
+          '<div style="text-align:right"><div>' + esc(I.date) + ' · ' + esc(fromMin(I.clock)) + '</div><div class="muted">Front desk Laras</div></div></div>' +
+          '<div class="row" style="margin-top:10px"><b>' + esc(I.name) + '</b>' + chip('info', I.type === 'baru' ? 'New Pasien' : 'Regular') + chip('', c.hv ? 'Home Visit' : PKG_NAME[c.pk]) + '</div>' +
+          '<div class="muted" style="font-size:12px;margin-top:4px">Fisioterapis ' + esc(I.th) + ' · Diagnosa: ' + esc(I.dx || '-') + '</div>' +
+          '<div style="margin-top:10px">' + linesTable(c) + '</div><div class="row" style="margin-top:8px">' + chip('warn', 'Belum dibayar', 'clock') + '</div></div>' +
+          '<div class="row"><button type="button" class="btn" data-act="back0">Ubah data</button><button type="button" class="btn primary" data-act="to-pay">Lanjut: terima pembayaran</button></div>';
+      };
+      var payHtml = function () {
+        var I = D.inv;
+        return '<div class="panel"><div class="lbl">Total tagihan · ' + esc(I.no) + '</div><div class="hero-fig num" style="font-size:40px">' + rp(I.calc.total) + '</div><div class="muted" style="font-size:13px;margin-top:4px">' + esc(I.name) + '</div></div>' +
+          '<div class="panel"><div class="sec-title" style="margin-bottom:8px">Rekening penerimaan</div>' + seg('pay', ['tunai', 'bca', 'mandiri', 'bni', 'transfer', 'qris'].map(function (k) { return [k, PAY[k]]; }), D.pay) +
+          '<p class="notes" style="margin-top:8px">' + esc(PAY_NOTE[D.pay]) + '. Pembayaran ini masuk ke laporan per rekening penerimaan.</p>' +
+          (D.pay !== 'tunai' ? '<div class="field" style="margin-top:8px"><label for="sv-ref">Nomor approval / referensi (opsional)</label><input type="text" id="sv-ref" value="' + esc(D.ref) + '" placeholder="Contoh: 152059" autocomplete="off"></div>' : '') + '</div>' +
+          '<div class="panel soft"><div class="row" style="justify-content:space-between"><div><b>Notifikasi suara</b><div class="muted" style="font-size:12px">Berbunyi di komputer front desk, dan notifikasi di HP finance dan owner</div></div>' +
+          '<span class="switch"><button type="button" role="switch" aria-checked="' + D.sound + '" aria-label="Notifikasi suara" data-act="snd"></button></span></div>' +
+          '<div class="row" style="margin-top:8px"><button type="button" class="btn sm" data-act="snd-test">Tes suara</button><span class="muted" style="font-size:12px">Nyalakan volume perangkat Anda.</span></div></div>' +
+          '<div class="row"><button type="button" class="btn" data-act="back1">Kembali</button><button type="button" class="btn primary" data-act="paid">Tandai pembayaran diterima</button></div>';
+      };
+      var doneHtml = function () {
+        var s = D.paid, ag = todayAgg();
+        var rc = { date: '17 / 11 / 2026', no: s.inv, name: s.name, type: s.type, tind: s.tind, th: s.th, note: s.note, dx: s.dx, pay: s.pay, pkg: s.pkg, hv: s.hv, total: s.total, fd: s.fd };
+        return callout('good', 'check', 'Pembayaran <b>' + rp(s.total) + '</b> dari <b>' + esc(s.name) + '</b> diterima lewat <b>' + esc(PAY[s.pay]) + '</b> dan sudah masuk daftar penjualan, laporan per rekening, dan insentif front desk.') +
+          '<div class="sec-title">Notifikasi yang terkirim</div>' +
+          '<div class="notif">' + ic('bell') + '<div><b>Komputer front desk' + (D.sound ? ' · suara berbunyi' : ' · suara dimatikan') + '</b>' + (D.sound ? 'Terdengar: "Pembayaran diterima. ' + esc(s.name) + ', ' + esc(terbilang(s.total)) + ' rupiah, lewat ' + esc(PAY[s.pay]) + '."' : 'Notifikasi hanya tampil di layar.') + '</div></div>' +
+          '<div class="notif">' + ic('bell') + '<div><b>HP finance</b>Pembayaran masuk ' + rp(s.total) + ' · ' + esc(PAY[s.pay]) + ' · ' + esc(s.name) + ' (' + esc(s.inv) + ')</div></div>' +
+          '<div class="notif">' + ic('bell') + '<div><b>HP owner</b>Pemasukan hari ini naik menjadi ' + rp(ag.total) + ' dari ' + ag.visits + ' transaksi.</div></div>' +
+          '<div class="sec-title">Kuitansi</div>' + receiptHtml(rc) +
+          '<div class="row"><button type="button" class="btn primary" data-act="print">Cetak kuitansi</button><button type="button" class="btn" data-act="wa">Kirim ke WhatsApp pasien</button><button type="button" class="btn" data-act="next">Pasien berikutnya</button></div>';
+      };
+      var salesHtml = function () {
+        var list = D.sales.filter(function (s) { return D.filter === 'all' || s.type === D.filter; }).sort(function (a, b) { return a.time < b.time ? -1 : 1; });
+        var all = D.sales, sub = function (t) { var x = all.filter(function (s) { return s.type === t; }); return { n: x.length, rp: sumBy(x, function (s) { return s.total; }) }; };
+        var b = sub('baru'), r = sub('reg');
+        return '<div class="panel"><div class="row" style="justify-content:space-between"><div class="sec-title">List penjualan layanan · Selasa 17 Nov</div>' +
+          seg('flt', [['all', 'Semua'], ['baru', 'Pasien baru'], ['reg', 'Pasien regular']], D.filter) + '</div>' +
+          '<div class="grid3" style="margin-top:10px">' + tile('Pasien baru', b.n + ' · ' + jt(b.rp / 1000000)) + tile('Pasien regular', r.n + ' · ' + jt(r.rp / 1000000)) + tile('Total', rp(b.rp + r.rp)) + '</div>' +
+          '<div class="scroll-y" style="margin-top:10px"><div class="tablewrap"><table><thead><tr><th>Jam</th><th>Pasien</th><th>Jenis</th><th>Layanan</th><th>Fisio</th><th>Rekening</th><th class="r">Total</th></tr></thead><tbody>' +
+          list.map(function (s) {
+            return '<tr' + (s.live ? ' class="hl"' : '') + '><td>' + s.time + '</td><td>' + esc(s.name) + '</td><td>' + chip(s.type === 'baru' ? 'info' : '', s.type === 'baru' ? 'Baru' : 'Regular') + '</td><td>' + (s.hv ? 'Home Visit' : PKG_NAME[s.pkg]) + '</td><td>' + esc(s.th) + '</td><td>' + esc(PAY[s.pay]) + '</td><td class="r num">' + rp(s.total) + '</td></tr>';
+          }).join('') + '</tbody></table></div></div>' +
+          '<p class="notes" style="margin-top:6px">Daftar ini otomatis dari transaksi kuitansi, tidak diketik ulang. Pasien baru dan regular dipisah, dan angka yang sama dipakai di laporan penjualan.</p></div>';
+      };
+      var render = function () {
+        var main = D.step === 0 ? formHtml() : (D.step === 1 ? invoiceHtml() : (D.step === 2 ? payHtml() : doneHtml()));
+        el.innerHTML = frame('Layanan dan pembayaran', 'Front desk', stepper() + '<div style="display:flex;flex-direction:column;gap:12px">' + main + '</div>' + salesHtml(), 'wide');
+      };
+      render();
+      el.addEventListener('input', function (e) {
+        var id = e.target.id;
+        if (id === 'sv-name') { D.name = e.target.value; }
+        if (id === 'sv-note') { D.note = e.target.value; }
+        if (id === 'sv-dx') { D.dx = e.target.value; }
+        if (id === 'sv-ref') { D.ref = e.target.value; }
+      });
+      el.addEventListener('change', function (e) {
+        var id = e.target.id, ti = e.target.getAttribute && e.target.getAttribute('data-tind');
+        if (id === 'sv-th') { D.th = e.target.value; }
+        if (id === 'sv-promo') { D.promo = e.target.value; render(); }
+        if (ti) { var k = D.tind.indexOf(ti); if (e.target.checked && k < 0) { D.tind.push(ti); } if (!e.target.checked && k > -1) { D.tind.splice(k, 1); } render(); }
+      });
+      el.addEventListener('click', function (e) {
+        var t = e.target.closest ? e.target.closest('button') : null; if (!t) { return; }
+        var sg = t.getAttribute('data-seg'), v = t.getAttribute('data-v'), act = t.getAttribute('data-act');
+        if (sg === 'type') { D.type = v; D.name = v === 'baru' ? 'Bapak Wawan' : 'Ibu Ratna'; render(); return; }
+        if (sg === 'loc') { D.loc = v; if (v === 'hv') { D.pkg = '1'; D.promo = ''; } render(); return; }
+        if (sg === 'pkg') { D.pkg = v; D.promo = ''; render(); return; }
+        if (sg === 'pay') { D.pay = v; render(); return; }
+        if (sg === 'flt') { D.filter = v; render(); return; }
+        if (act === 'mk-inv') {
+          if (!String(D.name).trim()) { toast('Isi nama pasien dulu.'); return; }
+          if (!D.tind.length) { toast('Pilih minimal satu jenis layanan.'); return; }
+          D.seq += 1;
+          D.inv = { no: 'INV-2026-11-' + String(D.seq).padStart(4, '0'), date: '17 Nov 2026', clock: D.clock, name: String(D.name).trim(), type: D.type, th: D.th, dx: String(D.dx).trim(), calc: invCalc() };
+          D.step = 1; render(); return;
+        }
+        if (act === 'back0') { D.step = 0; render(); return; }
+        if (act === 'to-pay') { D.step = 2; render(); return; }
+        if (act === 'back1') { D.step = 1; render(); return; }
+        if (act === 'snd') { D.sound = !D.sound; render(); return; }
+        if (act === 'snd-test') { var ok = chime(); speak('Pembayaran diterima. Tes suara.'); if (!ok) { toast('Suara tidak didukung di browser ini.'); } return; }
+        if (act === 'paid') {
+          var inv = D.inv, text = 'Pembayaran diterima. ' + inv.name + ', ' + terbilang(inv.calc.total) + ' rupiah, lewat ' + PAY[D.pay];
+          D.paid = { id: 's' + (D.sales.length + 1), time: fromMin(D.clock), name: inv.name, type: inv.type, pkg: inv.calc.pk, hv: inv.calc.hv, tind: D.tind.slice(), dx: D.dx, note: D.note, th: inv.th, fd: 'Laras', pay: D.pay, total: inv.calc.total, live: true, inv: inv.no };
+          D.sales.push(D.paid); D.clock += 7; D.step = 3; render();
+          if (D.sound) { chime(); speak(text); } else { toast('Pembayaran dicatat. Suara dimatikan.'); }
+          return;
+        }
+        if (act === 'print') {
+          var s = D.paid, html = receiptHtml({ date: '17 / 11 / 2026', no: s.inv, name: s.name, type: s.type, tind: s.tind, th: s.th, note: s.note, dx: s.dx, pay: s.pay, pkg: s.pkg, hv: s.hv, total: s.total, fd: s.fd });
+          modal('<div class="noprint"><h3>Cetak kuitansi</h3></div>' + html + '<div class="row noprint"><button type="button" class="btn primary" data-act="doprint">Cetak</button><button type="button" class="btn" data-close>Tutup</button></div>', function (o) {
+            o.addEventListener('click', function (ev) { var b = ev.target.closest ? ev.target.closest('button') : null; if (b && b.getAttribute('data-act') === 'doprint') { doPrint(); } });
+          });
+          return;
+        }
+        if (act === 'wa') { toast('Kuitansi PDF terkirim ke WhatsApp ' + D.paid.name + '.'); return; }
+        if (act === 'next') {
+          D.step = 0; D.inv = null; D.paid = null; D.type = 'reg'; D.name = 'Ibu Ratna'; D.loc = 'klinik'; D.pkg = '1'; D.promo = ''; D.tind = ['fe', 'ir', 'tens']; D.dx = ''; D.note = ''; D.ref = '';
+          render(); return;
+        }
+      });
+    }
+  });
+
+  /* =====================================================================
+     TAHAP 2b: Laporan penjualan, insentif, per rekening, per layanan
+     ===================================================================== */
+  add({
+    id: 't2r', title: 'Laporan penjualan, insentif, rekening, dan layanan',
+    now: 'Laporan penjualan dan penerimaan ditulis ulang dari kuitansi ke Excel harian, lalu insentif fisio dan front desk direkap sebulan sekali.',
+    with: 'Laporan penjualan layanan (pasien baru dan regular), insentif fisio, insentif front desk, penerimaan per rekening, dan per layanan keluar dari transaksi yang sama. Hari ini bisa dilihat kapan saja, bulan berjalan sudah terjumlah.',
+    who: ['Owner', 'Finance'],
+    build: function (el) {
+      var tab = initTab('t2r', 'penjualan'), per = 'today', reps = {};
+      var usesPer = function () { return tab === 'penjualan' || tab === 'rekening' || tab === 'layanan'; };
+      var perBar = function (ag) {
+        var live = S.svc.sales.filter(function (s) { return s.live; }), until = live.length ? live[live.length - 1].time : '14:05';
+        return '<div class="ctrl">' + seg('per', [['today', 'Hari ini'], ['month', 'Bulan berjalan']], per) + '</div>' +
+          '<div class="sec-title">' + (per === 'today' ? 'Selasa 17 Nov 2026 · sampai ' + until : '1-17 November 2026') + ' · ' + ag.visits + ' transaksi</div>';
+      };
+      var penjualan = function (ag) {
+        var m = ag.matrix, rows = KIND_ORDER.map(function (k) {
+          var c = m[k], n = c.baru.n + c.reg.n, r = c.baru.rp + c.reg.rp;
+          return [KIND[k], c.baru.n, rp(c.baru.rp), c.reg.n, rp(c.reg.rp), n, rp(r)];
+        });
+        var tb = sumBy(KIND_ORDER, function (k) { return m[k].baru.n; }), tr = sumBy(KIND_ORDER, function (k) { return m[k].reg.n; });
+        var rb = sumBy(KIND_ORDER, function (k) { return m[k].baru.rp; }), rr = sumBy(KIND_ORDER, function (k) { return m[k].reg.rp; });
+        reps.penjualan = { name: 'laporan-penjualan-layanan.xlsx', rep: { head: ['Layanan', 'Pasien baru (jml)', 'Pasien baru (Rp)', 'Regular (jml)', 'Regular (Rp)', 'Total (jml)', 'Total (Rp)'], num: [1, 2, 3, 4, 5, 6], rows: rows, total: ['Total', tb, rp(rb), tr, rp(rr), tb + tr, rp(rb + rr)] } };
+        return '<div class="grid3">' + tile('Pasien baru', tb + ' · ' + jt(rb / 1000000)) + tile('Pasien regular', tr + ' · ' + jt(rr / 1000000)) + tile('Total penjualan', rp(rb + rr)) + '</div>' +
+          repTable(reps.penjualan.rep, false) + '<div class="row">' + dlBtn('penjualan') + '</div>' +
+          '<p class="notes">' + (per === 'today' ? 'Transaksi yang Anda buat di layar Layanan sampai kuitansi langsung masuk ke angka ini.' : 'Angka bulan berjalan sama dengan layar Pemasukan dan Laporan akhir bulan: total penjualan = kas diterima.') + '</p>';
+      };
+      var fisio = function () {
+        var rows = terapisRows(false);
+        reps.fisio = { name: 'laporan-insentif-fisio.xlsx', rep: { head: ['Terapis', 'Status', 'Hari hadir', 'Pasien', 'Home visit', 'Uang harian', 'Per pasien', 'Home visit (Rp)', 'Total insentif'], num: [2, 3, 4, 5, 6, 7, 8],
+          rows: rows.map(function (x) { return [x.r.p.n, x.r.p.st, x.r.hadir, x.p, x.hv, rp(x.uh), rp(x.ps), rp(x.hr), { html: '<b>' + rp(x.total) + '</b>', text: rp(x.total) }]; }),
+          total: ['Total', '', sumBy(rows, function (x) { return x.r.hadir; }), sumBy(rows, function (x) { return x.p; }), sumBy(rows, function (x) { return x.hv; }), rp(sumBy(rows, function (x) { return x.uh; })), rp(sumBy(rows, function (x) { return x.ps; })), rp(sumBy(rows, function (x) { return x.hr; })), rp(sumBy(rows, function (x) { return x.total; }))] } };
+        return '<div class="sec-title">Insentif fisio · 26 Okt-17 Nov 2026 (periode berjalan)</div>' + repTable(reps.fisio.rep, false) + '<div class="row">' + dlBtn('fisio') + '</div>' +
+          '<p class="notes">Tarif: uang harian ' + rp(TER_R.uh) + ', per pasien ' + rp(TER_R.pasien) + ', home visit ' + rp(TER_R.hv) + '. Pasien dihitung dari kunjungan yang selesai. Baris Citra sama dengan layar Insentif harian, termasuk keberatan yang sudah diterima.</p>';
+      };
+      var fd = function () {
+        var names = ['Uang harian', 'Insentif pasien baru', 'Insentif paket 3x', 'Insentif paket 6x', 'Insentif paket 12x', 'Insentif tapping'], fds = fdGaji();
+        var cellOf = function (G, nm) {
+          var t = G.tunj.filter(function (x) { return x.n === nm; })[0], amt = tunjAmt(t);
+          return { html: '<b>' + rp(amt) + '</b><br><small class="muted">' + t.qty + ' × ' + rp(t.rate) + '</small>', text: rp(amt) + ' (' + t.qty + ' x ' + rp(t.rate) + ')', amt: amt };
+        };
+        var rows = fds.map(function (x) {
+          var cs = names.map(function (nm) { return cellOf(x.G, nm); });
+          return [x.p.n].concat(cs).concat([{ html: '<b>' + rp(sumBy(cs, function (c) { return c.amt; })) + '</b>', text: rp(sumBy(cs, function (c) { return c.amt; })) }]);
+        });
+        var colSum = names.map(function (nm, i) { return sumBy(fds, function (x) { return cellOf(x.G, nm).amt; }); });
+        reps.fd = { name: 'laporan-insentif-frontdesk.xlsx', rep: { head: ['Front desk', 'Uang harian', 'Pasien baru', 'Paket 3x', 'Paket 6x', 'Paket 12x', 'Tapping', 'Total insentif'], num: [1, 2, 3, 4, 5, 6, 7], rows: rows, total: ['Total'].concat(colSum.map(rp)).concat([rp(sumBy(colSum, function (v) { return v; }))]) } };
+        return '<div class="sec-title">Insentif front desk · periode 26 Okt-25 Nov (draf)</div><div class="tablewrap">' + repTable(reps.fd.rep, false) + '</div><div class="row">' + dlBtn('fd') + '</div>' +
+          '<p class="notes">Insentif pasien baru dan paket masuk ke front desk yang bertugas saat pasien datang untuk terapi, bukan yang menjual. Paket dihitung 1× per paket saat pertama kali dipakai. Angka Kirana sama dengan layar Penggajian.</p>';
+      };
+      var rekening = function (ag) {
+        var keys = PAY_ORDER.filter(function (k) { return ag.pay[k] > 0; }), mx = Math.max.apply(null, keys.map(function (k) { return ag.pay[k]; }).concat([1]));
+        reps.rekening = { name: 'laporan-per-rekening.xlsx', rep: { head: ['Rekening penerimaan', 'Penerimaan', '% dari total', 'Dicocokkan dengan'], num: [1, 2], rows: keys.map(function (k) { return [PAY[k], rp(ag.pay[k]), pct(ag.pay[k], ag.total), PAY_NOTE[k]]; }), total: ['Total', rp(ag.total), '100%', ''] } };
+        return '<div>' + keys.map(function (k) { return '<div class="hbar"><span>' + PAY[k] + '</span><span class="trk"><i style="width:' + (ag.pay[k] / mx * 100) + '%"></i></span><span class="num">' + rp(ag.pay[k]) + '</span></div>'; }).join('') + '</div>' +
+          repTable(reps.rekening.rep, false) + '<div class="row">' + dlBtn('rekening') + '</div>' +
+          '<p class="notes">Setiap pembayaran dicatat dengan rekening penerimaannya, jadi finance tinggal mencocokkan total per rekening dengan mutasi bank, settlement kartu, dan laci kas.</p>';
+      };
+      var layanan = function (ag) {
+        var m = ag.matrix, tot = function (k) { return { n: m[k].baru.n + m[k].reg.n, rp: m[k].baru.rp + m[k].reg.rp }; };
+        var paketN = tot('p3').n + tot('p6').n + tot('p12').n, paketRp = tot('p3').rp + tot('p6').rp + tot('p12').rp;
+        var row = function (nm, n, r) { return [nm, n, rp(r), pct(r, ag.total)]; };
+        reps.layanan = { name: 'laporan-per-layanan.xlsx', rep: { head: ['Layanan', 'Jumlah', 'Penjualan', '% dari total'], num: [1, 2, 3], rows: [
+          row('Single Visit', tot('sv').n, tot('sv').rp), row('Paket 3', tot('p3').n, tot('p3').rp), row('Paket 6', tot('p6').n, tot('p6').rp), row('Paket 12', tot('p12').n, tot('p12').rp),
+          [{ html: '<b>Subtotal paket</b>', text: 'Subtotal paket' }, paketN, rp(paketRp), pct(paketRp, ag.total)], row('Home Visit', tot('hv').n, tot('hv').rp)], total: ['Total', tot('sv').n + paketN + tot('hv').n, rp(ag.total), '100%'] } };
+        reps.tind = { name: 'laporan-per-tindakan.xlsx', rep: { head: ['Tindakan', 'Jumlah pasien', '% dari kunjungan'], num: [1, 2], rows: TINDAKAN.filter(function (t) { return ag.tind[t[0]]; }).map(function (t) { return [t[1], ag.tind[t[0]], pct(ag.tind[t[0]], ag.visits)]; }) } };
+        return '<div class="sec-title">Per bentuk layanan</div>' + repTable(reps.layanan.rep, false) + '<div class="row">' + dlBtn('layanan') + '</div>' +
+          '<div class="sec-title" style="margin-top:6px">Per jenis tindakan</div>' + repTable(reps.tind.rep, false) + '<div class="row">' + dlBtn('tind', 'Unduh per tindakan (.xlsx)') + '</div>' +
+          '<p class="notes">Satu pasien bisa mendapat beberapa tindakan, jadi jumlah per tindakan tidak dijumlahkan. Penjualan paket dihitung saat dibeli, sesinya dihitung di layar Paket dan sisa paket.</p>';
+      };
+      var render = function () {
+        var ag = usesPer() ? (per === 'today' ? todayAgg() : monthAgg()) : null;
+        var body = '<div>' + seg('tab', TABS.t2r, tab) + '</div>' + (ag ? perBar(ag) : '') +
+          (tab === 'penjualan' ? penjualan(ag) : tab === 'fisio' ? fisio() : tab === 'fd' ? fd() : tab === 'rekening' ? rekening(ag) : layanan(ag));
+        el.innerHTML = frame('Laporan layanan', 'Owner dan finance', body, 'wide');
+      };
+      render();
+      el.addEventListener('click', function (e) {
+        var t = e.target.closest ? e.target.closest('button') : null; if (!t) { return; }
+        var sg = t.getAttribute('data-seg');
+        if (sg === 'tab') { tab = t.getAttribute('data-v'); render(); return; }
+        if (sg === 'per') { per = t.getAttribute('data-v'); render(); return; }
+        var xl = t.getAttribute('data-xl');
+        if (xl && reps[xl]) { downloadXlsx(reps[xl].name, repRows(reps[xl].rep)); }
+      });
+    }
+  });
+
+  /* =====================================================================
+     TAHAP 3a: Pembelian, pemakaian, dan stok alat, obat, perlengkapan
+     ===================================================================== */
+  function stokChip(it) { var s = stokStatus(it); return { html: chip(s.k, s.t), text: s.t }; }
+  add({
+    id: 't3a', title: 'Beli alat, obat, perlengkapan, dan stoknya selalu tahu',
+    now: 'Pembelian, pemakaian, dan stok dicatat di satu lembar Excel (Rekap Pembelian, Pemakaian dan Stock Barang Klinik). Stok akhir dihitung manual setiap bulan.',
+    with: 'Setiap pembelian menambah stok dan setiap pemakaian mengurangi stok, otomatis. Barang yang menipis atau habis langsung ditandai, lengkap dengan daftar belanjanya.',
+    who: ['Front desk', 'Finance', 'Owner'],
+    build: function (el) {
+      var tab = initTab('t3a', 'beli'), kat = 'alat';
+      var first = function (k) { return S.stok.items.filter(function (i) { return i.kat === k; })[0]; };
+      var F = { it: first('alat').id, qty: '', hg: first('alat').harga, pit: 'a1', pqty: '', pfor: 'Terapi pasien', rc: 'tens', rn: 5 };
+      var num = function (id) { return parseInt(id.slice(1), 10); };
+
+      var beliHtml = function () {
+        var items = S.stok.items.filter(function (i) { return i.kat === kat; });
+        var buys = S.stok.buys.filter(function (b) { return stokItem(b.it).kat === kat; }).sort(function (a, b) { return b.d - a.d || num(b.id) - num(a.id); }).slice(0, 8);
+        var it = stokItem(F.it);
+        return '<div>' + seg('kat', STOK_KEYS.map(function (k) { return [k, STOK_KAT[k] + ' (' + S.stok.items.filter(function (i) { return i.kat === k; }).length + ')']; }), kat) + '</div>' +
+          '<div class="panel"><div class="sec-title" style="margin-bottom:8px">Catat pembelian ' + STOK_KAT[kat].toLowerCase() + '</div>' +
+          '<div class="field"><label for="bl-it">Barang</label><select id="bl-it">' + items.map(function (i) { return '<option value="' + i.id + '"' + (i.id === F.it ? ' selected' : '') + '>' + esc(i.n) + ' (stok ' + stokNow(i) + ' ' + i.unit + ')</option>'; }).join('') + '</select></div>' +
+          '<div class="grid2" style="margin-top:8px"><div class="field"><label for="bl-qty">Jumlah (' + esc(it.unit) + ')</label><input type="number" id="bl-qty" min="1" step="1" inputmode="numeric" value="' + F.qty + '" placeholder="0"></div>' +
+          '<div class="field"><label for="bl-hg">Harga satuan</label>' + money('bl-hg', F.hg) + '</div></div>' +
+          '<div class="row" style="margin-top:10px"><button type="button" class="btn primary" data-act="beli">Simpan pembelian</button><span class="muted" style="font-size:12px">Stok naik otomatis</span></div></div>' +
+          '<div><div class="sec-title" style="margin-bottom:6px">List pembelian ' + STOK_KAT[kat].toLowerCase() + ' terbaru</div>' + repTable({ head: ['Tgl', 'Barang', 'Jml', 'Harga satuan', 'Total'], num: [2, 3, 4], rows: buys.map(function (b) { var i = stokItem(b.it); return [b.d + ' Nov', i.n, b.qty + ' ' + i.unit, rp(b.harga), rp(b.qty * b.harga)]; }) }, false) + '</div>' +
+          '<p class="notes">Pembelian dibagi tiga jenis: alat, obat, dan perlengkapan. Rekap lengkap per periode ada di layar Laporan Tahap 3.</p>';
+      };
+      var pakaiHtml = function () {
+        var cur = stokItem(F.pit), uses = S.stok.uses.slice().sort(function (a, b) { return b.d - a.d || num(b.id) - num(a.id); }).slice(0, 6);
+        var opts = STOK_KEYS.map(function (k) {
+          return '<optgroup label="' + STOK_KAT[k] + '">' + S.stok.items.filter(function (i) { return i.kat === k; }).map(function (i) { return '<option value="' + i.id + '"' + (i.id === F.pit ? ' selected' : '') + '>' + esc(i.n) + '</option>'; }).join('') + '</optgroup>';
+        }).join('');
+        var rc = RECIPE[F.rc];
+        return '<div class="panel"><div class="sec-title" style="margin-bottom:8px">Catat pemakaian</div>' +
+          '<div class="field"><label for="pk-it">Barang</label><select id="pk-it">' + opts + '</select><small class="muted">Stok sekarang: ' + stokNow(cur) + ' ' + esc(cur.unit) + ' ' + '</small></div>' +
+          '<div class="grid2" style="margin-top:8px"><div class="field"><label for="pk-qty">Jumlah (' + esc(cur.unit) + ')</label><input type="number" id="pk-qty" min="1" step="1" inputmode="numeric" value="' + F.pqty + '" placeholder="0"></div>' +
+          '<div class="field"><label for="pk-for">Dipakai untuk</label><select id="pk-for">' + ['Terapi pasien', 'Home visit', 'Operasional klinik'].map(function (x) { return '<option' + (x === F.pfor ? ' selected' : '') + '>' + x + '</option>'; }).join('') + '</select></div></div>' +
+          '<div class="row" style="margin-top:10px"><button type="button" class="btn primary" data-act="pakai">Catat pemakaian</button><span class="muted" style="font-size:12px">Stok berkurang otomatis</span></div></div>' +
+          '<div class="panel soft"><div class="sec-title" style="margin-bottom:6px">Pemakaian otomatis per layanan</div>' +
+          '<p class="notes" style="margin:0 0 8px">Untuk barang yang selalu terpakai di tiap sesi, stok dipotong otomatis dari jumlah sesi, tanpa dicatat satu per satu.</p>' +
+          '<div class="grid2"><div class="field"><label for="rc-sv">Layanan</label><select id="rc-sv">' + Object.keys(RECIPE).map(function (k) { return '<option value="' + k + '"' + (k === F.rc ? ' selected' : '') + '>' + RECIPE[k].n + '</option>'; }).join('') + '</select></div>' +
+          '<div class="field"><label for="rc-n">Jumlah sesi</label><input type="number" id="rc-n" min="1" step="1" inputmode="numeric" value="' + F.rn + '"></div></div>' +
+          '<p class="notes" style="margin-top:6px">Setiap sesi ' + rc.n + ' memakai: ' + Object.keys(rc.use).map(function (id) { return rc.use[id] + ' ' + stokItem(id).unit + ' ' + stokItem(id).n; }).join(', ') + '.</p>' +
+          '<div class="row" style="margin-top:8px"><button type="button" class="btn" data-act="recipe">Potong stok otomatis</button></div></div>' +
+          '<div><div class="sec-title" style="margin-bottom:6px">Pemakaian terbaru</div>' + repTable({ head: ['Tgl', 'Barang', 'Jml', 'Untuk', 'Oleh'], num: [2], rows: uses.map(function (u) { var i = stokItem(u.it); return [u.d + ' Nov', i.n, u.qty + ' ' + i.unit, u.ket, u.by]; }) }, false) + '</div>';
+      };
+      var stokHtml = function () {
+        var its = S.stok.items, val = sumBy(its, function (i) { return Math.max(0, stokNow(i)) * i.harga; });
+        var warn = its.filter(function (i) { return stokStatus(i).k === 'warn'; }).length, bad = its.filter(function (i) { return stokStatus(i).k === 'bad'; }).length;
+        return '<div class="grid3">' + tile('Nilai persediaan', jt(val / 1000000)) + tile('Menipis', warn) + tile('Habis', bad) + '</div>' +
+          STOK_KEYS.map(function (k) {
+            return '<div><div class="sec-title" style="margin-bottom:6px">' + STOK_KAT[k] + '</div><div class="list">' + its.filter(function (i) { return i.kat === k; }).map(function (i) {
+              var n = stokNow(i), st = stokStatus(i), w = Math.min(100, Math.max(0, n / (i.min * 3) * 100));
+              return '<div class="li"><div class="t"><b>' + esc(i.n) + '</b><small>Minimum ' + i.min + ' ' + esc(i.unit) + '</small></div><div class="minibar"><i class="' + (st.k === 'good' ? '' : st.k) + '" style="width:' + w + '%"></i></div><div style="text-align:right;min-width:78px"><div class="num"><b>' + n + '</b> <span class="muted" style="font-size:12px">' + esc(i.unit) + '</span></div>' + chip(st.k, st.t) + '</div></div>';
+            }).join('') + '</div></div>';
+          }).join('') +
+          '<div class="row"><button type="button" class="btn primary" data-act="belanja">Buat daftar belanja</button></div>' +
+          '<p class="notes">Status Menipis muncul saat stok sama dengan atau di bawah minimum yang ditetapkan, dan Habis saat stok nol.</p>';
+      };
+      var render = function () {
+        var body = '<div>' + seg('tab', TABS.t3a, tab) + '</div>' + (tab === 'beli' ? beliHtml() : tab === 'pakai' ? pakaiHtml() : stokHtml());
+        el.innerHTML = frame('Alat, obat, perlengkapan', 'Front desk', body);
+      };
+      render();
+      el.addEventListener('input', function (e) {
+        var id = e.target.id;
+        if (id === 'bl-qty') { F.qty = e.target.value; }
+        if (id === 'bl-hg') { F.hg = e.target.value; }
+        if (id === 'pk-qty') { F.pqty = e.target.value; }
+        if (id === 'rc-n') { F.rn = e.target.value; }
+      });
+      el.addEventListener('change', function (e) {
+        var id = e.target.id;
+        if (id === 'bl-it') { F.it = e.target.value; F.hg = stokItem(F.it).harga; render(); }
+        if (id === 'pk-it') { F.pit = e.target.value; render(); }
+        if (id === 'pk-for') { F.pfor = e.target.value; }
+        if (id === 'rc-sv') { F.rc = e.target.value; render(); }
+      });
+      var warnAfter = function (it, before) {
+        var s = stokStatus(it);
+        if (s.k !== 'good' && before === 'good') { toast('Perhatian: stok ' + it.n + ' sekarang ' + s.t.toLowerCase() + ' (sisa ' + stokNow(it) + ' ' + it.unit + ', minimum ' + it.min + ').'); return true; }
+        return false;
+      };
+      el.addEventListener('click', function (e) {
+        var t = e.target.closest ? e.target.closest('button') : null; if (!t) { return; }
+        var sg = t.getAttribute('data-seg'), act = t.getAttribute('data-act');
+        if (sg === 'tab') { tab = t.getAttribute('data-v'); render(); return; }
+        if (sg === 'kat') { kat = t.getAttribute('data-v'); F.it = first(kat).id; F.hg = first(kat).harga; render(); return; }
+        if (act === 'beli') {
+          var q = parseInt(F.qty, 10), hg = parseInt(F.hg, 10), it = stokItem(F.it);
+          if (!(q >= 1)) { toast('Isi jumlah pembelian, minimal 1.'); return; }
+          if (!(hg >= 0)) { toast('Isi harga satuan.'); return; }
+          var old = stokNow(it);
+          S.stok.buys.push({ id: 'b' + (++S.stok.nb), d: 17, it: it.id, qty: q, harga: hg, by: 'Kirana' }); it.harga = hg; F.qty = '';
+          render(); toast('Pembelian dicatat. Stok ' + it.n + ' naik dari ' + old + ' menjadi ' + stokNow(it) + ' ' + it.unit + '.'); return;
+        }
+        if (act === 'pakai') {
+          var pq = parseInt(F.pqty, 10), pi = stokItem(F.pit);
+          if (!(pq >= 1)) { toast('Isi jumlah pemakaian, minimal 1.'); return; }
+          if (pq > stokNow(pi)) { toast('Ditolak: stok ' + pi.n + ' hanya ' + stokNow(pi) + ' ' + pi.unit + '.'); return; }
+          var b4 = stokStatus(pi).k;
+          S.stok.uses.push({ id: 'u' + (++S.stok.nu), d: 17, it: pi.id, qty: pq, ket: F.pfor, by: 'Kirana' }); F.pqty = '';
+          render(); if (!warnAfter(pi, b4)) { toast('Pemakaian dicatat. Sisa ' + pi.n + ' ' + stokNow(pi) + ' ' + pi.unit + '.'); } return;
+        }
+        if (act === 'recipe') {
+          var n = parseInt(F.rn, 10), rc = RECIPE[F.rc];
+          if (!(n >= 1)) { toast('Isi jumlah sesi, minimal 1.'); return; }
+          var ids = Object.keys(rc.use), short = ids.filter(function (id) { return rc.use[id] * n > stokNow(stokItem(id)); })[0];
+          if (short) { var si = stokItem(short); toast('Ditolak: stok ' + si.n + ' hanya ' + stokNow(si) + ' ' + si.unit + ', butuh ' + rc.use[short] * n + '.'); return; }
+          var before = {}; ids.forEach(function (id) { before[id] = stokStatus(stokItem(id)).k; S.stok.uses.push({ id: 'u' + (++S.stok.nu), d: 17, it: id, qty: rc.use[id] * n, ket: 'Terapi pasien (otomatis, ' + n + ' sesi ' + rc.n + ')', by: 'Sistem' }); });
+          render(); var warned = false; ids.forEach(function (id) { warned = warnAfter(stokItem(id), before[id]) || warned; });
+          if (!warned) { toast('Stok terpotong otomatis untuk ' + n + ' sesi ' + rc.n + '.'); } return;
+        }
+        if (act === 'belanja') {
+          var need = S.stok.items.filter(function (i) { return stokStatus(i).k !== 'good'; }).map(function (i) { var qy = Math.max(1, i.min * 2 - stokNow(i)); return { i: i, q: qy }; });
+          var cost = sumBy(need, function (x) { return x.q * x.i.harga; });
+          var text = 'Daftar belanja klinik (17 Nov 2026)\n' + need.map(function (x) { return '- ' + x.i.n + ': ' + x.q + ' ' + x.i.unit; }).join('\n') + '\nPerkiraan biaya ' + rp(cost);
+          modal('<h3>Daftar belanja</h3><p class="sub">Dibuat otomatis dari barang yang menipis atau habis. Jumlah disarankan sampai dua kali stok minimum.</p>' +
+            '<div class="list">' + need.map(function (x) { return '<div class="li"><div class="t"><b>' + esc(x.i.n) + '</b><small>' + STOK_KAT[x.i.kat] + ' · stok ' + stokNow(x.i) + ' ' + esc(x.i.unit) + '</small></div><div style="text-align:right"><b class="num">' + x.q + ' ' + esc(x.i.unit) + '</b><div class="muted num" style="font-size:12px">' + rp(x.q * x.i.harga) + '</div></div></div>'; }).join('') + '</div>' +
+            '<div class="row" style="justify-content:space-between"><b>Perkiraan biaya</b><b class="num">' + rp(cost) + '</b></div>' +
+            '<div class="row"><button type="button" class="btn primary" data-copy>Salin daftar</button><button type="button" class="btn" data-close>Tutup</button></div>', function (o) {
+            o.addEventListener('click', function (ev) { if (ev.target.closest && ev.target.closest('[data-copy]')) { copyText(text); } });
+          });
+        }
+      });
+    }
+  });
+
+  /* =====================================================================
+     TAHAP 3b: Laporan pembelian, pemakaian, dan stok
+     ===================================================================== */
+  add({
+    id: 't3r', title: 'Laporan pembelian, pemakaian, dan stok',
+    now: 'Laporan pembelian, pemakaian, dan stok disusun dari lembar Excel yang sama, dan angkanya harus dicocokkan sendiri.',
+    with: 'Tiga laporan keluar dari catatan yang sama, jadi stok awal ditambah pembelian dikurangi pemakaian selalu sama dengan stok akhir. Bisa difilter per jenis dan periode, lalu diunduh.',
+    who: ['Owner', 'Finance'],
+    build: function (el) {
+      var tab = initTab('t3r', 'beli'), per = 'month', kat = 'all', detail = false, reps = {};
+      var range = function () { return per === 'today' ? [17, 17] : [1, 17]; };
+      var okKat = function (i) { return kat === 'all' || i.kat === kat; };
+      var perLabel = function () { return per === 'today' ? 'Selasa 17 Nov 2026' : '1-17 November 2026'; };
+      var ctrl = function (withPer) {
+        return '<div class="ctrl">' + (withPer ? seg('per', [['today', 'Hari ini'], ['month', 'Bulan berjalan']], per) : '') +
+          seg('kat', [['all', 'Semua jenis'], ['alat', 'Alat'], ['obat', 'Obat'], ['perlengkapan', 'Perlengkapan']], kat) + '</div>';
+      };
+      var beli = function () {
+        var r = range(), buys = S.stok.buys.filter(function (b) { return b.d >= r[0] && b.d <= r[1]; });
+        var sumRows = STOK_KEYS.map(function (k) {
+          var x = buys.filter(function (b) { return stokItem(b.it).kat === k; });
+          return [STOK_KAT[k], x.length, rp(sumBy(x, function (b) { return b.qty * b.harga; }))];
+        });
+        var det = buys.filter(function (b) { return okKat(stokItem(b.it)); }).sort(function (a, b) { return a.d - b.d; });
+        reps.beli = { name: 'laporan-pembelian.xlsx', rep: { head: ['Tanggal', 'Jenis', 'Barang', 'Jumlah', 'Harga satuan', 'Total', 'Pencatat'], num: [3, 4, 5], rows: det.map(function (b) { var i = stokItem(b.it); return [b.d + ' Nov', STOK_KAT[i.kat], i.n, b.qty + ' ' + i.unit, rp(b.harga), rp(b.qty * b.harga), b.by]; }),
+          total: ['Total', '', '', '', '', rp(sumBy(det, function (b) { return b.qty * b.harga; })), ''] } };
+        return ctrl(true) + '<div class="sec-title">Pembelian · ' + perLabel() + '</div>' +
+          repTable({ head: ['Jenis', 'Transaksi', 'Total belanja'], num: [1, 2], rows: sumRows, total: ['Semua jenis', buys.length, rp(sumBy(buys, function (b) { return b.qty * b.harga; }))] }, false) +
+          '<div class="sec-title" style="margin-top:6px">Rincian</div>' + repTable(reps.beli.rep, true) + '<div class="row">' + dlBtn('beli') + '</div>';
+      };
+      var pakai = function () {
+        var r = range(), its = S.stok.items.filter(okKat);
+        var rows = its.map(function (i) { var q = stokPakai(i.id, r[0], r[1]); return { i: i, q: q }; }).filter(function (x) { return x.q > 0; });
+        reps.pakai = { name: 'laporan-pemakaian.xlsx', rep: { head: ['Barang', 'Jenis', 'Jumlah pakai', 'Satuan', 'Nilai pakai'], num: [2, 4], rows: rows.map(function (x) { return [x.i.n, STOK_KAT[x.i.kat], x.q, x.i.unit, rp(x.q * x.i.harga)]; }),
+          total: ['Total', '', '', '', rp(sumBy(rows, function (x) { return x.q * x.i.harga; }))] } };
+        var det = S.stok.uses.filter(function (u) { return u.d >= r[0] && u.d <= r[1] && okKat(stokItem(u.it)); }).sort(function (a, b) { return a.d - b.d; });
+        reps.pakaidet = { name: 'rincian-pemakaian.xlsx', rep: { head: ['Tanggal', 'Barang', 'Jumlah', 'Untuk', 'Dicatat oleh'], num: [2], rows: det.map(function (u) { var i = stokItem(u.it); return [u.d + ' Nov', i.n, u.qty + ' ' + i.unit, u.ket, u.by]; }) } };
+        return ctrl(true) + '<div class="sec-title">Pemakaian · ' + perLabel() + '</div>' + repTable(reps.pakai.rep, true) + '<div class="row">' + dlBtn('pakai') +
+          '<button type="button" class="btn sm" data-act="detail">' + (detail ? 'Sembunyikan rincian' : 'Tampilkan rincian per pencatatan') + '</button></div>' +
+          (detail ? repTable(reps.pakaidet.rep, true) + '<div class="row">' + dlBtn('pakaidet', 'Unduh rincian (.xlsx)') + '</div>' : '') +
+          '<p class="notes">Nilai pakai = jumlah pakai × harga satuan terakhir. Pemakaian dicatat dari layar Beli, pakai, stok, termasuk yang terpotong otomatis per sesi layanan.</p>';
+      };
+      var stok = function () {
+        var its = S.stok.items.filter(okKat);
+        reps.stok = { name: 'laporan-stok.xlsx', rep: { head: ['Barang', 'Jenis', 'Stok awal 1 Nov', 'Pembelian', 'Pemakaian', 'Stok akhir', 'Minimum', 'Status', 'Nilai persediaan'], num: [2, 3, 4, 5, 6, 8],
+          rows: its.map(function (i) { return [i.n, STOK_KAT[i.kat], i.awal, stokBeli(i.id, 1, 31), stokPakai(i.id, 1, 31), { html: '<b>' + stokNow(i) + '</b> ' + esc(i.unit), text: stokNow(i) + ' ' + i.unit }, i.min, stokChip(i), rp(Math.max(0, stokNow(i)) * i.harga)]; }),
+          total: ['Total nilai persediaan', '', '', '', '', '', '', '', rp(sumBy(its, function (i) { return Math.max(0, stokNow(i)) * i.harga; }))] } };
+        var ok = its.every(function (i) { return stokNow(i) === i.awal + stokBeli(i.id, 1, 31) - stokPakai(i.id, 1, 31); });
+        return ctrl(false) + '<div class="sec-title">Stok per 17 Nov 2026</div>' + repTable(reps.stok.rep, true) + '<div class="row">' + dlBtn('stok') + '</div>' +
+          callout(ok ? 'good' : 'warn', ok ? 'check' : 'warn', 'Stok awal + pembelian - pemakaian = stok akhir, untuk semua barang di tabel.') +
+          '<p class="notes">Nilai persediaan memakai harga satuan terakhir. Barang berstatus Menipis atau Habis juga muncul di layar Beli, pakai, stok beserta daftar belanjanya.</p>';
+      };
+      var render = function () {
+        var body = '<div>' + seg('tab', TABS.t3r, tab) + '</div>' + (tab === 'beli' ? beli() : tab === 'pakai' ? pakai() : stok());
+        el.innerHTML = frame('Laporan alat, obat, perlengkapan', 'Owner dan finance', body, 'wide');
+      };
+      render();
+      el.addEventListener('click', function (e) {
+        var t = e.target.closest ? e.target.closest('button') : null; if (!t) { return; }
+        var sg = t.getAttribute('data-seg'), v = t.getAttribute('data-v'), act = t.getAttribute('data-act');
+        if (sg === 'tab') { tab = v; render(); return; }
+        if (sg === 'per') { per = v; render(); return; }
+        if (sg === 'kat') { kat = v; render(); return; }
+        if (act === 'detail') { detail = !detail; render(); return; }
+        var xl = t.getAttribute('data-xl');
+        if (xl && reps[xl]) { downloadXlsx(reps[xl].name, repRows(reps[xl].rep)); }
+      });
+    }
+  });
+
+  /* =====================================================================
+     TAHAP 4: Laporan untuk gaji (absensi, cuti, insentif, lembur, gaji per karyawan)
+     ===================================================================== */
+  add({
+    id: 't4r', title: 'Laporan untuk gaji: absensi, cuti, insentif, lembur, dan gaji tiap karyawan',
+    now: 'Finance menghitung ulang dari rekap Excel front desk, komponen demi komponen, lalu menyusun gaji tiap karyawan.',
+    with: 'Absensi, cuti, insentif, dan lembur sudah menjadi laporan sendiri dan saling cocok. Gaji tiap karyawan tinggal disusun dari laporan itu, dan angkanya sama dengan slip gaji.',
+    who: ['Finance', 'Owner'],
+    build: function (el) {
+      var tab = initTab('t4r', 'absensi'), reps = {};
+      var inPeriod = function (iso) { return iso >= PERIOD_START && iso <= PERIOD_END; };
+      var absen = function () {
+        var rows = attendRows(PERIOD_START, PERIOD_END, true);
+        var sched = sumBy(rows, function (r) { return r.sched; }), hadir = sumBy(rows, function (r) { return r.hadir; });
+        reps.absensi = { name: 'gaji-laporan-absensi.xlsx', rep: { head: ['Nama', 'Jabatan', 'Terjadwal', 'Hadir', 'Cuti', 'Izin / sakit', 'Telat (kali)', 'Potongan telat', 'Jam kerja'], num: [2, 3, 4, 5, 6, 7, 8],
+          rows: rows.map(function (r) { return [r.p.n, ROLE_NAME[r.p.role], r.sched, r.hadir, r.cuti || '-', r.izin || '-', r.late || '-', r.pot ? rp(r.pot) : '-', hm(r.mins)]; }),
+          total: ['Total', '', sched, hadir, sumBy(rows, function (r) { return r.cuti; }), sumBy(rows, function (r) { return r.izin; }), sumBy(rows, function (r) { return r.late; }), rp(sumBy(rows, function (r) { return r.pot; })), hm(sumBy(rows, function (r) { return r.mins; }))] } };
+        return '<div class="sec-title">Absensi · periode gaji 26 Okt-25 Nov 2026 (draf)</div>' + repTable(reps.absensi.rep, false) + '<div class="row">' + dlBtn('absensi') + '</div>' +
+          '<p class="notes">Hari hadir menjadi dasar uang harian, dan kejadian terlambat menjadi potongan. Hari setelah 17 Nov mengikuti jadwal dan dikoreksi otomatis saat absen terjadi.</p>';
+      };
+      var cuti = function () {
+        var ev = cutiEvents();
+        reps.cuti = { name: 'gaji-laporan-cuti.xlsx', rep: { head: ['Karyawan', 'Status', 'Cuti periode ini (hari)', 'Terpakai tahun ini', 'Sisa kuota', 'Pengaruh ke gaji'], num: [2, 3, 4], rows: PEOPLE.map(function (p) {
+          if (!cutiApplies(p)) { return [p.n, p.st, '-', '-', 'Tidak berlaku', 'Tidak ada hak cuti']; }
+          var u = cutiUsed(p), inP = ev.filter(function (e) { return e.id === p.id && inPeriod(e.iso); }).length;
+          var sub = ev.filter(function (e) { return e.sub === p.id && inPeriod(e.iso); }).length;
+          return [p.n, p.st, inP || '-', u.before + u.now, u.sisa + ' hari', inP ? 'Tidak dipotong, uang harian shift itu ke pengganti' : (sub ? 'Menerima uang harian ' + sub + ' shift pengganti' : '-')];
+        }) } };
+        return '<div class="sec-title">Cuti · periode gaji 26 Okt-25 Nov 2026</div><div class="scroll-y">' + repTable(reps.cuti.rep, false) + '</div><div class="row">' + dlBtn('cuti') + '</div>' +
+          '<p class="notes">Cuti yang disetujui lewat layar Jadwal shift dan cuti langsung muncul di sini. Pengganti menerima uang harian shift yang digantikan.</p>';
+      };
+      var fdRep = function () {
+        var names = ['Uang harian', 'Insentif pasien baru', 'Insentif paket 3x', 'Insentif paket 6x', 'Insentif paket 12x', 'Insentif tapping'], fds = fdGaji();
+        var cellOf = function (G, nm) { var t = G.tunj.filter(function (x) { return x.n === nm; })[0], amt = tunjAmt(t); return { html: '<b>' + rp(amt) + '</b><br><small class="muted">' + t.qty + ' × ' + rp(t.rate) + '</small>', text: rp(amt) + ' (' + t.qty + ' x ' + rp(t.rate) + ')', amt: amt }; };
+        var colSum = names.map(function (nm) { return sumBy(fds, function (x) { return cellOf(x.G, nm).amt; }); });
+        return { head: ['Front desk', 'Uang harian', 'Pasien baru', 'Paket 3x', 'Paket 6x', 'Paket 12x', 'Tapping', 'Total insentif'], num: [1, 2, 3, 4, 5, 6, 7], rows: fds.map(function (x) {
+          var cs = names.map(function (nm) { return cellOf(x.G, nm); }), tot = sumBy(cs, function (c) { return c.amt; });
+          return [x.p.n].concat(cs).concat([{ html: '<b>' + rp(tot) + '</b>', text: rp(tot) }]);
+        }), total: ['Total'].concat(colSum.map(rp)).concat([rp(sumBy(colSum, function (v) { return v; }))]) };
+      };
+      var insentif = function () {
+        var rows = terapisRows(true);
+        reps.ins1 = { name: 'gaji-insentif-fisio.xlsx', rep: { head: ['Terapis', 'Hari hadir', 'Pasien', 'Home visit', 'Uang harian', 'Per pasien', 'Home visit (Rp)', 'Total insentif'], num: [1, 2, 3, 4, 5, 6, 7],
+          rows: rows.map(function (x) { return [x.r.p.n, x.r.hadir, x.p, x.hv, rp(x.uh), rp(x.ps), rp(x.hr), { html: '<b>' + rp(x.total) + '</b>', text: rp(x.total) }]; }),
+          total: ['Total', sumBy(rows, function (x) { return x.r.hadir; }), sumBy(rows, function (x) { return x.p; }), sumBy(rows, function (x) { return x.hv; }), rp(sumBy(rows, function (x) { return x.uh; })), rp(sumBy(rows, function (x) { return x.ps; })), rp(sumBy(rows, function (x) { return x.hr; })), rp(sumBy(rows, function (x) { return x.total; }))] } };
+        reps.ins2 = { name: 'gaji-insentif-frontdesk.xlsx', rep: fdRep() };
+        return '<div class="sec-title">Insentif fisio · 26 Okt-25 Nov 2026 (draf)</div>' + repTable(reps.ins1.rep, false) + '<div class="row">' + dlBtn('ins1', 'Unduh insentif fisio (.xlsx)') + '</div>' +
+          '<div class="sec-title" style="margin-top:6px">Insentif front desk · 26 Okt-25 Nov 2026 (draf)</div>' + repTable(reps.ins2.rep, false) + '<div class="row">' + dlBtn('ins2', 'Unduh insentif front desk (.xlsx)') + '</div>' +
+          '<p class="notes">Terapis mendapat uang harian, per pasien, dan home visit. Front desk mendapat insentif pasien baru, paket, dan tapping, ditambah tunjangan di slip gaji.</p>';
+      };
+      var lembur = function () {
+        var fd = fdGaji();
+        reps.lembur = { name: 'gaji-laporan-lembur.xlsx', rep: { head: ['Front desk', 'Jam kerja', 'Batas jam', 'Kelebihan', 'Tarif per jam', 'Lembur'], num: [1, 2, 3, 4, 5],
+          rows: fd.map(function (x) { return [x.p.n, hm(x.G.menit), x.G.batas + ':00', hm(x.calc.over), rp(x.calc.rate), rp(x.calc.lembur)]; }),
+          total: ['Total', '', '', '', '', rp(sumBy(fd, function (x) { return x.calc.lembur; }))] } };
+        return '<div class="sec-title">Lembur front desk · 26 Okt-25 Nov 2026 (draf)</div>' + repTable(reps.lembur.rep, false) + '<div class="row">' + dlBtn('lembur') + '</div>' +
+          '<p class="notes">Tarif per jam = gaji pokok ÷ 173. Lembur = kelebihan jam kerja dari batas × tarif per jam, dibulatkan ke bawah ke ribuan. Batas jam diisi finance di Data gaji.</p>';
+      };
+      /* Gaji per karyawan: satu baris tiap orang, dengan rincian slip. */
+      var gajiRows = function () {
+        var ar = attendRows(PERIOD_START, PERIOD_END, true), ter = terapisRows(true), fds = fdGaji(), out = [];
+        PEOPLE.forEach(function (p) {
+          var a = ar.filter(function (r) { return r.p.id === p.id; })[0], lateTxt = a.late + ' kejadian: ' + Math.min(a.late, 3) + '× Rp20.000' + (a.late > 3 ? ' + ' + (a.late - 3) + '× Rp40.000' : '');
+          if (p.role === 'T') {
+            var x = ter.filter(function (r) { return r.r.p.id === p.id; })[0];
+            out.push({ p: p, pokok: 0, ins: x.total, lembur: 0, pot: a.pot, net: x.total - a.pot,
+              earn: [{ n: 'Uang harian', det: x.r.hadir + ' hari × ' + rp(TER_R.uh), amt: x.uh }, { n: 'Per pasien', det: x.p + ' pasien × ' + rp(TER_R.pasien), amt: x.ps }, { n: 'Home visit', det: x.hv + ' kunjungan × ' + rp(TER_R.hv), amt: x.hr }],
+              ded: [{ n: 'Potongan keterlambatan', det: lateTxt, amt: a.pot }] });
+          } else if (p.role === 'F') {
+            var f = fds.filter(function (r) { return r.p.id === p.id; })[0], c = f.calc;
+            out.push({ p: p, pokok: f.G.gp, ins: c.te - f.G.gp - c.lembur, lembur: c.lembur, pot: c.td, net: c.net, earn: c.earn, ded: c.ded });
+          } else {
+            var amt = Math.round(a.mins / 60 * STAF_RATE / 1000) * 1000;
+            out.push({ p: p, pokok: 0, ins: amt, lembur: 0, pot: 0, net: amt, earn: [{ n: 'Upah per jam', det: hm(a.mins) + ' jam × ' + rp(STAF_RATE), amt: amt }], ded: [] });
+          }
+        });
+        return out;
+      };
+      var gaji = function () {
+        var rows = gajiRows(), stg = ['Draf', 'Diperiksa finance', 'Disetujui owner', 'Dibayar'][S.gaji.stage] || 'Draf';
+        reps.gaji = { name: 'gaji-per-karyawan.xlsx', rep: { head: ['Nama', 'Jabatan', 'Gaji pokok', 'Insentif dan tunjangan', 'Lembur', 'Potongan', 'Total diterima', 'Slip'], num: [2, 3, 4, 5, 6],
+          rows: rows.map(function (r) { return [r.p.n, ROLE_NAME[r.p.role], r.pokok ? rp(r.pokok) : '-', rp(r.ins), r.lembur ? rp(r.lembur) : '-', r.pot ? rp(-r.pot) : '-', { html: '<b>' + rp(r.net) + '</b>', text: rp(r.net) }, { html: '<button type="button" class="btn sm" data-slip="' + r.p.id + '">Lihat slip</button>', text: '' }]; }),
+          total: ['Total', '', rp(sumBy(rows, function (r) { return r.pokok; })), rp(sumBy(rows, function (r) { return r.ins; })), rp(sumBy(rows, function (r) { return r.lembur; })), rp(-sumBy(rows, function (r) { return r.pot; })), rp(sumBy(rows, function (r) { return r.net; })), ''] } };
+        return '<div class="grid3">' + tile('Karyawan', rows.length) + tile('Total gaji periode', jt(sumBy(rows, function (r) { return r.net; }) / 1000000)) + tile('Status', '<span style="font-size:15px">' + stg + '</span>') + '</div>' +
+          '<div class="sec-title">Gaji per karyawan · 26 Okt-25 Nov 2026 (draf)</div>' + repTable(reps.gaji.rep, false) + '<div class="row">' + dlBtn('gaji') + '<a class="btn sm" href="#m5?o=t">Buka layar persetujuan gaji</a></div>' +
+          '<p class="notes">Angka Kirana sama persis dengan layar Slip gaji dan persetujuan, termasuk lembur dan potongan keterlambatan. Ubah Data gaji di sana, lalu lihat hasilnya di sini.</p>';
+      };
+      var render = function () {
+        var body = '<div>' + seg('tab', TABS.t4r, tab) + '</div>' + (tab === 'absensi' ? absen() : tab === 'cuti' ? cuti() : tab === 'insentif' ? insentif() : tab === 'lembur' ? lembur() : gaji());
+        el.innerHTML = frame('Laporan penggajian', 'Finance dan owner', body, 'wide');
+      };
+      render();
+      el.addEventListener('click', function (e) {
+        var t = e.target.closest ? e.target.closest('button') : null; if (!t) { return; }
+        var sg = t.getAttribute('data-seg');
+        if (sg === 'tab') { tab = t.getAttribute('data-v'); render(); return; }
+        var xl = t.getAttribute('data-xl');
+        if (xl && reps[xl]) { downloadXlsx(reps[xl].name, repRows(reps[xl].rep)); return; }
+        var sl = t.getAttribute('data-slip');
+        if (sl) {
+          var r = gajiRows().filter(function (x) { return x.p.id === sl; })[0];
+          var line = function (x, minus) { return '<tr><td class="wrap"><b>' + esc(x.n) + '</b><div class="muted" style="font-size:11px">' + esc(x.det) + '</div></td><td class="r num">' + (minus ? '-' : '') + rp(x.amt) + '</td></tr>'; };
+          modal('<h3>Slip gaji · ' + esc(r.p.n) + '</h3><div class="muted" style="font-size:12px">' + ROLE_NAME[r.p.role] + ' · ' + esc(r.p.st) + ' · periode 26 Okt-25 Nov 2026 (draf)</div>' +
+            '<div class="tablewrap"><table><thead><tr><th>Pendapatan</th><th class="r">Jumlah</th></tr></thead><tbody>' + r.earn.map(function (x) { return line(x, false); }).join('') + '</tbody>' +
+            (r.ded.length ? '<thead><tr><th>Potongan</th><th class="r"></th></tr></thead><tbody>' + r.ded.map(function (x) { return line(x, true); }).join('') + '</tbody>' : '') +
+            '<tbody><tr class="total"><td>Total diterima</td><td class="r num">' + rp(r.net) + '</td></tr></tbody></table></div><div class="row"><button type="button" class="btn" data-close>Tutup</button></div>');
+        }
+      });
+    }
+  });
+
   /* ---------- Urutan presentasi: satu periode kerja, dengan satu hari penuh di tengahnya ---------- */
   var BAB = [
     { t: 'Awal periode', d: 'Sebelum periode jadwal berjalan, leader menyusun jadwal shift untuk semua karyawan.', ids: ['m2'], w: { m2: 'Sebelum periode dimulai' } },
@@ -2826,53 +4068,98 @@
       w: { m2b: '07:30 · Karyawan masuk', m8: '08:00 · Pengingat untuk pasien hari ini', m10: '09:00 · Pasien baru menghubungi klinik', m1: '11:20 · Owner membuka HP', m6: '14:00 · Pasien selesai terapi', m7: '14:30 · Bonus kunjungan pasien', /* m11: '16:00 · Kebutuhan operasional', */ m4: '19:30 · Penutupan hari dan laporan harian', m3: '20:00 · Owner melihat pemasukan hari ini' } },
     { t: 'Akhir periode dan akhir bulan', d: 'Semua laporan harian yang sudah final menjadi dasar gaji dan laporan bulanan.', ids: ['m5', 'm9'], w: { m5: '25 November · Hari gajian', m9: '30 November · Akhir bulan' } }
   ];
+  var ALL = {};
+  SCENES.forEach(function (sc) { ALL[sc.id] = sc; });
   (function () {
     var byIdMap = {}; SCENES.forEach(function (sc) { byIdMap[sc.id] = sc; });
     var ordered = [];
     BAB.forEach(function (b) { b.ids.forEach(function (id) { var sc = byIdMap[id]; sc.bab = b.t; sc.waktu = b.w[id]; ordered.push(sc); delete byIdMap[id]; }); });
-    if (Object.keys(byIdMap).length) { throw new Error('Adegan belum masuk urutan: ' + Object.keys(byIdMap).join(', ')); }
+    var rest = Object.keys(byIdMap).filter(function (id) { return TAHAP_ONLY.indexOf(id) < 0; });
+    if (rest.length) { throw new Error('Adegan belum masuk urutan: ' + rest.join(', ')); }
     SCENES.length = 0; ordered.forEach(function (sc) { SCENES.push(sc); });
   })();
+  /* Urutan menurut dokumen owner (4 tahap), lalu fitur tambahan. Setiap poin dokumen harus punya layar. */
+  var ORDER_TAHAP = ORDER_T.map(function (id) { if (!ALL[id]) { throw new Error('Layar tahap tidak ada: ' + id); } return ALL[id]; });
+  TAHAP.forEach(function (th) {
+    th.items.forEach(function (it) {
+      [it[2]].concat(it[3] || []).forEach(function (spec) { if (!ALL[spec.split(':')[0]]) { throw new Error('Poin ' + it[0] + ' menunjuk layar yang tidak ada: ' + spec); } });
+    });
+  });
 
   /* ---------- Router & halaman daftar ---------- */
   var root = $('#root');
   var header = function () {
     return '<div class="demo-bar">' + ic('warn') + '<span>Prototype dengan data contoh. Nama, angka, dan tarif di sini fiktif, dan ini belum sistem yang sebenarnya.</span></div>' +
       '<div class="topbar"><div class="brand"><span class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.500" stroke-linecap="round" aria-hidden="true">' + ICON.cross + '</svg></span><span>Sistem Klinik</span></div>' +
-      '<a class="btn sm" href="#daftar">Daftar masalah</a></div>';
+      '<a class="btn sm" href="#daftar">Daftar isi</a></div>';
   };
-  function listPage() {
+  var FULL_IDS = ['t1r', 't2r', 't3r', 't4r'];
+  function parseHash() {
+    var h = (location.hash || '').replace(/^#/, ''), q = '', i = h.indexOf('?'), o = {};
+    if (i >= 0) { q = h.slice(i + 1); h = h.slice(0, i); }
+    q.split('&').forEach(function (kv) { var p = kv.split('='); if (p[0]) { o[p[0]] = decodeURIComponent(p[1] || ''); } });
+    return { id: h || 'daftar', o: o };
+  }
+  function tahapHtml(th) {
+    var firstId = ORDER_T.filter(function (id) { return TH_OF[id] === th.no; })[0];
+    return '<section class="tahap"><header><div><span class="n">Tahap ' + th.no + '</span><h2>' + esc(th.t) + '</h2><p>' + esc(th.d) + '</p></div>' +
+      '<a class="btn sm primary" href="#' + firstId + '?o=t">Buka tahap ini</a></header>' +
+      th.items.map(function (it) {
+        return '<div class="pitem"><span class="k">' + it[0] + '</span><div class="tx">' + esc(it[1]) + '</div><div class="go"><a class="plink main" href="' + linkHref(it[2]) + '">' + esc(linkLabel(it[2])) + '</a>' +
+          (it[3] || []).map(function (s) { return '<a class="plink" href="' + linkHref(s) + '">' + esc(linkLabel(s)) + '</a>'; }).join('') + '</div></div>';
+      }).join('') + '</section>';
+  }
+  function listPage(o) {
     var no = {}; SCENES.forEach(function (sc, i) { no[sc.id] = i + 1; });
+    var total = 0; TAHAP.forEach(function (th) { total += th.items.length; });
+    var extra = ORDER_T.filter(function (id) { return !TH_OF[id]; }).map(function (id) { return ALL[id]; });
     root.innerHTML = header() +
-      '<div class="hero"><h1>Dari masalah sehari-hari, biarkan sistem yang menyelesaikannya</h1>' +
-      '<p>Ikuti satu periode kerja di klinik: jadwal disiapkan, lalu satu hari penuh dari absen pagi sampai laporan malam, dan ditutup dengan gajian dan laporan akhir bulan. Setiap layar bisa dicoba.</p>' +
-      '<div class="row" style="margin-top:20px"><a class="btn primary" href="#' + SCENES[0].id + '">Mulai dari awal periode</a></div></div>' +
-      BAB.map(function (b) {
-        return '<div class="bab"><h2>' + esc(b.t) + '</h2><p>' + esc(b.d) + '</p><div class="cards">' + b.ids.map(function (id) {
-          var sc = SCENES.filter(function (x) { return x.id === id; })[0];
+      '<div class="hero"><h1>Empat tahap yang Anda minta, bisa dicoba satu per satu</h1>' +
+      '<p>Setiap poin di daftar Tahap 1 sampai Tahap 4 punya layar yang bisa diklik dan dicoba. Pilih poinnya di bawah, atau ikuti satu hari penuh di klinik di bagian paling bawah.</p>' +
+      '<div class="row" style="margin-top:20px"><a class="btn primary" href="#m2?o=t">Mulai dari Tahap 1</a><a class="btn" href="#daftar?s=cerita">Atau ikuti cerita satu hari</a></div>' +
+      '<div class="peta-sum">' + chip('good', total + ' dari ' + total + ' poin sudah ada layarnya', 'check') + chip('info', '4 tahap, ' + ORDER_TAHAP.filter(function (s) { return TH_OF[s.id]; }).length + ' layar') + '</div></div>' +
+      TAHAP.map(tahapHtml).join('') +
+      '<section class="tahap"><header><div><span class="n">Tambahan</span><h2>Di luar daftar 4 tahap</h2><p>Tidak ada di daftar, tapi sudah disiapkan sebagai pelengkap.</p></div></header>' +
+      extra.map(function (sc) {
+        return '<div class="pitem"><span class="k">+</span><div class="tx">' + esc(sc.title) + '</div><div class="go"><a class="plink main" href="#' + sc.id + '?o=t">Buka</a></div></div>';
+      }).join('') + '</section>' +
+      '<div id="cerita">' + BAB.map(function (b, bi) {
+        return '<div class="bab"><h2>' + (bi === 0 ? 'Cara lain: ikuti cerita satu hari di klinik. ' : '') + esc(b.t) + '</h2><p>' + esc(b.d) + '</p><div class="cards">' + b.ids.map(function (id) {
+          var sc = ALL[id];
           return '<a class="card-link" href="#' + sc.id + '"><span class="n">Masalah ' + no[id] + ' · ' + esc(sc.waktu) + '</span><h3>' + esc(sc.title) + '</h3><span class="a">Sekarang: ' + esc(sc.now) + '</span><span class="b">Dengan sistem: ' + esc(sc.with) + '</span></a>';
         }).join('') + '</div></div>';
-      }).join('');
+      }).join('') + '</div>';
+    if (o && o.s === 'cerita') { var c = $('#cerita'); if (c && c.scrollIntoView) { c.scrollIntoView(); } }
   }
-  function scenePage(i) {
-    var s = SCENES[i], prev = SCENES[i - 1], next = SCENES[i + 1];
-    var nav = '<div class="scene-nav"><a class="btn sm" href="#daftar">' + ic('left') + ' Semua masalah</a><div class="row">' +
-      (prev ? '<a class="btn sm" href="#' + prev.id + '">' + ic('left') + ' Sebelumnya</a>' : '') +
-      '<span class="muted" style="font-size:13px">' + (i + 1) + ' dari ' + SCENES.length + '</span>' +
-      (next ? '<a class="btn sm primary" href="#' + next.id + '">Berikutnya ' + ic('right') + '</a>' : '') + '</div></div>';
+  function scenePage(s, mode) {
+    var list = mode === 't' ? ORDER_TAHAP : SCENES, i = list.indexOf(s), prev = list[i - 1], next = list[i + 1];
+    var q = mode === 't' ? '?o=t' : '';
+    var nav = '<div class="scene-nav"><a class="btn sm" href="#daftar">' + ic('left') + ' Semua poin</a><div class="row">' +
+      (prev ? '<a class="btn sm" href="#' + prev.id + q + '">' + ic('left') + ' Sebelumnya</a>' : '') +
+      '<span class="muted" style="font-size:13px">' + (i + 1) + ' dari ' + list.length + '</span>' +
+      (next ? '<a class="btn sm primary" href="#' + next.id + q + '">Berikutnya ' + ic('right') + '</a>' : '') + '</div></div>';
+    var th = TH_OF[s.id];
+    var tag, sub;
+    if (mode === 't') { tag = th ? 'Tahap ' + th + ' · ' + TAHAP[th - 1].t : 'Tambahan di luar daftar'; sub = SHORT[s.id] || ''; }
+    else { tag = 'Masalah ' + (i + 1) + ' · ' + s.waktu; sub = s.bab; }
+    var keys = SC_ITEMS[s.id] || [];
+    var pdfBox = keys.length
+      ? '<div class="box pdf"><small>Poin permintaan owner di layar ini</small><ul>' + keys.map(function (k) { return '<li><b>' + k + '</b> ' + esc(pdfItem(k).n) + '</li>'; }).join('') + '</ul></div>'
+      : '<div class="box pdf"><small>Tambahan</small>Layar ini tidak ada di daftar 4 tahap. Disiapkan sebagai pelengkap.</div>';
     root.innerHTML = header() + nav +
-      '<div class="scene"><div class="story"><span class="tag">Masalah ' + (i + 1) + ' · ' + esc(s.waktu) + '</span><div class="muted" style="font-size:12px">' + esc(s.bab) + '</div><h2>' + esc(s.title) + '</h2>' +
+      '<div class="scene' + (FULL_IDS.indexOf(s.id) > -1 ? ' full' : '') + '"><div class="story"><span class="tag">' + esc(tag) + '</span><div class="muted" style="font-size:12px">' + esc(sub) + '</div><h2>' + esc(s.title) + '</h2>' +
       '<div class="box before"><small>Sekarang</small>' + esc(s.now) + '</div>' +
-      '<div class="box after"><small>Dengan sistem</small>' + esc(s.with) + '</div>' +
+      '<div class="box after"><small>Dengan sistem</small>' + esc(s.with) + '</div>' + pdfBox +
       '<div class="row">' + s.who.map(function (w) { return chip('info', w); }).join('') + '<span class="muted" style="font-size:12px">yang melihat layar ini</span></div></div>' +
       '<div class="stage" id="stage-host"></div></div>';
     s.build($('#stage-host'));
   }
   function route() {
-    var h = (location.hash || '').replace('#', '') || 'daftar';
-    var idx = -1; SCENES.forEach(function (s, i) { if (s.id === h) { idx = i; } });
-    if (idx < 0) { listPage(); } else { scenePage(idx); }
-    window.scrollTo(0, 0);
+    try { if ('speechSynthesis' in window) { window.speechSynthesis.cancel(); } } catch (e) { /* abaikan */ }
+    var h = parseHash(), sc = ALL[h.id];
+    START.tab = h.o.tab || '';
+    if (!sc) { listPage(h.o); } else { scenePage(sc, (h.o.o === 't' || SCENES.indexOf(sc) < 0) ? 't' : 's'); }
+    if (!(h.id === 'daftar' && h.o.s === 'cerita')) { window.scrollTo(0, 0); }
   }
   window.addEventListener('hashchange', route);
   route();
