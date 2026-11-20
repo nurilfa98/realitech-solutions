@@ -400,6 +400,8 @@
   .tahap > header h2 { font-size: 18px; line-height: 1.25; }
   .tahap > header .n { font-size: 12px; font-weight: 600; color: var(--accent-text); letter-spacing: 0.06em; text-transform: uppercase; }
   .tahap > header p { margin-top: 2px; font-size: 13px; color: var(--ink-2); max-width: 62ch; }
+  .tahap .legend { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; padding: 8px 16px; font-size: 12.5px; color: var(--ink-2); border-bottom: 1px solid var(--line); }
+  .tahap .legend .plink { min-height: 24px; padding: 1px 9px; font-size: 12px; cursor: default; }
   .pitem { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 10px 16px; border-bottom: 1px solid var(--line); }
   .pitem:last-child { border-bottom: 0; }
   .pitem .k { width: 28px; height: 28px; border-radius: 50%; background: var(--accent-soft); color: var(--accent-text); display: grid; place-items: center; font-size: 12px; font-weight: 600; }
@@ -3351,7 +3353,7 @@
   var RECIPE = { tens: { n: 'TENS', use: { a1: 2 } }, tape: { n: 'Kinesiotape', use: { a2: 1 } }, dn: { n: 'Dry needling', use: { a4: 2 } } };
 
   /* ---------- State tambahan ---------- */
-  S.svc = { step: 0, type: 'baru', name: 'Bapak Wawan', loc: 'klinik', tind: ['fe', 'ir', 'tens'], dx: 'Nyeri punggung bawah', note: '', th: 'Dina', pkg: '1', promo: '', pay: 'bca', ref: '', sound: true, inv: null, paid: null, filter: 'all', seq: 148, clock: 14 * 60 + 5, sales: seedSales() };
+  S.svc = { step: 0, type: 'baru', name: 'Bapak Wawan', loc: 'klinik', tind: ['fe', 'ir', 'tens'], dx: 'Nyeri punggung', note: '', th: 'Dina', pkg: '1', promo: '', pay: 'bca', ref: '', sound: true, inv: null, paid: null, filter: 'all', seq: 148, clock: 14 * 60 + 5, sales: seedSales() };
   S.stok = seedStok();
 
   /* =====================================================================
@@ -3545,7 +3547,7 @@
           }).join('') + '</div><p class="notes" style="margin-top:6px">Tindakan dasar sudah termasuk di tarif per kedatangan. Kinesiotape, ESWT, dan sport massage ditagih tambahan.</p></div>' +
           '<div class="panel"><div class="sec-title" style="margin-bottom:8px">Note dan diagnosa</div>' +
           '<div class="field"><label for="sv-note">Note</label><input type="text" id="sv-note" value="' + esc(D.note) + '" autocomplete="off"></div>' +
-          '<div class="field" style="margin-top:8px"><label for="sv-dx">Diagnosa</label><input type="text" id="sv-dx" value="' + esc(D.dx) + '" placeholder="Contoh: Nyeri punggung bawah" autocomplete="off"></div>' +
+          '<div class="field" style="margin-top:8px"><label for="sv-dx">Diagnosa</label><input type="text" id="sv-dx" value="' + esc(D.dx) + '" placeholder="Contoh: Nyeri punggung" autocomplete="off"></div>' +
           '<p class="notes" style="margin-top:6px">Dua baris ini sama seperti di formulir kuitansi sekarang (Note dan Diagnosa): diisi bebas, lalu tampil di kuitansi.</p></div>';
         var right =
           '<div class="panel"><div class="sec-title" style="margin-bottom:8px">Paket layanan</div>' +
@@ -4069,7 +4071,7 @@
   var RET_THR = { '1': 30, '2': 60, '3': 90, '6': 180 };
   var RET_MON = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
   var RET_SIZE = { p3: 3, p6: 6, p12: 12 };
-  var RET_DX = ['Nyeri punggung bawah', 'Nyeri leher', 'Frozen shoulder', 'Nyeri lutut', 'HNP', 'Plantar fasciitis', 'Keseleo pergelangan kaki', 'Pasca stroke', 'Tennis elbow', 'Cedera hamstring'];
+  var RET_DX = ['Nyeri punggung', 'Nyeri leher', 'Nyeri bahu', 'Nyeri lutut', 'Saraf kejepit', 'Nyeri tumit', 'Keseleo', 'Pasca stroke', 'Nyeri siku', 'Nyeri paha'];
   var RET_TPL = [
     { id: 'back', n: 'Ajak kembali + Promo Paket 6', need: false, txt: 'Halo {nama}, sudah lama kami tidak bertemu. Bagaimana kabar keluhan Anda? Bulan ini ada Promo Paket 6 Cares dengan potongan Rp100.000. Balas pesan ini untuk jadwalkan kunjungan. Balas STOP bila tidak ingin menerima info.' },
     { id: 'p12', n: 'Promo November: Paket 12', need: false, txt: 'Halo {nama}, ada Promo November: Paket 12 Cares dengan potongan Rp200.000, berlaku sampai 30 November. Balas pesan ini untuk jadwalkan. Balas STOP bila tidak ingin menerima info.' },
@@ -4293,6 +4295,7 @@
     var firstId = ORDER_T.filter(function (id) { return TH_OF[id] === th.no; })[0];
     return '<section class="tahap"><header><div><span class="n">Tahap ' + th.no + '</span><h2>' + esc(th.t) + '</h2><p>' + esc(th.d) + '</p></div>' +
       '<a class="btn sm primary" href="#' + firstId + '?o=t">Buka tahap ini</a></header>' +
+      '<div class="legend"><span class="plink main">Biru</span> layar utama yang menjawab poin <span class="plink">Putih</span> layar terkait, misalnya laporannya</div>' +
       th.items.map(function (it) {
         return '<div class="pitem"><span class="k">' + it[0] + '</span><div class="tx">' + esc(it[1]) + '</div><div class="go"><a class="plink main" href="' + linkHref(it[2]) + '">' + esc(linkLabel(it[2])) + '</a>' +
           (it[3] || []).map(function (s) { return '<a class="plink" href="' + linkHref(s) + '">' + esc(linkLabel(s)) + '</a>'; }).join('') + '</div></div>';
