@@ -759,12 +759,15 @@
   function bkCatTag(b) { return b.cat === 'teman' ? 'Teman owner ' + b.disc + '%' : (BK_CATS[b.cat] && b.cat !== 'umum' ? BK_CATS[b.cat].s : ''); }
   /* Rentang jam kerja terapis pada satu tanggal, dari jadwal shift. */
   function bkWindow(p, iso) {
-    if (iso > BK_PERIOD_END) { return null; }
-    var c = resolve(p, bkDow(iso));
+    if (iso > bkEnd()) { return null; }
+    var q = iso > S.sched.until ? { days: S.sched.nx.days[p.id], phase: p.phase } : p;
+    var c = resolve(q, bkDow(iso));
     if (!isWork(c)) { return null; }
     var sh = SHIFTS[c], s = toMin(sh.s), e = toMin(sh.e);
     return { p: p, code: c, name: sh.n, s: s, e: e };
   }
+  /* Jadwal berjalan terbit sampai S.sched.until. Jadwal berikutnya (bila sudah terbit) memperpanjangnya. */
+  function bkEnd() { return S.sched.nx ? S.sched.nx.until : S.sched.until; }
   function bkTherapists(iso) {
     return PEOPLE.filter(function (p) { return p.role === 'T'; }).map(function (p) { return bkWindow(p, iso); }).filter(function (w) { return !!w; });
   }
@@ -905,9 +908,8 @@
     lateCount: 3,
     absen: { shift: 'P', time: '07:38' },
     cuti: { who: 'e', day: 5, sub: '', stage: 0, orig: null, jenis: 'cuti' },
-    sched: { hp: 0, pubs: 0, logs: [
+    sched: { hp: 0, pubs: 0, until: BK_PERIOD_END, pick: '2027-01-25', nx: null, draft: null, base: PEOPLE.reduce(function (m, p) { m[p.id] = p.days.slice(); return m; }, {}), logs: [
       { at: '12 Nov 2026 09:05', by: 'Otomatis', t: 'Elsa cuti pada 12 Nov, digantikan Anisa. Disetujui leader dan owner, jadwal berubah sendiri.' },
-      { at: '5 Nov 2026 13:40', by: 'Leader', t: 'Revisi 1: salah satu terapis berhenti, shift-nya dialihkan ke terapis lain. Jadwal diterbitkan ulang, kalender booking ikut berubah.' },
       { at: '3 Nov 2026 08:30', by: 'Otomatis', t: 'Hendra cuti pada 3 Nov, digantikan Anisa. Disetujui leader dan owner, jadwal berubah sendiri.' },
       { at: '22 Agu 2026 15:30', by: 'Leader', t: 'Jadwal baru berlaku mulai 26 Agu 2026 diterbitkan. Terapis dan front desk menerima notifikasi.' }
     ] },
@@ -962,11 +964,12 @@
   }
   function isWork(c) { return !!c && c !== 'OFF' && c !== 'CUTI'; }
   function startMin(c) { return toMin(SHIFTS[c].s); }
-  function validateDay(i) {
-    var th = PEOPLE.filter(function (p) { return p.role === 'T' && isWork(resolve(p, i)); });
+  function validateDay(i, L) {
+    L = L || PEOPLE;
+    var th = L.filter(function (p) { return p.role === 'T' && isWork(resolve(p, i)); });
     var f = th.filter(function (p) { return p.g === 'f'; }).length;
     var m = th.filter(function (p) { return p.g === 'm'; }).length;
-    var fd = PEOPLE.filter(function (p) { return p.role === 'F'; }).map(function (p) { return resolve(p, i); }).filter(isWork);
+    var fd = L.filter(function (p) { return p.role === 'F'; }).map(function (p) { return resolve(p, i); }).filter(isWork);
     var fdOk = fd.indexOf('L') > -1 || (fd.indexOf('P') > -1 && fd.indexOf('S') > -1);
     var issues = [];
     if (f < 1) { issues.push('tidak ada terapis perempuan'); }
@@ -1145,7 +1148,7 @@
             (r.arr ? 'Absen masuk ' + r.arr + '<br>' + chip('good', 'Lokasi di klinik', 'pin') + ' ' + chip('good', 'Selfie tersimpan', 'camera') : 'Belum ada absen untuk shift ini.') +
             '</div></div></div></div>';
         }).join('') + '</div></div>' +
-        '<p class="notes">Contoh: ketuk nama untuk melihat bukti absen. Ubah jadwal di adegan Jadwal periode dan daftar ini ikut berubah.</p>';
+        '<p class="notes">Contoh: ketuk nama untuk melihat bukti absen. Jadwal diatur di layar Jadwal periode, dan cuti atau tukar shift yang disetujui ikut mengubah daftar ini.</p>';
       el.innerHTML = frame('Hari ini', 'Owner', body);
       el.addEventListener('click', function (e) {
         var b = e.target.closest ? e.target.closest('[data-att]') : null; if (!b) { return; }
@@ -1164,31 +1167,32 @@
         if (c === 'F') { return 'P/S'; }
         return c;
       };
-      var rosterHtml = function () {
+      var rosterHtml = function (L, edit, checks) {
         var groups = [['T', 'Terapis perempuan', 'f'], ['T', 'Terapis laki-laki', 'm'], ['F', 'Front desk', null], ['S', 'Staf penunjang (upah per jam)', null]];
         var rows = '';
         groups.forEach(function (g) {
+          var ps = L.filter(function (p) { return p.role === g[0] && (g[2] === null || p.g === g[2]); });
+          if (!ps.length) { return; }
           rows += '<tr class="grp"><td colspan="8">' + g[1] + '</td></tr>';
-          PEOPLE.filter(function (p) { return p.role === g[0] && (g[2] === null || p.g === g[2]); }).forEach(function (p) {
+          ps.forEach(function (p) {
             rows += '<tr><td class="name"><b>' + esc(p.n) + '</b> <span class="muted" style="font-size:11px">' + p.st + '</span></td>';
             for (var i = 0; i < 7; i++) {
-              var c = p.days[i];
-              var code = c === 'R' ? resolve(p, i) : c;
-              rows += '<td><button type="button" class="cell ' + code + '" data-cell="' + p.id + ':' + i + '" aria-label="' + esc(p.n + ', ' + DAYS_FULL[i] + ', ' + cellLabel(p, i)) + '">' + cellLabel(p, i) + '</button></td>';
+              var code = resolve(p, i);
+              rows += '<td><button type="button" class="cell ' + code + '"' + (edit ? ' data-dcell="' + p.id + ':' + i + '"' : ' disabled tabindex="-1"') + ' aria-label="' + esc(p.n + ', ' + DAYS_FULL[i] + ', ' + cellLabel(p, i)) + '">' + cellLabel(p, i) + '</button></td>';
             }
             rows += '</tr>';
           });
         });
         var head = '<tr><th style="text-align:left;padding-left:8px">Nama</th>' + DAYS.map(function (d) { return '<th>' + d + '</th>'; }).join('') + '</tr>';
-        var checks = '';
+        var out = '<div class="tablewrap"><table class="roster"><thead>' + head + '</thead><tbody>' + rows + '</tbody></table></div>';
+        if (!checks) { return out; }
+        var cks = '', issues = [];
         for (var d = 0; d < 7; d++) {
-          var v = validateDay(d);
-          checks += '<div class="' + (v.issues.length ? 'no' : 'ok') + '" title="' + esc(v.issues.join(', ') || 'Aman') + '">' + DAYS[d] + '<br>' + (v.issues.length ? 'Cek' : 'Aman') + '</div>';
+          var v = validateDay(d, L);
+          cks += '<div class="' + (v.issues.length ? 'no' : 'ok') + '" title="' + esc(v.issues.join(', ') || 'Aman') + '">' + DAYS[d] + '<br>' + (v.issues.length ? 'Cek' : 'Aman') + '</div>';
+          if (v.issues.length) { issues.push('<b>' + DAYS_FULL[d] + ':</b> ' + v.issues.join(', ')); }
         }
-        var issues = [];
-        for (var k = 0; k < 7; k++) { var vv = validateDay(k); if (vv.issues.length) { issues.push('<b>' + DAYS_FULL[k] + ':</b> ' + vv.issues.join(', ')); } }
-        return '<div class="tablewrap"><table class="roster"><thead>' + head + '</thead><tbody>' + rows + '</tbody></table></div>' +
-          '<div class="sec-title" style="margin-top:12px">Pemeriksaan otomatis per hari</div><div class="checks">' + checks + '</div>' +
+        return out + '<div class="sec-title" style="margin-top:12px">Pemeriksaan otomatis per hari</div><div class="checks">' + cks + '</div>' +
           '<div style="margin-top:8px">' + (issues.length ? callout('warn', 'warn', issues.join('<br>')) : callout('good', 'check', 'Setiap hari ada terapis perempuan dan laki-laki, dan front desk menutup 07:30-20:00.')) + '</div>';
       };
       var cutiOpts = function () {
@@ -1251,9 +1255,16 @@
         return '<div class="tablewrap"><table style="width:100%"><thead><tr>' + head.map(function (h) { return '<th style="text-align:left">' + esc(h) + '</th>'; }).join('') + '</tr></thead><tbody>' +
           rows.map(function (r) { return '<tr>' + r.map(function (c, i) { return '<td style="vertical-align:top;white-space:' + (i === 0 && !boldFirst ? 'nowrap' : 'normal') + (i === 0 && boldFirst ? ';font-weight:600' : '') + '">' + esc(c) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table></div>';
       };
+      var UNTIL = [
+        ['2026-11-25', '25 Nov 2026', ''],
+        ['2026-12-25', '25 Des 2026', '+1 bulan, sampai 25 Des'],
+        ['2027-01-25', '25 Jan 2027', '+2 bulan, sampai 25 Jan'],
+        ['2027-02-25', '25 Feb 2027', '+3 bulan, sampai 25 Feb']
+      ];
+      var untilLong = function (iso) { return UNTIL.filter(function (u) { return u[0] === iso; })[0][1]; };
       var SCHEDS = [
         { pub: '22 Agu 2026', from: '26 Agu 2026', note: 'berlaku sejak 26 Agu 2026 dan masih dipakai', off: 0 },
-        { pub: '20 Jun 2026', from: '26 Jun 2026', note: 'dipakai 2 bulan lalu diganti jadwal baru, tidak harus menunggu 3 bulan', off: 2 },
+        { pub: '20 Jun 2026', from: '26 Jun 2026', note: 'dipakai 2 bulan, lalu diganti jadwal berikutnya', off: 2 },
         { pub: '21 Mar 2026', from: '26 Mar 2026', note: 'dipakai 3 bulan', off: 4 }
       ];
       var HIST = [
@@ -1284,7 +1295,7 @@
         var hp = S.sched.hp, H = HIST[hp], SC = SCHEDS[H.s];
         var logs = wrapTable(['Waktu', 'Oleh', 'Perubahan'], S.sched.logs.map(function (e) { return [e.at, e.by, e.t]; }), false);
         return '<div class="sec-title">Perubahan pada jadwal yang berjalan sekarang</div>' +
-          '<p class="sub" style="margin:4px 0 8px">Semua penerbitan ulang dan perubahan dari cuti atau tukar shift yang disetujui leader tercatat di sini, lengkap dengan waktunya.</p>' +
+          '<p class="sub" style="margin:4px 0 8px">Penerbitan jadwal dan perubahan dari cuti atau tukar shift yang disetujui tercatat di sini, lengkap dengan waktunya.</p>' +
           logs +
           '<div class="sec-title" style="margin-top:16px">Jadwal per bulan</div>' +
           '<p class="sub" style="margin:4px 0 8px">Pilih bulan untuk melihat jadwal yang berlaku saat itu. Bulan mengikuti periode 26 sampai 25, sama dengan periode gaji. Hanya untuk dilihat.</p>' +
@@ -1292,7 +1303,7 @@
           '<div class="row" style="justify-content:space-between;margin-top:10px"><div class="muted" style="font-size:13px">Jadwal terbitan ' + esc(SC.pub) + ' oleh leader · ' + esc(SC.note) + '</div>' +
           seg('week', [['0', 'Minggu 1'], ['1', 'Minggu 2']], String(S.week)) + '</div>' +
           '<div style="margin-top:8px">' + histRoster(SC.off) + '</div>' +
-          '<p class="notes">Setiap kali leader menerbitkan jadwal baru, jadwal sebelumnya tetap tersimpan dan muncul di sini per bulan. Isi jadwal bulan lama di layar ini hanya contoh.</p>';
+          '<p class="notes">Setiap kali leader menerbitkan jadwal untuk periode berikutnya, jadwal sebelumnya tetap tersimpan dan muncul di sini per bulan. Isi jadwal bulan lama di layar ini hanya contoh.</p>';
       };
       var leaderHtml = function () {
         var rows = [
@@ -1306,24 +1317,54 @@
           '<p class="sub" style="margin:4px 0 8px">Leader tetap dibutuhkan sebagai penanggung jawab tim. Yang berkurang adalah pekerjaan menyusun dan menghitung, karena sistem yang mengerjakannya.</p>' +
           wrapTable(['Tugas', 'Sekarang', 'Dengan sistem'], rows, true) +
           '<div class="sec-title" style="margin-top:16px">Yang tetap dikerjakan leader</div>' +
-          '<ul class="notes" style="margin:6px 0 0 18px;padding:0"><li>Mengubah pola jadwal saat dibutuhkan, misalnya tiap dua atau tiga bulan, lalu menerbitkannya.</li><li>Menyetujui cuti dan tukar shift. Cuti dilanjutkan ke owner untuk persetujuan akhir.</li><li>Memantau tim: terlambat, jadwal yang perlu dicek, dan beban pasien per terapis.</li><li>Menjadi tempat owner bertanya tentang tim.</li></ul>' +
+          '<ul class="notes" style="margin:6px 0 0 18px;padding:0"><li>Menyusun dan menerbitkan jadwal periode berikutnya, misalnya tiap dua atau tiga bulan. Selama jadwal berjalan, jadwal terkunci.</li><li>Menyetujui cuti dan tukar shift. Cuti dilanjutkan ke owner untuk persetujuan akhir.</li><li>Memantau tim: terlambat, jadwal yang perlu dicek, dan beban pasien per terapis.</li><li>Menjadi tempat owner bertanya tentang tim.</li></ul>' +
           '<div class="sec-title" style="margin-top:16px">Satu akun, dua peran</div>' +
           '<div class="panel soft" style="margin-top:6px"><p style="margin:0 0 6px">Leader adalah terapis juga. Satu akun bisa memegang dua peran, dan menu yang tampil adalah gabungan keduanya.</p>' +
           '<div class="row">' + chip('good', 'Peran terapis: jadwal dan absen sendiri', 'check') + chip('good', 'Peran leader: jadwal tim, persetujuan, laporan tim', 'check') + '</div></div>' +
           '<div class="sec-title" style="margin-top:16px">Perlu keputusan owner</div>' +
           '<ul class="notes" style="margin:6px 0 0 18px;padding:0"><li>Laporan tim yang boleh dilihat leader. Usulan: jadwal, absen, dan pasien per terapis. Gaji dan insentif orang lain hanya untuk owner dan finance.</li><li>Perubahan jadwal atau absen leader sendiri. Usulan: perlu persetujuan owner.</li><li>Semua perubahan tercatat siapa dan kapan.</li></ul>';
       };
+      var shadow = function (days) {
+        return PEOPLE.map(function (p) { return { id: p.id, n: p.n, role: p.role, g: p.g, st: p.st, phase: p.phase, days: days[p.id] }; });
+      };
+      var draftDays = function () {
+        if (!S.sched.draft) { S.sched.draft = {}; PEOPLE.forEach(function (p) { S.sched.draft[p.id] = S.sched.base[p.id].slice(); }); }
+        return S.sched.draft;
+      };
+      var LEGEND = '<div class="legend"><span><b>P</b> pagi 07:30-14:30</span><span><b>S</b> siang 13:00-20:00</span><span><b>M</b> middle 09:30-16:30</span><span><b>PL/SL</b> pagi/siang long (10 jam)</span><span><b>L</b> long (12 jam)</span><span><b>↻</b> berputar tiap minggu</span></div>';
+      var nextHtml = function () {
+        var sc = S.sched, h = '<div class="sec-title" style="margin-top:20px">Jadwal berikutnya: berlaku mulai 26 Nov 2026</div>';
+        if (sc.nx) {
+          return h + '<div style="margin-top:8px">' + callout('good', 'check', 'Sudah terbit. Berlaku <b>26 Nov 2026 - ' + untilLong(sc.nx.until) + '</b> dan terkunci selama masa itu. Terapis dan front desk sudah menerima notifikasi, dan kalender booking dibuka sampai ' + untilLong(sc.nx.until) + '.') + '</div>' +
+            '<div style="margin-top:8px">' + rosterHtml(shadow(sc.nx.days), false, false) + '</div>';
+        }
+        var L = shadow(draftDays()), bad = 0;
+        for (var d = 0; d < 7; d++) { if (validateDay(d, L).issues.length) { bad += 1; } }
+        return h + '<p class="sub" style="margin:4px 0 8px">Disusun dari salinan jadwal berjalan. Ketuk sel untuk mengganti shift. Jadwal ini baru berlaku setelah jadwal berjalan habis.</p>' +
+          rosterHtml(L, true, true) +
+          '<div class="sec-title" style="margin-top:14px">Masa berlaku jadwal berikutnya</div>' +
+          '<p class="sub" style="margin:4px 0 8px">Hitungan bulan mengikuti periode 26 sampai 25. Setelah terbit, jadwal terkunci selama masa ini dan kalender booking dibuka sampai tanggalnya.</p>' +
+          '<div class="ctrl">' + seg('until', UNTIL.slice(1).map(function (u) { return [u[0], u[2]]; }), sc.pick) + '</div>' +
+          '<div class="row" style="margin-top:10px"><button type="button" class="btn primary" data-act="next-pub"' + (bad ? ' disabled' : '') + '>Terbitkan jadwal berikutnya</button>' +
+          (bad ? '<span class="muted" style="font-size:12px">Perbaiki hari bertanda Cek dulu.</span>' : '') + '</div>';
+      };
+      var jadwalHtml = function () {
+        var sc = S.sched;
+        var bell = '<div class="sec-title">Lonceng leader</div><div style="display:flex;flex-direction:column;gap:6px;margin-top:6px">' +
+          (sc.nx ? '<div class="notif">' + ic('bell') + '<div><b>Jadwal berikutnya sudah terbit</b>Berlaku 26 Nov 2026 - ' + untilLong(sc.nx.until) + '. Tidak ada tindakan lagi.</div></div>'
+                 : '<div class="notif">' + ic('bell') + '<div><b>Jadwal berikutnya belum diterbitkan</b>Jadwal berjalan berakhir 25 Nov 2026 (8 hari lagi) dan sudah masuk bulan terakhirnya. Belum ada jadwal berikutnya yang menunggu berlaku. Susun dan terbitkan di bagian Jadwal berikutnya di bawah.</div></div>') +
+          '</div><p class="notes">Lonceng muncul saat jadwal berjalan masuk bulan terakhirnya dan belum ada jadwal berikutnya yang menunggu berlaku.</p>';
+        var live = '<div class="row" style="justify-content:space-between;margin-top:16px"><div class="sec-title">Jadwal berjalan: 26 Agu - 25 Nov 2026</div><div class="row">' + chip('info', 'Terkunci', 'lock') +
+          seg('week', [['0', 'Minggu 1'], ['1', 'Minggu 2']], String(S.week)) + '</div></div>' +
+          '<div style="margin:8px 0">' + callout('info', 'lock', 'Jadwal terkunci sampai 25 Nov 2026, jadi leader tidak bisa mengubahnya. Yang tetap bisa: cuti dan tukar shift di hari tertentu lewat persetujuan, dan jadwal berubah sendiri.') + '</div>' +
+          '<div id="roster">' + rosterHtml(PEOPLE, false, true) + '</div>' + LEGEND + '<p class="notes">Jam shift long hanya contoh.</p>';
+        return bell + live + '<div id="nxsec">' + nextHtml() + '</div>';
+      };
       var render = function () {
         var body =
           '<div class="row" style="justify-content:space-between"><div>' + (tabs.length > 1 ? seg('tab', tabs, tab) : '') + '</div></div>';
         if (tab === 'jadwal') {
-          body += '<div class="row" style="justify-content:space-between"><div class="sec-title">Jadwal berlaku mulai 26 Agu 2026 · disusun leader</div>' +
-            seg('week', [['0', 'Minggu 1'], ['1', 'Minggu 2']], String(S.week)) + '</div>' +
-            '<div id="roster">' + rosterHtml() + '</div>' +
-            '<div class="legend"><span><b>P</b> pagi 07:30-14:30</span><span><b>S</b> siang 13:00-20:00</span><span><b>M</b> middle 09:30-16:30</span><span><b>PL/SL</b> pagi/siang long (10 jam)</span><span><b>L</b> long (12 jam)</span><span><b>↻</b> berputar tiap minggu</span></div>' +
-            '<div style="margin-top:8px">' + callout('info', 'clock', 'Pola mingguan ini berulang sampai leader menerbitkan jadwal baru. Lamanya bebas: dua bulan, tiga bulan, atau berapa pun yang cocok. Jadwal contoh ini membuka booking sampai <b>25 Nov 2026</b>. Setelah itu leader mengubah pola lalu menerbitkannya, boleh sebelum masa itu habis. Booking untuk tanggal sesudahnya baru dibuka setelah jadwal terbit. Jadwal lama tersimpan per bulan di tab Riwayat jadwal.') + '</div>' +
-            '<p class="notes">Ketuk sel untuk mengganti shift, lalu lihat pemeriksaan otomatis di bawahnya. Jika ada terapis berhenti di tengah masa berlaku, leader mengubah sel yang terkait lalu menekan Terbitkan jadwal. Setiap penerbitan tercatat di Riwayat jadwal. Jam shift long hanya contoh.</p>' +
-            '<div class="row"><button type="button" class="btn primary" data-act="publish">Terbitkan jadwal</button></div>';
+          body += jadwalHtml();
         } else if (tab === 'riwayat') {
           body += histHtml();
         } else if (tab === 'leader') {
@@ -1344,6 +1385,7 @@
           if (k === 'tab') { tab = v; render(); }
           if (k === 'week') { S.week = parseInt(v, 10); render(); }
           if (k === 'hp') { S.sched.hp = parseInt(v, 10); render(); }
+          if (k === 'until') { S.sched.pick = v; render(); }
           if (k === 'jenis') {
             var cj = S.cuti, wj = byId(cj.who), sj = cj.sub ? byId(cj.sub) : null;
             if (cj.orig) { wj.days[cj.day] = cj.orig.who; if (sj) { sj.days[cj.day] = cj.orig.sub; } }
@@ -1354,18 +1396,24 @@
         }
         var tm = t.getAttribute('data-time');
         if (tm) { S.absen.time = tm; $('#absen', el).innerHTML = absenHtml(); return; }
-        var cell = t.getAttribute('data-cell');
+        var cell = t.getAttribute('data-dcell');
         if (cell) {
-          var parts = cell.split(':'), p = byId(parts[0]), i = parseInt(parts[1], 10), opts = OPTS[p.role];
-          var idx = opts.indexOf(p.days[i]); p.days[i] = opts[(idx + 1) % opts.length];
-          var rs = $('#roster', el); if (rs) { rs.innerHTML = rosterHtml(); }
+          var parts = cell.split(':'), p = byId(parts[0]), i = parseInt(parts[1], 10), opts = OPTS[p.role], dd = draftDays();
+          var idx = opts.indexOf(dd[p.id][i]); dd[p.id][i] = opts[(idx + 1) % opts.length];
+          var ns = $('#nxsec', el); if (ns) { ns.innerHTML = nextHtml(); }
           return;
         }
         var act = t.getAttribute('data-act');
-        if (act === 'publish') {
+        if (act === 'next-pub') {
+          var dl = shadow(draftDays()), badDays = 0;
+          for (var dn = 0; dn < 7; dn += 1) { if (validateDay(dn, dl).issues.length) { badDays += 1; } }
+          if (badDays) { toast('Perbaiki hari yang bertanda Cek sebelum menerbitkan.'); return; }
+          var copy = {}; PEOPLE.forEach(function (q) { copy[q.id] = draftDays()[q.id].slice(); });
+          S.sched.nx = { days: copy, until: S.sched.pick };
           S.sched.pubs += 1;
-          S.sched.logs.unshift({ at: '17 Nov 2026 11:30', by: 'Leader', t: 'Revisi ' + (S.sched.pubs + 1) + ': jadwal diterbitkan ulang. Terapis dan front desk menerima notifikasi, kalender booking ikut berubah.' });
-          toast('Jadwal terbit. Terapis dan front desk menerima notifikasi, kalender booking ikut diperbarui. Tercatat di Riwayat jadwal.');
+          S.sched.logs.unshift({ at: '17 Nov 2026 11:30', by: 'Leader', t: 'Jadwal berikutnya diterbitkan: berlaku 26 Nov 2026 - ' + untilLong(S.sched.pick) + '. Terapis dan front desk menerima notifikasi, kalender booking dibuka sampai ' + untilLong(S.sched.pick) + '.' });
+          toast('Jadwal berikutnya terbit sampai ' + untilLong(S.sched.pick) + '. Lonceng pengingat hilang, jadwal terkunci selama masa berlaku.');
+          render();
         }
         if (act === 'cuti-send') { if (S.cuti.sub) { S.cuti.stage = 1; $('#cuti', el).innerHTML = cutiHtml(); } }
         if (act === 'cuti-sub-ok') { S.cuti.stage = 2; $('#cuti', el).innerHTML = cutiHtml(); }
@@ -1404,7 +1452,7 @@
   add({
     id: 'm2', title: 'Jadwal shift disusun sekali, jadi kalender booking',
     now: 'Jadwal dibuat di Excel, lalu diinput ulang ke Setmore.',
-    with: 'Leader menyusun pola jadwal mingguan, lalu menerbitkannya. Pola berulang sampai leader menerbitkan jadwal baru, lamanya bebas. Jadwal langsung menjadi kalender booking dan dasar uang harian, dan jadwal lama tersimpan di riwayat per bulan. Cuti disetujui pengganti, leader, lalu owner. Tukar shift disetujui rekan dan leader. Jadwal berubah sendiri setelah semuanya setuju.',
+    with: 'Leader menyusun pola jadwal mingguan dan menerbitkannya untuk masa tertentu, misalnya 2 bulan. Selama masa itu jadwal terkunci. Cuti dan tukar shift di hari tertentu tetap bisa lewat persetujuan, lalu jadwal berubah sendiri. Lonceng mengingatkan leader menyusun jadwal berikutnya sebelum masa habis.',
     who: ['Leader', 'Front desk', 'Terapis'],
     build: buildSchedule('jadwal', [['jadwal', 'Jadwal periode'], ['riwayat', 'Riwayat jadwal'], ['cuti', 'Cuti dan tukar shift'], ['leader', 'Peran leader']], 'Jadwal periode', 'Leader')
   });
@@ -2256,7 +2304,7 @@
 
         var strip = '<div class="bk-strip">';
         for (var i = 0; i < 7; i++) {
-          var d = isoAdd(B.wk, i), n = d > BK_PERIOD_END ? '-' : B.list.filter(function (b) { return b.date === d && bkActive(b); }).length;
+          var d = isoAdd(B.wk, i), n = d > bkEnd() ? '-' : B.list.filter(function (b) { return b.date === d && bkActive(b); }).length;
           strip += '<button type="button" class="bk-day' + (d === BK_TODAY ? ' today' : '') + '" data-bkday="' + d + '" aria-pressed="' + (d === B.date) + '" aria-label="' + esc(bkLong(d) + (d === BK_TODAY ? ', hari ini' : '') + ', ' + n + ' janji') + '"><span>' + DAYS[bkDow(d)] + '</span><b>' + parseInt(d.slice(8), 10) + '</b><small>' + n + '</small></button>';
         }
         strip += '</div>';
@@ -2267,7 +2315,7 @@
           }).join('') + '</div>';
 
         var main;
-        if (!all.length) { main = callout('warn', 'warn', 'Belum ada terapis yang bertugas pada ' + esc(bkLong(B.date)) + (B.date > BK_PERIOD_END ? '. Jadwal shift periode berikutnya belum disusun leader, jadi booking baru dibuka setelah jadwal terbit.' : '.')); }
+        if (!all.length) { main = callout('warn', 'warn', 'Belum ada terapis yang bertugas pada ' + esc(bkLong(B.date)) + (B.date > bkEnd() ? '. Jadwal shift periode berikutnya belum disusun leader, jadi booking baru dibuka setelah jadwal terbit.' : '.')); }
         else if (!ths.length) { main = callout('warn', 'warn', 'Tidak ada ' + (B.who === 'g:f' ? 'terapis perempuan' : (B.who === 'g:m' ? 'terapis laki-laki' : 'terapis yang dipilih')) + ' yang bertugas pada ' + esc(bkLong(B.date)) + '. Pilih hari lain atau terapis lain.'); }
         else { main = B.view === 'list' ? listHtml(ths) : (ths.length > 1 ? '<p class="notes bk-hint">Geser ke samping untuk melihat terapis lain, atau pilih satu nama terapis di atas.</p>' : '') + calHtml(ths); }
 
@@ -2285,7 +2333,7 @@
           main +
           '<div class="bk-legend">' + ['PENDING', 'CONFIRMED', 'CHECKED_IN', 'DONE', 'NO_SHOW'].map(function (k) { return bkBadge(k, false); }).join('') + '</div>' +
           '<p class="notes">Jadwal terkunci per terapis: janji per 30 menit, tiap sesi 60 menit (home visit 90 menit), dan jam yang sudah terisi tidak bisa dipilih. Jam kerja terapis diambil dari jadwal shift. Untuk memindahkan janji, geser kotaknya ke jam atau terapis lain (di HP: tahan sebentar, lalu geser). Jam yang sudah terisi menolak. Angka kecil di bawah tanggal adalah jumlah janji. ' + (isToday ? 'Garis merah menunjukkan waktu sekarang. ' : '') +
-          'Ubah jadwal di Jadwal periode, lalu kalender ini ikut berubah. <button type="button" class="btn sm" data-act="reset">Ulangi contoh</button></p>';
+          'Jadwal shift diterbitkan leader di Jadwal periode dan terkunci selama masa berlaku. Cuti dan tukar shift yang disetujui ikut mengubah kalender ini. Janji pasien dipindahkan oleh front desk bila perlu. <button type="button" class="btn sm" data-act="reset">Ulangi contoh</button></p>';
         el.innerHTML = frame('Jadwal pasien', 'Front desk', body, 'wide');
         var sc2 = $('.bk-scroll', el); if (sc2 && keep) { sc2.scrollTop = keep[0] || 0; sc2.scrollLeft = keep[1] || 0; }
       };
@@ -2309,7 +2357,7 @@
         };
         var dateOpts = function () {
           var a = [], i = 0, d;
-          do { d = isoAdd(BK_TODAY, i++); a.push(d); } while (d < BK_PERIOD_END);
+          do { d = isoAdd(BK_TODAY, i++); a.push(d); } while (d < bkEnd());
           if (a.indexOf(f.date) < 0) { a.push(f.date); a.sort(); }
           return a;
         };
@@ -2320,7 +2368,7 @@
             var lo = reqMin - reqMin % BK_SLOT;
             hint = callout('info', 'clock', 'Pasien meminta jam <b>' + fromMin(reqMin) + '</b>. Jadwal berjalan per 30 menit, jadi pilihannya <b>' + fromMin(lo) + '</b> atau <b>' + fromMin(lo + BK_SLOT) + '</b>, selama jam itu masih kosong. Tawarkan salah satunya ke pasien.');
           }
-          if (!ws.length) { warn = callout('warn', 'warn', 'Belum ada terapis bertugas pada ' + esc(bkLong(f.date)) + (f.date > BK_PERIOD_END ? '. Jadwal shift periode berikutnya belum disusun leader.' : '.')); }
+          if (!ws.length) { warn = callout('warn', 'warn', 'Belum ada terapis bertugas pada ' + esc(bkLong(f.date)) + (f.date > bkEnd() ? '. Jadwal shift periode berikutnya belum disusun leader.' : '.')); }
           else if (!starts.length) { warn = callout('warn', 'warn', 'Semua jam ' + esc(byId(f.th).n) + ' pada ' + esc(bkLong(f.date)) + ' sudah terisi. Pilih terapis atau hari lain.'); }
           var slots = f.th ? bkSlots(f.date, f.th, id, BK_SERVICES[f.sv].min) : [];
           /* Seperti kalender: jam kosong jadi pilihan, tiap janji yang sudah ada tampil satu baris saja (tidak bisa dipilih). Jam mulai yang menabrak janji itu tidak ditawarkan lagi, jadi tidak ada baris berulang. */
@@ -2411,7 +2459,7 @@
         if ((v = t.getAttribute('data-bkday'))) { B.date = v; B.last = ''; render(); return; }
         if ((v = t.getAttribute('data-bkwk'))) {
           var step = parseInt(v, 10), nw = isoAdd(B.wk, 7 * step);
-          if (nw >= BK_WEEK_MIN && nw <= BK_WEEK_MAX) { var k = Math.round((new Date(B.date + 'T00:00:00Z') - new Date(B.wk + 'T00:00:00Z')) / 86400000); B.wk = nw; B.date = isoAdd(nw, k); B.last = ''; render(); }
+          if (nw >= BK_WEEK_MIN && nw <= isoAdd(bkEnd(), 5)) { var k = Math.round((new Date(B.date + 'T00:00:00Z') - new Date(B.wk + 'T00:00:00Z')) / 86400000); B.wk = nw; B.date = isoAdd(nw, k); B.last = ''; render(); }
           return;
         }
         if ((v = t.getAttribute('data-who'))) { B.who = v; B.last = ''; render(); return; }
