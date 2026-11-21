@@ -265,7 +265,7 @@
 
   /* Roster */
   .roster td, .roster th { padding: 4px; text-align: center; }
-  .roster td.name { text-align: left; padding-left: 8px; white-space: nowrap; position: sticky; left: 0; background: var(--surface); z-index: 1; }
+  .roster td.name { text-align: left; padding: 4px 14px 4px 8px; white-space: nowrap; position: sticky; left: 0; background: var(--surface); z-index: 1; }
   .roster th:first-child { position: sticky; left: 0; background: var(--surface); z-index: 1; }
   .roster .grp td { background: var(--surface-2); font-size: 11px; font-weight: 600; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; text-align: left; padding: 6px 8px; }
   .cell {
@@ -460,8 +460,9 @@
 
   /* Layar laporan: penjelasan di atas, tabel selebar halaman */
   .scene.full { grid-template-columns: minmax(0, 1fr); gap: 18px; }
-  .scene.full .story { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; align-items: start; }
-  .scene.full .story > .tag, .scene.full .story > .muted, .scene.full .story > h2, .scene.full .story > .row { grid-column: 1 / -1; }
+  .scene.full .story { display: flex; flex-direction: row; flex-wrap: wrap; gap: 12px; align-items: stretch; }
+  .scene.full .story > .box { flex: 1 1 240px; min-width: 0; margin: 0; }
+  .scene.full .story > .tag, .scene.full .story > .muted, .scene.full .story > h2, .scene.full .story > .row { flex: 0 0 100%; }
   .scene.full .app th { white-space: normal; }
   .scroll-y th, .scroll-y td { padding: 8px; }
   @media (max-width: 460px) { .grid3 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
@@ -903,7 +904,13 @@
     week: 0,
     lateCount: 3,
     absen: { shift: 'P', time: '07:38' },
-    cuti: { who: 'e', day: 5, sub: '', stage: 0, orig: null },
+    cuti: { who: 'e', day: 5, sub: '', stage: 0, orig: null, jenis: 'cuti' },
+    sched: { hp: 0, pubs: 0, logs: [
+      { at: '12 Nov 2026 09:05', by: 'Otomatis', t: 'Elsa cuti pada 12 Nov, digantikan Anisa. Disetujui leader dan owner, jadwal berubah sendiri.' },
+      { at: '5 Nov 2026 13:40', by: 'Leader', t: 'Revisi 1: salah satu terapis berhenti, shift-nya dialihkan ke terapis lain. Jadwal diterbitkan ulang, kalender booking ikut berubah.' },
+      { at: '3 Nov 2026 08:30', by: 'Otomatis', t: 'Hendra cuti pada 3 Nov, digantikan Anisa. Disetujui leader dan owner, jadwal berubah sendiri.' },
+      { at: '22 Agu 2026 15:30', by: 'Leader', t: 'Jadwal baru berlaku mulai 26 Agu 2026 diterbitkan. Terapis dan front desk menerima notifikasi.' }
+    ] },
     claims: seedClaims(),
     rep: seedRep(),
     claimSeq: 0,
@@ -1186,34 +1193,37 @@
       };
       var cutiOpts = function () {
         var c = S.cuti, who = byId(c.who), code = resolve(who, c.day);
-        var cands = PEOPLE.filter(function (p) { return p.role === who.role && p.id !== who.id && (!isWork(resolve(p, c.day))); });
+        var cands = PEOPLE.filter(function (p) { return p.role === who.role && p.id !== who.id && (c.jenis === 'tukar' ? resolve(p, c.day) !== code : !isWork(resolve(p, c.day))); });
         return { who: who, code: code, cands: cands };
       };
       var cutiHtml = function () {
         var c = S.cuti, o = cutiOpts(), who = o.who;
-        var work = isWork(o.code);
-        var stages = ['Pengajuan', 'Pengganti setuju', 'Owner setuju', 'Jadwal berubah'];
-        var st = '<div class="stepper">' + stages.map(function (s, i) { return '<div class="' + (i < c.stage ? 'done' : (i === c.stage ? 'on' : '')) + '">' + s + '</div>'; }).join('') + '</div>';
+        var work = isWork(o.code), tk = c.jenis === 'tukar';
+        var stages = tk ? ['Pengajuan', 'Rekan setuju', 'Leader setuju', 'Jadwal berubah'] : ['Pengajuan', 'Pengganti setuju', 'Leader setuju', 'Owner setuju', 'Jadwal berubah'];
+        var st = '<div class="stepper" style="grid-template-columns:repeat(' + stages.length + ',minmax(0,1fr))">' + stages.map(function (s, i) { return '<div class="' + (i < c.stage ? 'done' : (i === c.stage ? 'on' : '')) + '">' + s + '</div>'; }).join('') + '</div>';
         var body = '';
         if (c.stage === 0) {
-          body = '<div class="grid2"><div class="field"><label for="cuti-who">Yang cuti</label><select id="cuti-who">' +
+          body = '<div class="grid2"><div class="field"><label for="cuti-who">' + (tk ? 'Yang menukar shift' : 'Yang cuti') + '</label><select id="cuti-who">' +
             PEOPLE.filter(function (p) { return p.role === 'T' || p.role === 'F'; }).map(function (p) { return '<option value="' + p.id + '"' + (p.id === c.who ? ' selected' : '') + '>' + p.n + '</option>'; }).join('') +
             '</select></div><div class="field"><label for="cuti-day">Hari</label><select id="cuti-day">' +
             DAYS_FULL.map(function (d, i) { return '<option value="' + i + '"' + (i === c.day ? ' selected' : '') + '>' + d + '</option>'; }).join('') +
             '</select></div></div>' +
-            (work ? '<div class="field" style="margin-top:10px"><label for="cuti-sub">Calon pengganti (' + ROLE_NAME[who.role] + ' yang sedang libur)</label><select id="cuti-sub"><option value="">Pilih pengganti</option>' +
-              o.cands.map(function (p) { return '<option value="' + p.id + '"' + (p.id === c.sub ? ' selected' : '') + '>' + p.n + ' (libur hari itu)</option>'; }).join('') + '</select></div>' +
-              '<div class="row" style="margin-top:10px"><button type="button" class="btn primary" data-act="cuti-send"' + (c.sub ? '' : ' disabled') + '>Kirim permintaan cuti</button><span class="chip">Sisa kuota cuti: 9 dari 12 hari</span></div>' +
-              '<p class="notes" style="margin-top:8px">Cuti tidak bisa diajukan tanpa pengganti, dan pengganti harus setuju lebih dulu.</p>'
-              : '<div style="margin-top:10px">' + callout('info', 'check', esc(who.n) + ' sudah libur pada hari itu. Pilih hari kerja untuk mencoba pengajuan cuti.') + '</div>');
+            (work ? '<div class="field" style="margin-top:10px"><label for="cuti-sub">' + (tk ? 'Ditukar dengan (' + ROLE_NAME[who.role] + ')' : 'Calon pengganti (' + ROLE_NAME[who.role] + ' yang sedang libur)') + '</label><select id="cuti-sub"><option value="">Pilih pengganti</option>' +
+              o.cands.map(function (p) { return '<option value="' + p.id + '"' + (p.id === c.sub ? ' selected' : '') + '>' + p.n + (tk ? ' (' + (isWork(resolve(p, c.day)) ? SHIFTS[resolve(p, c.day)].n : 'libur') + ')' : ' (libur hari itu)') + '</option>'; }).join('') + '</select></div>' +
+              '<div class="row" style="margin-top:10px"><button type="button" class="btn primary" data-act="cuti-send"' + (c.sub ? '' : ' disabled') + '>' + (tk ? 'Kirim permintaan tukar shift' : 'Kirim permintaan cuti') + '</button>' + (tk ? '' : '<span class="chip">Sisa kuota cuti: 9 dari 12 hari</span>') + '</div>' +
+              '<p class="notes" style="margin-top:8px">' + (tk ? 'Tukar shift diajukan ke leader. Rekan yang ditukar setuju lebih dulu, lalu leader menyetujui, dan jadwal berubah sendiri. Tukar shift tidak mengurangi kuota cuti.' : 'Cuti tidak bisa diajukan tanpa pengganti. Pengganti setuju lebih dulu, lalu leader, lalu owner. Setelah semuanya setuju, jadwal berubah sendiri.') + '</p>'
+              : '<div style="margin-top:10px">' + callout('info', 'check', esc(who.n) + ' sudah libur pada hari itu. Pilih hari kerja untuk mencoba pengajuan ' + (tk ? 'tukar shift' : 'cuti') + '.') + '</div>');
         } else if (c.stage === 1) {
-          body = callout('info', 'clock', 'Permintaan cuti <b>' + esc(who.n) + '</b> (' + DAYS_FULL[c.day] + ') menunggu persetujuan <b>' + esc(byId(c.sub).n) + '</b>, yang harus masuk di shift ' + esc(SHIFTS[o.code === 'R' ? 'P' : o.code] ? SHIFTS[o.code === 'R' ? 'P' : o.code].n : '') + '.') +
+          body = callout('info', 'clock', (tk ? 'Permintaan tukar shift <b>' : 'Permintaan cuti <b>') + esc(who.n) + '</b> (' + DAYS_FULL[c.day] + ') menunggu persetujuan <b>' + esc(byId(c.sub).n) + '</b>, yang harus masuk di shift ' + esc(SHIFTS[o.code === 'R' ? 'P' : o.code] ? SHIFTS[o.code === 'R' ? 'P' : o.code].n : '') + '.') +
             '<div class="row" style="margin-top:10px"><button type="button" class="btn primary" data-act="cuti-sub-ok">Simulasikan: pengganti setuju</button></div>';
         } else if (c.stage === 2) {
-          body = callout('info', 'clock', esc(byId(c.sub).n) + ' sudah setuju. Menunggu persetujuan owner.') +
+          body = callout('info', 'clock', esc(byId(c.sub).n) + ' sudah setuju. Menunggu persetujuan leader.') +
+            '<div class="row" style="margin-top:10px"><button type="button" class="btn primary" data-act="cuti-leader-ok">Simulasikan: leader setuju</button></div>';
+        } else if (c.stage === 3 && !tk) {
+          body = callout('info', 'clock', 'Leader sudah setuju. Menunggu persetujuan <b>owner</b>.') +
             '<div class="row" style="margin-top:10px"><button type="button" class="btn primary" data-act="cuti-owner-ok">Simulasikan: owner setuju</button></div>';
         } else {
-          body = callout('good', 'check', 'Jadwal sudah berubah. <b>' + esc(who.n) + '</b> cuti, <b>' + esc(byId(c.sub).n) + '</b> menggantikan di ' + DAYS_FULL[c.day] + '. Uang harian shift itu pindah ke pengganti.') +
+          body = callout('good', 'check', (tk ? 'Jadwal sudah berubah. <b>' + esc(who.n) + '</b> dan <b>' + esc(byId(c.sub).n) + '</b> bertukar shift pada ' + DAYS_FULL[c.day] + '. Uang harian mengikuti shift yang dijalani. Perubahan tercatat di Riwayat jadwal.' : 'Jadwal sudah berubah. <b>' + esc(who.n) + '</b> cuti, <b>' + esc(byId(c.sub).n) + '</b> menggantikan di ' + DAYS_FULL[c.day] + '. Uang harian shift itu pindah ke pengganti. Perubahan tercatat di Riwayat jadwal.')) +
             '<div class="row" style="margin-top:10px"><button type="button" class="btn" data-act="cuti-reset">Coba lagi</button></div>';
         }
         return st + '<div style="margin-top:10px">' + body + '</div>';
@@ -1226,7 +1236,7 @@
         if (!isLate) {
           res = callout('good', 'check', 'Tepat waktu. Toleransi sampai ' + fromMin(st + 10) + '. Tidak ada potongan.');
         } else {
-          res = callout('warn', 'clock', 'Terlambat <b>' + late + ' menit</b>. Ini kejadian terlambat ke-<b>' + nth + '</b> pada periode ini, potongan <b>' + rp(tier(nth)) + '</b>. ' + (nth <= 3 ? 'Kejadian ke-1 sampai ke-3 Rp20.000, ke-4 dan seterusnya Rp40.000.' : 'Mulai kejadian ke-4 potongan Rp40.000.'));
+          res = callout('warn', 'clock', 'Terlambat <b>' + late + ' menit</b>. Jika absen sekarang, ini jadi kejadian terlambat ke-<b>' + nth + '</b> pada periode ini, potongan <b>' + rp(tier(nth)) + '</b>. ' + (nth <= 3 ? 'Kejadian ke-1 sampai ke-3 Rp20.000, ke-4 dan seterusnya Rp40.000.' : 'Mulai kejadian ke-4 potongan Rp40.000.'));
         }
         return '<div class="grid2"><div class="field"><label for="ab-shift">Shift hari ini</label><select id="ab-shift">' +
           ['P', 'S', 'M'].map(function (k) { return '<option value="' + k + '"' + (k === a.shift ? ' selected' : '') + '>' + SHIFTS[k].n + ' (' + SHIFTS[k].s + '-' + SHIFTS[k].e + ')</option>'; }).join('') +
@@ -1235,20 +1245,92 @@
           '<div style="margin-top:10px">' + res + '</div>' +
           '<div class="row" style="margin-top:10px"><span class="muted" style="font-size:12px">Coba jam:</span><button type="button" class="btn sm" data-time="' + fromMin(st + 8) + '">' + fromMin(st + 8) + ' tepat waktu</button><button type="button" class="btn sm" data-time="' + fromMin(st + 22) + '">' + fromMin(st + 22) + ' terlambat</button></div>' +
           '<div class="row" style="margin-top:10px"><button type="button" class="btn primary" data-act="absen-go">Absen sekarang</button><button type="button" class="btn" data-act="absen-reset">Kembalikan ke 3 kejadian</button></div>' +
-          '<p class="notes" style="margin-top:8px">Terlambat tercatat sekarang: ' + S.lateCount + ' kejadian, potongan ' + rp(lateTotal(S.lateCount)) + '. Angka ini dipakai di adegan Penggajian.</p>';
+          '<p class="notes" style="margin-top:8px">Terlambat tercatat sekarang: ' + S.lateCount + ' kejadian, potongan ' + rp(lateTotal(S.lateCount)) + ' (' + Math.min(S.lateCount, 3) + '× Rp20.000' + (S.lateCount > 3 ? ' + ' + (S.lateCount - 3) + '× Rp40.000' : '') + '). Angka ini dipakai di adegan Penggajian.</p>';
+      };
+      var wrapTable = function (head, rows, boldFirst) {
+        return '<div class="tablewrap"><table style="width:100%"><thead><tr>' + head.map(function (h) { return '<th style="text-align:left">' + esc(h) + '</th>'; }).join('') + '</tr></thead><tbody>' +
+          rows.map(function (r) { return '<tr>' + r.map(function (c, i) { return '<td style="vertical-align:top;white-space:' + (i === 0 && !boldFirst ? 'nowrap' : 'normal') + (i === 0 && boldFirst ? ';font-weight:600' : '') + '">' + esc(c) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table></div>';
+      };
+      var SCHEDS = [
+        { pub: '22 Agu 2026', from: '26 Agu 2026', note: 'berlaku sejak 26 Agu 2026 dan masih dipakai', off: 0 },
+        { pub: '20 Jun 2026', from: '26 Jun 2026', note: 'dipakai 2 bulan lalu diganti jadwal baru, tidak harus menunggu 3 bulan', off: 2 },
+        { pub: '21 Mar 2026', from: '26 Mar 2026', note: 'dipakai 3 bulan', off: 4 }
+      ];
+      var HIST = [
+        { l: '26 Sep - 25 Okt 2026', s: 0 }, { l: '26 Agu - 25 Sep 2026', s: 0 },
+        { l: '26 Jul - 25 Agu 2026', s: 1 }, { l: '26 Jun - 25 Jul 2026', s: 1 },
+        { l: '26 Mei - 25 Jun 2026', s: 2 }, { l: '26 Apr - 25 Mei 2026', s: 2 }, { l: '26 Mar - 25 Apr 2026', s: 2 }
+      ];
+      var histRoster = function (off) {
+        var groups = [['T', 'Terapis perempuan', 'f'], ['T', 'Terapis laki-laki', 'm'], ['F', 'Front desk', null], ['S', 'Staf penunjang (upah per jam)', null]];
+        var rows = '';
+        groups.forEach(function (g) {
+          rows += '<tr class="grp"><td colspan="8">' + g[1] + '</td></tr>';
+          PEOPLE.filter(function (p) { return p.role === g[0] && (g[2] === null || p.g === g[2]); }).forEach(function (p) {
+            rows += '<tr><td class="name"><b>' + esc(p.n) + '</b> <span class="muted" style="font-size:11px">' + p.st + '</span></td>';
+            for (var i = 0; i < 7; i++) {
+              var j = (i + off) % 7, c = p.days[j];
+              var code = c === 'R' ? resolve(p, j) : c;
+              var lab = c === 'F' ? 'P/S' : (c === 'R' ? code + '↻' : c);
+              rows += '<td><button type="button" class="cell ' + code + '" disabled tabindex="-1">' + lab + '</button></td>';
+            }
+            rows += '</tr>';
+          });
+        });
+        var head = '<tr><th style="text-align:left;padding-left:8px">Nama</th>' + DAYS.map(function (d) { return '<th>' + d + '</th>'; }).join('') + '</tr>';
+        return '<div class="tablewrap"><table class="roster"><thead>' + head + '</thead><tbody>' + rows + '</tbody></table></div>';
+      };
+      var histHtml = function () {
+        var hp = S.sched.hp, H = HIST[hp], SC = SCHEDS[H.s];
+        var logs = wrapTable(['Waktu', 'Oleh', 'Perubahan'], S.sched.logs.map(function (e) { return [e.at, e.by, e.t]; }), false);
+        return '<div class="sec-title">Perubahan pada jadwal yang berjalan sekarang</div>' +
+          '<p class="sub" style="margin:4px 0 8px">Semua penerbitan ulang dan perubahan dari cuti atau tukar shift yang disetujui leader tercatat di sini, lengkap dengan waktunya.</p>' +
+          logs +
+          '<div class="sec-title" style="margin-top:16px">Jadwal per bulan</div>' +
+          '<p class="sub" style="margin:4px 0 8px">Pilih bulan untuk melihat jadwal yang berlaku saat itu. Bulan mengikuti periode 26 sampai 25, sama dengan periode gaji. Hanya untuk dilihat.</p>' +
+          '<div class="ctrl">' + seg('hp', HIST.map(function (h, i) { return [String(i), h.l]; }), String(hp)) + '</div>' +
+          '<div class="row" style="justify-content:space-between;margin-top:10px"><div class="muted" style="font-size:13px">Jadwal terbitan ' + esc(SC.pub) + ' oleh leader · ' + esc(SC.note) + '</div>' +
+          seg('week', [['0', 'Minggu 1'], ['1', 'Minggu 2']], String(S.week)) + '</div>' +
+          '<div style="margin-top:8px">' + histRoster(SC.off) + '</div>' +
+          '<p class="notes">Setiap kali leader menerbitkan jadwal baru, jadwal sebelumnya tetap tersimpan dan muncul di sini per bulan. Isi jadwal bulan lama di layar ini hanya contoh.</p>';
+      };
+      var leaderHtml = function () {
+        var rows = [
+          ['Menyusun jadwal shift', 'Dibuat di Excel, lalu diinput ulang ke Setmore.', 'Disusun sekali di sistem, langsung jadi kalender booking, dengan pemeriksaan otomatis tiap hari.'],
+          ['Rekap absen per bulan', 'Dikumpulkan dan dihitung manual.', 'Laporan Absensi dibuat sistem. Leader tinggal mengunduh (.xlsx).'],
+          ['Rekap terapis pegang pasien berapa', 'Dihitung manual dari catatan.', 'Laporan booking dibuat sistem dari data harian dan bisa disaring per terapis. Leader tinggal mengunduh.'],
+          ['Cuti dan tukar shift', 'Diminta lewat chat, lalu jadwal diubah dengan tangan.', 'Diajukan di sistem. Leader menyetujui (cuti dilanjutkan ke owner), lalu jadwal berubah sendiri.'],
+          ['Informasi untuk owner', 'Leader menyusun jawaban setiap kali ditanya.', 'Owner melihat langsung. Leader tetap penanggung jawab tim dan menindaklanjuti.']
+        ];
+        return '<div class="sec-title">Peran leader sebelum dan sesudah ada sistem</div>' +
+          '<p class="sub" style="margin:4px 0 8px">Leader tetap dibutuhkan sebagai penanggung jawab tim. Yang berkurang adalah pekerjaan menyusun dan menghitung, karena sistem yang mengerjakannya.</p>' +
+          wrapTable(['Tugas', 'Sekarang', 'Dengan sistem'], rows, true) +
+          '<div class="sec-title" style="margin-top:16px">Yang tetap dikerjakan leader</div>' +
+          '<ul class="notes" style="margin:6px 0 0 18px;padding:0"><li>Mengubah pola jadwal saat dibutuhkan, misalnya tiap dua atau tiga bulan, lalu menerbitkannya.</li><li>Menyetujui cuti dan tukar shift. Cuti dilanjutkan ke owner untuk persetujuan akhir.</li><li>Memantau tim: terlambat, jadwal yang perlu dicek, dan beban pasien per terapis.</li><li>Menjadi tempat owner bertanya tentang tim.</li></ul>' +
+          '<div class="sec-title" style="margin-top:16px">Satu akun, dua peran</div>' +
+          '<div class="panel soft" style="margin-top:6px"><p style="margin:0 0 6px">Leader adalah terapis juga. Satu akun bisa memegang dua peran, dan menu yang tampil adalah gabungan keduanya.</p>' +
+          '<div class="row">' + chip('good', 'Peran terapis: jadwal dan absen sendiri', 'check') + chip('good', 'Peran leader: jadwal tim, persetujuan, laporan tim', 'check') + '</div></div>' +
+          '<div class="sec-title" style="margin-top:16px">Perlu keputusan owner</div>' +
+          '<ul class="notes" style="margin:6px 0 0 18px;padding:0"><li>Laporan tim yang boleh dilihat leader. Usulan: jadwal, absen, dan pasien per terapis. Gaji dan insentif orang lain hanya untuk owner dan finance.</li><li>Perubahan jadwal atau absen leader sendiri. Usulan: perlu persetujuan owner.</li><li>Semua perubahan tercatat siapa dan kapan.</li></ul>';
       };
       var render = function () {
         var body =
           '<div class="row" style="justify-content:space-between"><div>' + (tabs.length > 1 ? seg('tab', tabs, tab) : '') + '</div></div>';
         if (tab === 'jadwal') {
-          body += '<div class="row" style="justify-content:space-between"><div class="sec-title">Periode 3-30 November 2026 · disusun leader</div>' +
+          body += '<div class="row" style="justify-content:space-between"><div class="sec-title">Jadwal berlaku mulai 26 Agu 2026 · disusun leader</div>' +
             seg('week', [['0', 'Minggu 1'], ['1', 'Minggu 2']], String(S.week)) + '</div>' +
             '<div id="roster">' + rosterHtml() + '</div>' +
             '<div class="legend"><span><b>P</b> pagi 07:30-14:30</span><span><b>S</b> siang 13:00-20:00</span><span><b>M</b> middle 09:30-16:30</span><span><b>PL/SL</b> pagi/siang long (10 jam)</span><span><b>L</b> long (12 jam)</span><span><b>↻</b> berputar tiap minggu</span></div>' +
-            '<p class="notes">Ketuk sel untuk mengganti shift, lalu lihat pemeriksaan otomatis di bawahnya. Jam shift long hanya contoh.</p>' +
+            '<div style="margin-top:8px">' + callout('info', 'clock', 'Pola mingguan ini berulang sampai leader menerbitkan jadwal baru. Lamanya bebas: dua bulan, tiga bulan, atau berapa pun yang cocok. Jadwal contoh ini membuka booking sampai <b>25 Nov 2026</b>. Setelah itu leader mengubah pola lalu menerbitkannya, boleh sebelum masa itu habis. Booking untuk tanggal sesudahnya baru dibuka setelah jadwal terbit. Jadwal lama tersimpan per bulan di tab Riwayat jadwal.') + '</div>' +
+            '<p class="notes">Ketuk sel untuk mengganti shift, lalu lihat pemeriksaan otomatis di bawahnya. Jika ada terapis berhenti di tengah masa berlaku, leader mengubah sel yang terkait lalu menekan Terbitkan jadwal. Setiap penerbitan tercatat di Riwayat jadwal. Jam shift long hanya contoh.</p>' +
             '<div class="row"><button type="button" class="btn primary" data-act="publish">Terbitkan jadwal</button></div>';
+        } else if (tab === 'riwayat') {
+          body += histHtml();
+        } else if (tab === 'leader') {
+          body += leaderHtml();
         } else if (tab === 'cuti') {
-          body += '<div class="sec-title">Ajukan cuti dengan pengganti</div><div id="cuti">' + cutiHtml() + '</div>';
+          body += '<div class="ctrl">' + seg('jenis', [['cuti', 'Cuti'], ['tukar', 'Tukar shift']], S.cuti.jenis) + '</div>' +
+            '<div class="sec-title" style="margin-top:10px">' + (S.cuti.jenis === 'tukar' ? 'Ajukan tukar shift ke leader' : 'Ajukan cuti dengan pengganti') + '</div><div id="cuti">' + cutiHtml() + '</div>';
         } else {
           body += '<div class="sec-title">Absen masuk (tampilan terapis atau front desk)</div><div id="absen">' + absenHtml() + '</div>';
         }
@@ -1261,6 +1343,13 @@
           var k = t.getAttribute('data-seg'), v = t.getAttribute('data-v');
           if (k === 'tab') { tab = v; render(); }
           if (k === 'week') { S.week = parseInt(v, 10); render(); }
+          if (k === 'hp') { S.sched.hp = parseInt(v, 10); render(); }
+          if (k === 'jenis') {
+            var cj = S.cuti, wj = byId(cj.who), sj = cj.sub ? byId(cj.sub) : null;
+            if (cj.orig) { wj.days[cj.day] = cj.orig.who; if (sj) { sj.days[cj.day] = cj.orig.sub; } }
+            if (cj.logRef) { S.sched.logs = S.sched.logs.filter(function (l) { return l !== cj.logRef; }); }
+            S.cuti = { who: cj.who, day: cj.day, sub: '', stage: 0, orig: null, jenis: v }; render();
+          }
           return;
         }
         var tm = t.getAttribute('data-time');
@@ -1273,20 +1362,27 @@
           return;
         }
         var act = t.getAttribute('data-act');
-        if (act === 'publish') { toast('Jadwal terbit. Terapis dan front desk menerima notifikasi, kalender booking ikut diperbarui.'); }
+        if (act === 'publish') {
+          S.sched.pubs += 1;
+          S.sched.logs.unshift({ at: '17 Nov 2026 11:30', by: 'Leader', t: 'Revisi ' + (S.sched.pubs + 1) + ': jadwal diterbitkan ulang. Terapis dan front desk menerima notifikasi, kalender booking ikut berubah.' });
+          toast('Jadwal terbit. Terapis dan front desk menerima notifikasi, kalender booking ikut diperbarui. Tercatat di Riwayat jadwal.');
+        }
         if (act === 'cuti-send') { if (S.cuti.sub) { S.cuti.stage = 1; $('#cuti', el).innerHTML = cutiHtml(); } }
         if (act === 'cuti-sub-ok') { S.cuti.stage = 2; $('#cuti', el).innerHTML = cutiHtml(); }
-        if (act === 'cuti-owner-ok') {
-          var c = S.cuti, who = byId(c.who), sub = byId(c.sub), code = resolve(who, c.day);
+        if (act === 'cuti-leader-ok' && S.cuti.jenis === 'cuti') { S.cuti.stage = 3; $('#cuti', el).innerHTML = cutiHtml(); }
+        if ((act === 'cuti-leader-ok' && S.cuti.jenis === 'tukar') || act === 'cuti-owner-ok') {
+          var c = S.cuti, who = byId(c.who), sub = byId(c.sub), code = resolve(who, c.day), subCode = resolve(sub, c.day);
           c.orig = { who: who.days[c.day], sub: sub.days[c.day] };
-          who.days[c.day] = 'CUTI';
-          sub.days[c.day] = code;
-          S.cuti.stage = 3; $('#cuti', el).innerHTML = cutiHtml();
+          if (c.jenis === 'tukar') { who.days[c.day] = subCode; sub.days[c.day] = code; } else { who.days[c.day] = 'CUTI'; sub.days[c.day] = code; }
+          c.logRef = { at: '17 Nov 2026 11:30', by: 'Otomatis', t: c.jenis === 'tukar' ? who.n + ' dan ' + sub.n + ' bertukar shift pada ' + DAYS_FULL[c.day] + '. Disetujui leader, jadwal berubah sendiri.' : who.n + ' cuti pada ' + DAYS_FULL[c.day] + ', digantikan ' + sub.n + '. Disetujui leader dan owner, jadwal berubah sendiri.' };
+          S.sched.logs.unshift(c.logRef);
+          S.cuti.stage = (S.cuti.jenis === 'tukar' ? 3 : 4); $('#cuti', el).innerHTML = cutiHtml();
         }
         if (act === 'cuti-reset') {
           var c2 = S.cuti, who2 = byId(c2.who), sub2 = c2.sub ? byId(c2.sub) : null;
           if (c2.orig) { who2.days[c2.day] = c2.orig.who; if (sub2) { sub2.days[c2.day] = c2.orig.sub; } }
-          S.cuti = { who: c2.who, day: c2.day, sub: '', stage: 0, orig: null }; $('#cuti', el).innerHTML = cutiHtml();
+          if (c2.logRef) { S.sched.logs = S.sched.logs.filter(function (l) { return l !== c2.logRef; }); }
+          S.cuti = { who: c2.who, day: c2.day, sub: '', stage: 0, orig: null, jenis: c2.jenis }; $('#cuti', el).innerHTML = cutiHtml();
         }
         if (act === 'absen-go') {
           var a = S.absen, late = toMin(a.time) - toMin(SHIFTS[a.shift].s);
@@ -1308,9 +1404,9 @@
   add({
     id: 'm2', title: 'Jadwal shift disusun sekali, jadi kalender booking',
     now: 'Jadwal dibuat di Excel, lalu diinput ulang ke Setmore.',
-    with: 'Leader menyusun jadwal sekali. Jadwal langsung menjadi kalender booking dan dasar uang harian. Cuti wajib punya pengganti yang sudah setuju.',
+    with: 'Leader menyusun pola jadwal mingguan, lalu menerbitkannya. Pola berulang sampai leader menerbitkan jadwal baru, lamanya bebas. Jadwal langsung menjadi kalender booking dan dasar uang harian, dan jadwal lama tersimpan di riwayat per bulan. Cuti disetujui pengganti, leader, lalu owner. Tukar shift disetujui rekan dan leader. Jadwal berubah sendiri setelah semuanya setuju.',
     who: ['Leader', 'Front desk', 'Terapis'],
-    build: buildSchedule('jadwal', [['jadwal', 'Jadwal periode'], ['cuti', 'Cuti']], 'Jadwal periode', 'Leader')
+    build: buildSchedule('jadwal', [['jadwal', 'Jadwal periode'], ['riwayat', 'Riwayat jadwal'], ['cuti', 'Cuti dan tukar shift'], ['leader', 'Peran leader']], 'Jadwal periode', 'Leader')
   });
   add({
     id: 'm2b', title: 'Absen lewat HP, terlambat dihitung otomatis',
@@ -1504,7 +1600,7 @@
           (td.sent ? '<p class="notes" style="margin-top:8px">Dikunci dan dikirim ' + esc(td.at) + ' ke finance dan owner.</p>'
             : '<div class="row" style="margin-top:10px"><button type="button" class="btn primary" data-act="send"' + (pend || lk ? ' disabled' : '') + '>Kunci dan kirim ke finance dan owner</button></div>') + '</div>';
         var remind = '<div class="panel soft"><div class="lbl">Pengingat otomatis</div>' +
-          '<p class="notes" style="margin:4px 0 0">Setiap pukul 20:00 sistem memeriksa apakah laporan hari ini sudah dikirim. Bila belum, front desk yang bertugas menerima notifikasi WhatsApp (lewat Fonnte; di demo ini hanya keterangan). Bila sudah dikirim, tidak ada pengingat apa pun. Finance dan owner tidak diberi notifikasi, hanya melihat status "belum dikirim".</p></div>';
+          '<p class="notes" style="margin:4px 0 0">Setiap pukul 20:00 sistem memeriksa apakah laporan hari ini sudah dikirim. Bila belum, front desk yang bertugas menerima notifikasi WhatsApp (lewat WhatsApp Business dari Meta; di demo ini hanya keterangan). Bila sudah dikirim, tidak ada pengingat apa pun. Finance dan owner tidak diberi notifikasi, hanya melihat status "belum dikirim".</p></div>';
         var pending = S.claims.filter(function (c) { return c.status === 'Menunggu'; });
         var items = pending.map(function (c) {
           var sent = repOf(c.day).sent;
@@ -1756,7 +1852,7 @@
   add({
     id: 'm6', title: 'Beli paket, dan sisa paket yang selalu cocok',
     now: 'Sisa paket dihitung dengan mata dari kolom tanggal di Excel. Pasien ingat sisa 3, catatan front desk sisa 2, dan tidak ada yang bisa membuktikan.',
-    with: 'Harga dan promo dari sistem, kwitansi langsung ke WhatsApp pasien. Sisa paket dihitung dari buku mutasi, jadi pasien dan front desk melihat angka yang sama.',
+    with: 'Harga dan promo dari sistem, kwitansi siap dikirim ke WhatsApp pasien dengan sekali klik. Sisa paket dihitung dari buku mutasi, jadi pasien dan front desk melihat angka yang sama.',
     who: ['Pasien', 'Front desk'],
     build: function (el) {
       var view = 'jual';
@@ -1813,10 +1909,10 @@
           (c.pr ? '<tr><td>' + esc(c.pr.n) + '</td><td class="r num">' + rp(-c.off) + '</td></tr>' : '') +
           '<tr><td><b>Total ditagih</b></td><td class="r num"><b>' + rp(c.total) + '</b></td></tr></tbody></table></div>' +
           '<p class="notes" style="margin-top:6px">Harga ditetapkan sistem dari daftar harga dan promo yang dibuat owner atau finance. Front desk tidak bisa mengetik harga sendiri.</p>' +
-          '<div class="row" style="margin-top:10px"><button type="button" class="btn primary" data-act="jual-go">Buat invoice dan kirim kwitansi ke WhatsApp</button></div></div>';
+          '<div class="row" style="margin-top:10px"><button type="button" class="btn primary" data-act="jual-go">Buat invoice</button></div></div>';
         if (J.done) {
-          var d = J.done;
-          out += callout('good', 'check', 'Invoice dibuat: <b>' + esc(d.label) + ' ' + rp(d.total) + '</b>' + (d.promo ? ' (' + esc(d.promo) + ')' : '') + '. Kwitansi PDF terkirim ke WhatsApp pasien dengan harga ini, jadi pasien bisa mencocokkannya dengan uang yang ia bayar.') +
+          var d = J.done, waRow = d.sent ? '<div class="row">' + chip('good', 'Kwitansi terkirim ke WhatsApp pasien', 'check') + '</div>' : '<div class="row"><button type="button" class="btn primary" data-act="jual-wa">Kirim kwitansi ke WhatsApp pasien</button></div>';
+          out += callout('good', 'check', 'Invoice dibuat: <b>' + esc(d.label) + ' ' + rp(d.total) + '</b>' + (d.promo ? ' (' + esc(d.promo) + ')' : '') + '. Kwitansi siap dikirim ke WhatsApp pasien dengan harga ini, jadi pasien bisa mencocokkannya dengan uang yang ia bayar.') + waRow +
             callout('info', 'clock', d.paket
               ? 'Sesi yang baru selesai tercatat sebagai sesi ke-1 paket. Insentif paket (1×) dan insentif pasien baru masuk ke <b>Laras</b>, front desk yang bertugas saat pasien datang.'
               : 'Insentif pasien baru masuk ke <b>Laras</b>, front desk yang bertugas saat pasien datang.') +
@@ -1848,7 +1944,13 @@
           var c = jualPick();
           S.jual.done = { paket: !!c.pk, label: c.pk ? c.pk.n : 'Terapi per kedatangan', total: c.total, promo: c.pr ? c.pr.n : '' };
           if (c.pk && c.pr) { S.jual.log.push({ d: '17 Nov', who: 'Laras', paket: c.pk.n, promo: c.pr.n, normal: c.normal, paid: c.total }); }
-          render(); toast('Invoice dibuat. Kwitansi terkirim ke WhatsApp pasien.');
+          render(); toast('Invoice dibuat. Kwitansi siap dikirim ke WhatsApp pasien.');
+        }
+        if (act === 'jual-wa' && S.jual.done) {
+          var jd = S.jual.done;
+          waModal({ title: 'Kwitansi untuk Bapak Wawan', to: 'Bapak Wawan', wa: '0812-0000-0110',
+            text: 'Halo Bapak Wawan, terima kasih sudah terapi di klinik kami. Kwitansi ' + jd.label + ': total ' + rp(jd.total) + (jd.promo ? ' (' + jd.promo + ')' : '') + '. Semoga lekas pulih.',
+            onSent: function () { jd.sent = true; render(); toast('Tercatat: kwitansi dikirim ke WhatsApp Bapak Wawan.'); } });
         }
         if (act === 'jual-reset') { S.jual.done = null; render(); }
         if (act === 'use' && sisa() > 0) {
@@ -1860,111 +1962,119 @@
     }
   });
 
-  /* M7: Kartu bonus pasien (10x terapi, gratis 1x) */
-  add({
-    id: 'm7', title: 'Kartu bonus pasien tercatat di sistem, tidak hanya di kertas',
-    now: 'Pasien baru menerima kartu kertas berangka 1 sampai 10. Setiap datang, front desk melingkari satu angka dengan pulpen. Setelah 10, pasien membawa kartu untuk 1 terapi gratis, lalu kartu diganti baru. Kartu hilang berarti progres hilang, dan klinik tidak punya catatan sendiri untuk memeriksanya.',
-    with: 'Front desk tidak lagi melingkari angka. Kunjungan yang selesai menambah progres otomatis, pasien melihatnya di HP tanpa membawa kartu, dan sesi gratis tercatat siapa yang memberikannya.',
-    who: ['Front desk', 'Pasien', 'Owner'],
-    build: function (el) {
-      var L = S.loy, view = 'fd', kind = 'reg', NILAI = 375000, NAME = 'Ibu Ratna', ME = 'Kirana';
-      var full = function () { return L.vouch > 0; };
-      var statusText = function () {
-        if (!L.aktif) { return 'Program bonus sedang tidak aktif.'; }
-        return full() ? 'Kartu penuh. Kunjungan berikutnya gratis.' : 'Tinggal ' + (L.n - L.count) + ' kunjungan lagi untuk 1 sesi gratis.';
-      };
-      var cardHtml = function () {
-        var dots = '', i;
-        for (i = 1; i <= L.n; i++) { dots += '<span class="lc' + (i <= L.count ? ' on' : '') + '">' + i + '</span>'; }
-        return '<div class="panel"><div class="row" style="justify-content:space-between"><div><b>' + NAME + '</b><div class="muted" style="font-size:12px">Kartu bonus ke-' + L.card + '</div></div>' +
-          (L.aktif ? (full() ? chip('good', 'Kartu penuh', 'check') : chip('info', L.count + ' dari ' + L.n)) : chip('', 'Tidak aktif')) + '</div>' +
-          '<div class="lgrid" style="grid-template-columns:repeat(' + (L.n <= 10 ? 5 : 10) + ',minmax(0,1fr))">' + dots + '</div>' +
-          '<div class="sub" style="margin-top:10px;font-size:13px">' + statusText() + '</div></div>';
-      };
-      var fdHtml = function () {
-        return cardHtml() +
-          (full() ? callout('good', 'check', '<b>' + NAME + ' berhak 1 sesi gratis</b> pada kunjungan ini. Kartu kertas tidak perlu dibawa. Terapis tetap menerima komponen per pasien penuh.') : '') +
-          '<div class="field"><label for="loy-kind">Kunjungan yang baru selesai</label><select id="loy-kind"><option value="reg"' + (kind === 'reg' ? ' selected' : '') + '>Physio reguler</option><option value="paket"' + (kind === 'paket' ? ' selected' : '') + '>Sesi paket</option></select></div>' +
-          '<div class="row"><button type="button" class="btn primary" data-act="visit"' + (L.aktif && !full() ? '' : ' disabled') + '>Simulasikan kunjungan selesai</button>' +
-          '<button type="button" class="btn" data-act="voucher"' + (full() ? '' : ' disabled') + '>Pakai bonus: sesi gratis</button></div>' +
-          '<p class="notes">Di sistem sungguhan, angka bertambah sendiri saat status janji menjadi Selesai (Masalah 4), jadi tidak ada lagi yang dilingkari. Front desk hanya menekan Pakai bonus saat pasien berhak, dan tombol itu mati selama kartu belum penuh.</p>';
-      };
-      var pasienHtml = function () {
-        if (!L.aktif) { return callout('info', 'clock', 'Program bonus sedang tidak aktif.'); }
-        var msg = full()
-          ? 'Halo ' + NAME + ', kartu bonus Anda sudah penuh. Terapi berikutnya GRATIS. Cukup sebutkan nama Anda ke front desk, kartu kertas tidak perlu dibawa.'
-          : 'Halo ' + NAME + ', terima kasih sudah terapi hari ini. Ini kunjungan ke-' + L.count + ' dari ' + L.n + ' di kartu bonus Anda. ' + (L.n - L.count) + ' kunjungan lagi untuk 1 terapi gratis.';
-        return cardHtml() +
-          '<div class="panel soft"><div class="sec-title">Pesan WhatsApp setelah terapi</div><p style="margin-top:6px">' + esc(msg) + '</p></div>' +
-          '<p class="notes">Progres yang sama terlihat di PWA pasien. Pasien tidak perlu membawa kartu, dan tidak kehilangan progres bila kartu hilang.</p>';
-      };
-      var ownerHtml = function () {
-        var n = L.log.length;
-        return '<div class="panel"><div class="sec-title" style="margin-bottom:8px">Pengaturan owner</div>' +
-          '<div class="row" style="justify-content:space-between"><span>Program bonus aktif</span><span class="switch"><button type="button" role="switch" aria-checked="' + L.aktif + '" aria-label="Program bonus aktif" data-act="toggle"></button></span></div>' +
-          '<div class="field" style="margin-top:12px"><label for="loy-n">Setiap berapa kunjungan dapat 1 sesi gratis</label><input type="number" id="loy-n" min="2" max="30" value="' + L.n + '"></div>' +
-          '<label class="chk" style="margin-top:8px"><input type="checkbox" id="loy-p"' + (L.paket ? ' checked' : '') + '> Kunjungan yang memakai paket ikut dihitung</label></div>' +
-          '<div class="grid2"><div class="tile"><div class="l">Sesi gratis bulan ini</div><div class="v num">' + n + '</div></div><div class="tile"><div class="l">Biaya bonus</div><div class="v num" style="font-size:18px">' + rp(n * NILAI) + '</div></div></div>' +
-          '<div><div class="sec-title" style="margin-bottom:6px">Siapa yang memberikan sesi gratis</div><div class="list">' +
-          (n ? L.log.slice().reverse().map(function (l) {
-            return '<div class="li"><div class="t"><b>' + esc(l.who) + '</b><small>' + esc(l.d) + ' · diberikan front desk ' + esc(l.by) + ' · Terapis ' + esc(l.th) + '</small></div>' + chip('', 'Gratis') + '</div>';
-          }).join('') : '<div class="li"><div class="t muted">Belum ada.</div></div>') + '</div></div>' +
-          '<div class="panel soft"><div class="sec-title">Beralih dari kartu kertas</div><ol style="margin:6px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-size:13px">' +
-          '<li>Pasien yang kartunya sedang berjalan: front desk memasukkan angka terakhir yang dilingkari, satu kali saja.</li>' +
-          '<li>Sejak itu angka bertambah otomatis. Kartu kertas boleh tetap dibagikan sebagai pengingat, tetapi yang berlaku adalah catatan sistem.</li>' +
-          '<li>Sesi gratis hanya bisa diberikan bila kartu di sistem penuh, dan tercatat siapa yang memberikannya.</li></ol></div>';
-      };
-      var render = function () {
-        var body = view === 'fd' ? fdHtml() : (view === 'pasien' ? pasienHtml() : ownerHtml());
-        $('#loyv', el).innerHTML = body;
-      };
-      el.innerHTML = frame('Kartu bonus', 'Front desk, pasien, owner',
-        seg('loyview', [['fd', 'Front desk'], ['pasien', 'HP pasien'], ['owner', 'Owner']], view) + '<div id="loyv" style="display:flex;flex-direction:column;gap:16px"></div>');
-      render();
-      el.addEventListener('click', function (e) {
-        var t = e.target.closest ? e.target.closest('button') : null; if (!t) { return; }
-        if (t.getAttribute('data-seg') === 'loyview') {
-          view = t.getAttribute('data-v');
-          $$('[data-seg="loyview"]', el).forEach(function (b) { b.setAttribute('aria-pressed', String(b === t)); });
-          render(); return;
-        }
-        var act = t.getAttribute('data-act');
-        if (act === 'toggle') { L.aktif = !L.aktif; render(); return; }
-        if (act === 'visit' && L.aktif && !full()) {
-          if (kind === 'paket' && !L.paket) { toast('Sesi paket tidak dihitung menurut aturan owner. Progres tetap ' + L.count + '/' + L.n + '.'); return; }
-          L.count += 1;
-          if (L.count >= L.n) { L.count = L.n; L.vouch = 1; toast('Kartu penuh. Kunjungan berikutnya gratis, dan pasien menerima pesan WhatsApp.'); } else { toast('Kunjungan tercatat: ' + L.count + '/' + L.n + '. Pesan WhatsApp ke pasien terkirim.'); }
-          render(); return;
-        }
-        if (act === 'voucher' && full()) {
-          L.vouch = 0; L.count = 0; L.card += 1; L.log.push({ d: '17 Nov', who: NAME, by: ME, th: 'Dina' });
-          render(); toast('Sesi gratis dicatat atas nama ' + ME + '. Kartu bonus ke-' + L.card + ' dimulai dari 0.');
-        }
-      });
-      el.addEventListener('input', function (e) {
-        if (e.target.id === 'loy-n') {
-          var v = parseInt(e.target.value, 10);
-          if (v >= 2 && v <= 30) { L.n = v; if (full() || L.count >= L.n) { L.count = L.n; L.vouch = 1; } }
-        }
-      });
-      el.addEventListener('change', function (e) {
-        if (e.target.id === 'loy-p') { L.paket = e.target.checked; }
-        if (e.target.id === 'loy-kind') { kind = e.target.value || 'reg'; }
-      });
-    }
-  });
+// [DITUNDA]   /* M7: Kartu bonus pasien (10x terapi, gratis 1x) */
+// [DITUNDA]   add({
+// [DITUNDA]     id: 'm7', title: 'Kartu bonus pasien tercatat di sistem, tidak hanya di kertas',
+// [DITUNDA]     now: 'Pasien baru menerima kartu kertas berangka 1 sampai 10. Setiap datang, front desk melingkari satu angka dengan pulpen. Setelah 10, pasien membawa kartu untuk 1 terapi gratis, lalu kartu diganti baru. Kartu hilang berarti progres hilang, dan klinik tidak punya catatan sendiri untuk memeriksanya.',
+// [DITUNDA]     with: 'Front desk tidak lagi melingkari angka. Kunjungan yang selesai menambah progres otomatis, pasien melihatnya di HP tanpa membawa kartu, dan sesi gratis tercatat siapa yang memberikannya.',
+// [DITUNDA]     who: ['Front desk', 'Pasien', 'Owner'],
+// [DITUNDA]     build: function (el) {
+// [DITUNDA]       var L = S.loy, view = 'fd', kind = 'reg', NILAI = 375000, NAME = 'Ibu Ratna', ME = 'Kirana';
+// [DITUNDA]       var full = function () { return L.vouch > 0; };
+// [DITUNDA]       var loyMsg = function () {
+// [DITUNDA]         return full()
+// [DITUNDA]           ? 'Halo ' + NAME + ', kartu bonus Anda sudah penuh. Terapi berikutnya GRATIS. Cukup sebutkan nama Anda ke front desk, kartu kertas tidak perlu dibawa.'
+// [DITUNDA]           : 'Halo ' + NAME + ', terima kasih sudah terapi hari ini. Ini kunjungan ke-' + L.count + ' dari ' + L.n + ' di kartu bonus Anda. ' + (L.n - L.count) + ' kunjungan lagi untuk 1 terapi gratis.';
+// [DITUNDA]       };
+// [DITUNDA]       var statusText = function () {
+// [DITUNDA]         if (!L.aktif) { return 'Program bonus sedang tidak aktif.'; }
+// [DITUNDA]         return full() ? 'Kartu penuh. Kunjungan berikutnya gratis.' : 'Tinggal ' + (L.n - L.count) + ' kunjungan lagi untuk 1 sesi gratis.';
+// [DITUNDA]       };
+// [DITUNDA]       var cardHtml = function () {
+// [DITUNDA]         var dots = '', i;
+// [DITUNDA]         for (i = 1; i <= L.n; i++) { dots += '<span class="lc' + (i <= L.count ? ' on' : '') + '">' + i + '</span>'; }
+// [DITUNDA]         return '<div class="panel"><div class="row" style="justify-content:space-between"><div><b>' + NAME + '</b><div class="muted" style="font-size:12px">Kartu bonus ke-' + L.card + '</div></div>' +
+// [DITUNDA]           (L.aktif ? (full() ? chip('good', 'Kartu penuh', 'check') : chip('info', L.count + ' dari ' + L.n)) : chip('', 'Tidak aktif')) + '</div>' +
+// [DITUNDA]           '<div class="lgrid" style="grid-template-columns:repeat(' + (L.n <= 10 ? 5 : 10) + ',minmax(0,1fr))">' + dots + '</div>' +
+// [DITUNDA]           '<div class="sub" style="margin-top:10px;font-size:13px">' + statusText() + '</div></div>';
+// [DITUNDA]       };
+// [DITUNDA]       var fdHtml = function () {
+// [DITUNDA]         return cardHtml() +
+// [DITUNDA]           (full() ? callout('good', 'check', '<b>' + NAME + ' berhak 1 sesi gratis</b> pada kunjungan ini. Kartu kertas tidak perlu dibawa. Terapis tetap menerima komponen per pasien penuh.') : '') +
+// [DITUNDA]           '<div class="field"><label for="loy-kind">Kunjungan yang baru selesai</label><select id="loy-kind"><option value="reg"' + (kind === 'reg' ? ' selected' : '') + '>Physio reguler</option><option value="paket"' + (kind === 'paket' ? ' selected' : '') + '>Sesi paket</option></select></div>' +
+// [DITUNDA]           '<div class="row"><button type="button" class="btn primary" data-act="visit"' + (L.aktif && !full() ? '' : ' disabled') + '>Simulasikan kunjungan selesai</button>' +
+// [DITUNDA]           '<button type="button" class="btn" data-act="voucher"' + (full() ? '' : ' disabled') + '>Pakai bonus: sesi gratis</button></div>' +
+// [DITUNDA]           (L.aktif && L.count > 0 ? '<div class="panel soft"><div class="sec-title">Pesan WhatsApp setelah terapi</div><p style="margin-top:6px">' + esc(loyMsg()) + '</p><div class="row" style="margin-top:8px">' + (L.waAt === L.count ? chip('good', 'Pesan terkirim ke pasien', 'check') : '<button type="button" class="btn sm primary" data-act="loy-wa">Kirim pesan ke pasien</button>') + '</div></div>' : '') +
+// [DITUNDA]           '<p class="notes">Di sistem sungguhan, angka bertambah sendiri saat status janji menjadi Selesai (Masalah 4), jadi tidak ada lagi yang dilingkari. Front desk hanya menekan Pakai bonus saat pasien berhak, dan tombol itu mati selama kartu belum penuh.</p>';
+// [DITUNDA]       };
+// [DITUNDA]       var pasienHtml = function () {
+// [DITUNDA]         if (!L.aktif) { return callout('info', 'clock', 'Program bonus sedang tidak aktif.'); }
+// [DITUNDA]         var msg = loyMsg();
+// [DITUNDA]         return cardHtml() +
+// [DITUNDA]           '<div class="panel soft"><div class="sec-title">Pesan WhatsApp setelah terapi</div><p style="margin-top:6px">' + esc(msg) + '</p></div>' +
+// [DITUNDA]           '<p class="notes">Progres yang sama terlihat di PWA pasien. Pasien tidak perlu membawa kartu, dan tidak kehilangan progres bila kartu hilang.</p>';
+// [DITUNDA]       };
+// [DITUNDA]       var ownerHtml = function () {
+// [DITUNDA]         var n = L.log.length;
+// [DITUNDA]         return '<div class="panel"><div class="sec-title" style="margin-bottom:8px">Pengaturan owner</div>' +
+// [DITUNDA]           '<div class="row" style="justify-content:space-between"><span>Program bonus aktif</span><span class="switch"><button type="button" role="switch" aria-checked="' + L.aktif + '" aria-label="Program bonus aktif" data-act="toggle"></button></span></div>' +
+// [DITUNDA]           '<div class="field" style="margin-top:12px"><label for="loy-n">Setiap berapa kunjungan dapat 1 sesi gratis</label><input type="number" id="loy-n" min="2" max="30" value="' + L.n + '"></div>' +
+// [DITUNDA]           '<label class="chk" style="margin-top:8px"><input type="checkbox" id="loy-p"' + (L.paket ? ' checked' : '') + '> Kunjungan yang memakai paket ikut dihitung</label></div>' +
+// [DITUNDA]           '<div class="grid2"><div class="tile"><div class="l">Sesi gratis bulan ini</div><div class="v num">' + n + '</div></div><div class="tile"><div class="l">Biaya bonus</div><div class="v num" style="font-size:18px">' + rp(n * NILAI) + '</div></div></div>' +
+// [DITUNDA]           '<div><div class="sec-title" style="margin-bottom:6px">Siapa yang memberikan sesi gratis</div><div class="list">' +
+// [DITUNDA]           (n ? L.log.slice().reverse().map(function (l) {
+// [DITUNDA]             return '<div class="li"><div class="t"><b>' + esc(l.who) + '</b><small>' + esc(l.d) + ' · diberikan front desk ' + esc(l.by) + ' · Terapis ' + esc(l.th) + '</small></div>' + chip('', 'Gratis') + '</div>';
+// [DITUNDA]           }).join('') : '<div class="li"><div class="t muted">Belum ada.</div></div>') + '</div></div>' +
+// [DITUNDA]           '<div class="panel soft"><div class="sec-title">Beralih dari kartu kertas</div><ol style="margin:6px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-size:13px">' +
+// [DITUNDA]           '<li>Pasien yang kartunya sedang berjalan: front desk memasukkan angka terakhir yang dilingkari, satu kali saja.</li>' +
+// [DITUNDA]           '<li>Sejak itu angka bertambah otomatis. Kartu kertas boleh tetap dibagikan sebagai pengingat, tetapi yang berlaku adalah catatan sistem.</li>' +
+// [DITUNDA]           '<li>Sesi gratis hanya bisa diberikan bila kartu di sistem penuh, dan tercatat siapa yang memberikannya.</li></ol></div>';
+// [DITUNDA]       };
+// [DITUNDA]       var render = function () {
+// [DITUNDA]         var body = view === 'fd' ? fdHtml() : (view === 'pasien' ? pasienHtml() : ownerHtml());
+// [DITUNDA]         $('#loyv', el).innerHTML = body;
+// [DITUNDA]       };
+// [DITUNDA]       el.innerHTML = frame('Kartu bonus', 'Front desk, pasien, owner',
+// [DITUNDA]         seg('loyview', [['fd', 'Front desk'], ['pasien', 'HP pasien'], ['owner', 'Owner']], view) + '<div id="loyv" style="display:flex;flex-direction:column;gap:16px"></div>');
+// [DITUNDA]       render();
+// [DITUNDA]       el.addEventListener('click', function (e) {
+// [DITUNDA]         var t = e.target.closest ? e.target.closest('button') : null; if (!t) { return; }
+// [DITUNDA]         if (t.getAttribute('data-seg') === 'loyview') {
+// [DITUNDA]           view = t.getAttribute('data-v');
+// [DITUNDA]           $$('[data-seg="loyview"]', el).forEach(function (b) { b.setAttribute('aria-pressed', String(b === t)); });
+// [DITUNDA]           render(); return;
+// [DITUNDA]         }
+// [DITUNDA]         var act = t.getAttribute('data-act');
+// [DITUNDA]         if (act === 'toggle') { L.aktif = !L.aktif; render(); return; }
+// [DITUNDA]         if (act === 'visit' && L.aktif && !full()) {
+// [DITUNDA]           if (kind === 'paket' && !L.paket) { toast('Sesi paket tidak dihitung menurut aturan owner. Progres tetap ' + L.count + '/' + L.n + '.'); return; }
+// [DITUNDA]           L.count += 1; L.waAt = -1;
+// [DITUNDA]           if (L.count >= L.n) { L.count = L.n; L.vouch = 1; toast('Kartu penuh. Kunjungan berikutnya gratis. Pesan ke pasien siap dikirim.'); } else { toast('Kunjungan tercatat: ' + L.count + '/' + L.n + '. Pesan ke pasien siap dikirim.'); }
+// [DITUNDA]           render(); return;
+// [DITUNDA]         }
+// [DITUNDA]         if (act === 'loy-wa') {
+// [DITUNDA]           waModal({ title: 'Pesan untuk ' + NAME, to: NAME, wa: '0812-0000-0088', text: loyMsg(), onSent: function () { L.waAt = L.count; render(); toast('Tercatat: pesan ke ' + NAME + ' dikirim oleh ' + ME + '.'); } });
+// [DITUNDA]           return;
+// [DITUNDA]         }
+// [DITUNDA]         if (act === 'voucher' && full()) {
+// [DITUNDA]           L.vouch = 0; L.count = 0; L.card += 1; L.log.push({ d: '17 Nov', who: NAME, by: ME, th: 'Dina' });
+// [DITUNDA]           render(); toast('Sesi gratis dicatat atas nama ' + ME + '. Kartu bonus ke-' + L.card + ' dimulai dari 0.');
+// [DITUNDA]         }
+// [DITUNDA]       });
+// [DITUNDA]       el.addEventListener('input', function (e) {
+// [DITUNDA]         if (e.target.id === 'loy-n') {
+// [DITUNDA]           var v = parseInt(e.target.value, 10);
+// [DITUNDA]           if (v >= 2 && v <= 30) { L.n = v; if (full() || L.count >= L.n) { L.count = L.n; L.vouch = 1; } }
+// [DITUNDA]         }
+// [DITUNDA]       });
+// [DITUNDA]       el.addEventListener('change', function (e) {
+// [DITUNDA]         if (e.target.id === 'loy-p') { L.paket = e.target.checked; }
+// [DITUNDA]         if (e.target.id === 'loy-kind') { kind = e.target.value || 'reg'; }
+// [DITUNDA]       });
+// [DITUNDA]     }
+// [DITUNDA]   });
 
   /* M8: Reminder */
   add({
     id: 'm8', title: 'Reminder pasien tinggal klik',
     now: 'Front desk mengetik pesan WhatsApp satu per satu. Ada yang terlewat, pasien lupa, slot kosong.',
-    with: 'Daftar yang perlu diingatkan tersusun otomatis. Satu klik, pesan siap dikirim, dan tercatat siapa serta kapan.',
+    with: 'Daftar yang perlu diingatkan tersusun otomatis. Satu klik, WhatsApp Web terbuka dengan pesan sudah terisi, front desk tinggal menekan Enter, dan tercatat siapa serta kapan.',
     who: ['Front desk'],
     build: function (el) {
       /* Daftar diambil dari janji besok di Jadwal pasien, jadi dua layar ini selalu sama. */
       var APPTS = S.booking.list.filter(function (b) { return b.date === '2026-11-18' && (b.st === 'PENDING' || b.st === 'CONFIRMED'); })
         .sort(function (a, c) { return a.t - c.t || (a.th < c.th ? -1 : 1); })
-        .map(function (b) { return { id: b.id, t: fromMin(b.t), p: b.name, th: byId(b.th).n, sv: BK_SERVICES[b.sv].n }; });
+        .map(function (b) { return { id: b.id, t: fromMin(b.t), p: b.name, wa: b.wa, th: byId(b.th).n, sv: BK_SERVICES[b.sv].n }; });
       var msg = function (a) {
         return 'Halo ' + a.p + ', kami mengingatkan jadwal terapi Anda besok, Rabu 18 November 2026 pukul ' + a.t + ' bersama terapis ' + a.th + ' (' + a.sv + '). Balas OK untuk konfirmasi. Terima kasih.';
       };
@@ -1976,7 +2086,7 @@
             return '<div class="li"><span class="ava">' + esc(bkInitial(a.p)) + '</span><div class="t"><b>' + a.t + ' · ' + esc(a.p) + '</b><small>' + esc(a.sv) + ' · Terapis ' + esc(a.th) + '</small></div>' +
               (r ? chip('good', r, 'check') : '<button type="button" class="btn sm primary" data-rem="' + a.id + '">Kirim WA</button>') + '</div>';
           }).join('') + '</div>' +
-          '<p class="notes">Di sistem sungguhan, tombol membuka WhatsApp dengan pesan terisi. Di prototype ini pesan ditampilkan dan bisa disalin.</p>';
+          '<p class="notes">Tombol membuka WhatsApp Web di chat pasien dengan pesan sudah terisi, front desk tinggal menekan Enter, lalu menandai terkirim.</p>';
         el.innerHTML = frame('Reminder pasien', 'Front desk', body);
       };
       render();
@@ -1985,12 +2095,8 @@
         var ri = t.getAttribute('data-rem');
         if (ri !== null) {
           var a = APPTS.filter(function (x) { return x.id === ri; })[0], text = msg(a);
-          modal('<h3>Pesan untuk ' + esc(a.p) + '</h3><p class="sub">Pesan sudah terisi. Periksa lalu kirim.</p><div class="panel soft" id="msgtxt" style="user-select:all">' + esc(text) + '</div>' +
-            '<div class="row" style="justify-content:flex-end"><button type="button" class="btn" id="cp">' + ic('copy') + ' Salin pesan</button><button type="button" class="btn primary" id="sent">Tandai terkirim</button></div>',
-            function (o, close) {
-              $('#cp', o).addEventListener('click', function () { copyText(text); });
-              $('#sent', o).addEventListener('click', function () { S.remind[ri] = 'Diingatkan 08:05 oleh Kirana'; close(); render(); toast('Tercatat: siapa dan kapan pengingat dikirim.'); });
-            });
+          waModal({ title: 'Pesan untuk ' + a.p, to: a.p, wa: a.wa, text: text,
+            onSent: function () { S.remind[ri] = 'Diingatkan 08:05 oleh Kirana'; render(); toast('Tercatat: siapa dan kapan pengingat dikirim.'); } });
         }
       });
     }
@@ -2230,7 +2336,7 @@
           if (f.cat === 'teman') {
             catExtra = '<div class="field"><label for="bkf-disc">Diskon teman owner (persen, paling besar ' + BK_DISC_MAX + ', batas diatur owner)</label><input type="number" id="bkf-disc" min="1" max="' + BK_DISC_MAX + '" value="' + (f.disc || '') + '"></div>';
           } else if (f.cat === 'gratis') {
-            catExtra = callout('info', 'check', 'Untuk pasien yang kartu bonusnya sudah penuh (10 kunjungan, Masalah 7). Di sistem sungguhan kategori ini muncul otomatis dan sekaligus memakai bonusnya. Sesi gratis tidak dihitung di kartu baru.');
+            catExtra = callout('info', 'check', 'Untuk pasien yang kartu bonusnya sudah penuh (10 kunjungan). Di sistem sungguhan kategori ini muncul otomatis dan sekaligus memakai bonusnya. Sesi gratis tidak dihitung di kartu baru.');
           } else if (f.cat === 'warrior') {
             catExtra = callout('info', 'check', 'Pasien warrior (atlet) dicatat sebagai kategori sendiri di laporan harian untuk evaluasi bulanan owner.');
           }
@@ -2919,22 +3025,23 @@
     ] }
   ];
   var SHORT = {
-    m2: 'Jadwal shift dan cuti', m2b: 'Absen dan telat', m10: 'Jadwal pasien', t1r: 'Laporan Tahap 1',
+    m2: 'Jadwal, cuti, dan tukar shift', m2b: 'Absen dan telat', m10: 'Jadwal pasien', t1r: 'Laporan Tahap 1',
     t2a: 'Layanan sampai kuitansi', m6: 'Paket dan sisa paket', m4: 'Insentif harian', m3: 'Pemasukan', t2r: 'Laporan Tahap 2',
-    t3a: 'Beli, pakai, stok', t3r: 'Laporan Tahap 3', t4r: 'Laporan gaji', m5: 'Slip gaji dan persetujuan', ret: 'Pasien tidak kembali'
+    t3a: 'Beli, pakai, stok', t3r: 'Laporan Tahap 3', t4r: 'Laporan gaji', m5: 'Slip gaji dan persetujuan'
+    /* , ret: 'Pasien tidak kembali' */
   };
   var TABS = {
-    m2: [['jadwal', 'Jadwal periode'], ['cuti', 'Cuti']],
+    m2: [['jadwal', 'Jadwal periode'], ['riwayat', 'Riwayat jadwal'], ['cuti', 'Cuti dan tukar shift'], ['leader', 'Peran leader']],
     t1r: [['booking', 'Booking'], ['pending', 'Pending dan batal'], ['absensi', 'Absensi'], ['cuti', 'Cuti'], ['lembur', 'Lembur dan telat']],
     t2r: [['penjualan', 'Penjualan layanan'], ['fisio', 'Insentif fisio'], ['fd', 'Insentif front desk'], ['rekening', 'Per rekening'], ['layanan', 'Per layanan']],
     t3a: [['beli', 'Pembelian'], ['pakai', 'Pemakaian'], ['stok', 'Stok']],
     t3r: [['beli', 'Pembelian'], ['pakai', 'Pemakaian'], ['stok', 'Stok']],
     t4r: [['absensi', 'Absensi'], ['cuti', 'Cuti'], ['insentif', 'Insentif'], ['lembur', 'Lembur'], ['gaji', 'Gaji per karyawan']],
-    ret: [['review', 'Review owner'], ['daftar', 'Daftar dan kirim WhatsApp']]
+    /* ret: [['review', 'Review owner'], ['daftar', 'Daftar dan kirim WhatsApp']] */
   };
-  var ORDER_T = ['m2', 'm2b', 'm10', 't1r', 't2a', 'm6', 'm4', 'm3', 't2r', 't3a', 't3r', 't4r', 'm5', 'ret', 'm1', 'm9', 'm7', 'm8'];
+  var ORDER_T = ['m2', 'm2b', 'm10', 't1r', 't2a', 'm6', 'm4', 'm3', 't2r', 't3a', 't3r', 't4r', 'm5', /* 'ret', */ 'm1', 'm9', /* 'm7', */ 'm8'];
   var TH_OF = { m2: 1, m2b: 1, m10: 1, t1r: 1, t2a: 2, m6: 2, m4: 2, m3: 2, t2r: 2, t3a: 3, t3r: 3, t4r: 4, m5: 4 };
-  var TAHAP_ONLY = ['t1r', 't2a', 't2r', 't3a', 't3r', 't4r', 'ret'];
+  var TAHAP_ONLY = ['t1r', 't2a', 't2r', 't3a', 't3r', 't4r' /* , 'ret' */];
   var SC_ITEMS = {};
   TAHAP.forEach(function (th) {
     th.items.forEach(function (it) {
@@ -3073,6 +3180,35 @@
       ['xl/worksheets/sheet1.xml', sheet]
     ]);
   }
+
+  /* ---------- Alur kirim WhatsApp yang sama di semua layar: teks terisi, buka WhatsApp Web, Enter, tandai terkirim ---------- */
+  var WA_DEMO = true;
+  function waPhone(wa) { var d = String(wa).replace(/\D/g, ''); return d.charAt(0) === '0' ? '62' + d.slice(1) : d; }
+  function waLink(wa, text) { return WA_DEMO ? 'https://wa.me/?text=' + encodeURIComponent(text) : 'https://web.whatsapp.com/send?phone=' + waPhone(wa) + '&text=' + encodeURIComponent(text); }
+  function waOpen(wa, text) { try { window.open(waLink(wa, text), '_blank', 'noopener'); return true; } catch (e) { return false; } }
+  function waOpenToast(wa, text) {
+    if (waOpen(wa, text)) { toast('WhatsApp Web dibuka di tab baru, pesan sudah terisi. Tekan Enter di sana untuk mengirim.'); }
+    else { toast('Browser memblokir tab baru. Izinkan pop-up, atau salin pesannya.'); }
+  }
+  function waSteps() {
+    return '<ol class="notes" style="margin:8px 0 0;padding-left:18px"><li>Klik <b>Buka WhatsApp Web</b>. Chat pasien terbuka dengan pesan sudah terisi.</li><li>Periksa pesan, lalu tekan <b>Enter</b> di WhatsApp Web.</li><li>Kembali ke sini dan klik <b>Tandai terkirim</b>, supaya tercatat siapa dan kapan.</li></ol>' +
+      '<p class="notes" style="margin-top:6px">Di prototype, WhatsApp Web dibuka tanpa nomor tujuan (kontak dipilih sendiri), supaya tidak ada pesan ke nomor sungguhan.</p>';
+  }
+  /* o: { title, to, wa, text, onSent } */
+  function waModal(o) {
+    modal('<h3>' + esc(o.title) + '</h3><p class="sub">Pesan sudah terisi. Periksa, lalu kirim lewat WhatsApp Web.</p>' +
+      '<div class="muted" style="font-size:13px;margin:4px 0">Ke: <b>' + esc(o.to) + '</b> · ' + esc(o.wa) + '</div>' +
+      '<div class="panel soft" style="user-select:all;white-space:pre-wrap">' + esc(o.text) + '</div>' + waSteps() +
+      '<div class="row" style="justify-content:flex-end;margin-top:10px"><button type="button" class="btn" data-wa-cp>' + ic('copy') + ' Salin pesan</button><button type="button" class="btn primary" data-wa-open>Buka WhatsApp Web</button><button type="button" class="btn" data-wa-sent>Tandai terkirim</button></div>',
+      function (m, close) {
+        m.addEventListener('click', function (e) {
+          var b = e.target.closest ? e.target.closest('button') : null; if (!b) { return; }
+          if (b.hasAttribute('data-wa-cp')) { copyText(o.text); }
+          if (b.hasAttribute('data-wa-open')) { waOpenToast(o.wa, o.text); }
+          if (b.hasAttribute('data-wa-sent')) { close(); o.onSent(); }
+        });
+      });
+  }
   function downloadXlsx(name, rows) {
     try {
       var blob = xlsxBlob(rows, !!rows.hasTotal);
@@ -3121,7 +3257,7 @@
   }
   var K_LATE_DAYS = ['2026-10-28', '2026-11-03', '2026-11-05', '2026-11-10', '2026-11-11', '2026-11-15', '2026-11-16', '2026-10-27', '2026-10-29', '2026-11-02'];
   var LATE_MIN = [12, 14, 21, 15, 19, 33, 11, 18, 14, 25];
-  var LATE_OTHERS = [{ id: 'c', iso: '2026-11-06', m: 14 }, { id: 'd', iso: '2026-11-12', m: 12 }, { id: 'j', iso: '2026-10-28', m: 11 }, { id: 'j', iso: '2026-11-09', m: 17 }, { id: 'l', iso: '2026-11-04', m: 13 }, { id: 'l', iso: '2026-11-13', m: 22 }];
+  var LATE_OTHERS = [{ id: 'c', iso: '2026-11-06', m: 14 }, { id: 'd', iso: '2026-11-12', m: 12 }, { id: 'j', iso: '2026-10-28', m: 11 }, { id: 'j', iso: '2026-11-03', m: 15 }, { id: 'j', iso: '2026-11-09', m: 17 }, { id: 'j', iso: '2026-11-12', m: 19 }, { id: 'l', iso: '2026-11-04', m: 13 }, { id: 'l', iso: '2026-11-13', m: 22 }];
   /* Kejadian terlambat (lebih dari 10 menit). Kejadian milik Kirana mengikuti hitungan di adegan Absen, supaya sama dengan slip gaji. */
   function lateEvents(from, to) {
     var out = [];
@@ -3145,7 +3281,7 @@
   /* Cuti yang baru disetujui lewat adegan Jadwal (tahap 3) ikut tercatat di sini. */
   function liveCuti() {
     var c = S.cuti;
-    if (c.stage !== 3 || !c.sub) { return []; }
+    if (c.stage !== 4 || !c.sub || c.jenis === 'tukar') { return []; }
     return [{ id: c.who, iso: isoAdd('2026-11-22', c.day), sub: c.sub, live: true }];
   }
   function cutiEvents() { return CUTI_EVENTS.concat(liveCuti()); }
@@ -3353,6 +3489,7 @@
   var RECIPE = { tens: { n: 'TENS', use: { a1: 2 } }, tape: { n: 'Kinesiotape', use: { a2: 1 } }, dn: { n: 'Dry needling', use: { a4: 2 } } };
 
   /* ---------- State tambahan ---------- */
+  S.pendRem = {};
   S.svc = { step: 0, type: 'baru', name: 'Bapak Wawan', loc: 'klinik', tind: ['fe', 'ir', 'tens'], dx: 'Nyeri punggung', note: '', th: 'Dina', pkg: '1', promo: '', pay: 'bca', ref: '', sound: true, inv: null, paid: null, filter: 'all', seq: 148, clock: 14 * 60 + 5, sales: seedSales() };
   S.stok = seedStok();
 
@@ -3404,12 +3541,12 @@
         };
         reps.pending = { name: 'laporan-pending-batal.xlsx', rep: { head: ['Tanggal', 'Jam', 'Pasien', 'WhatsApp', 'Terapis', 'Status', 'Keterangan', 'Tindak lanjut'], rows: list.map(function (b) {
           return [bkLong(b.date), fromMin(b.t), b.name, b.wa, byId(b.th).n, { html: bkBadge(b.st, true), text: BK_STATUS[b.st].n }, why(b),
-            b.st === 'PENDING' ? { html: '<button type="button" class="btn sm" data-wa="' + b.id + '">Kirim pengingat</button>', text: 'Kirim pengingat' } : (b.st === 'CANCELED' ? 'Jam sudah kosong lagi' : 'Hubungi pasien')];
+            b.st === 'PENDING' ? (S.pendRem[b.id] ? { html: chip('good', S.pendRem[b.id], 'check'), text: S.pendRem[b.id] } : { html: '<button type="button" class="btn sm" data-wa="' + b.id + '">Kirim pengingat</button>', text: 'Belum diingatkan' }) : (b.st === 'CANCELED' ? 'Jam sudah kosong lagi' : 'Hubungi pasien')];
         }) } };
         return '<div class="grid3">' + tile('Menunggu konfirmasi', n('PENDING')) + tile('Batal', n('CANCELED')) + tile('Tidak datang', n('NO_SHOW')) + '</div>' +
           '<div class="ctrl">' + seg('pst', [['all', 'Semua'], ['PENDING', 'Menunggu'], ['CANCELED', 'Batal'], ['NO_SHOW', 'Tidak datang']], F.pst) + '</div>' +
           repTable(reps.pending.rep, true) + '<div class="row">' + dlBtn('pending') + '</div>' +
-          '<p class="notes">Ketuk Kirim pengingat untuk menyiapkan pesan WhatsApp ke pasien yang belum konfirmasi. Alasan batal dicatat front desk saat mengubah status.</p>';
+          '<p class="notes">Klik Kirim pengingat, lalu pesan sudah terisi dan WhatsApp Web terbuka di chat pasien. Front desk tinggal menekan Enter, kemudian menandai terkirim agar tercatat siapa dan kapan (alur sama seperti Reminder pasien). Alasan batal dicatat front desk saat mengubah status.</p>';
       };
 
       var absenHtml = function () {
@@ -3433,12 +3570,12 @@
         var log = cutiEvents().sort(function (a, b) { return a.iso < b.iso ? -1 : 1; });
         reps.cuti = { name: 'laporan-cuti.xlsx', rep: { head: ['Karyawan', 'Status', 'Kuota', 'Terpakai sebelum periode', 'Periode ini', 'Sisa'], num: [3, 4, 5], rows: rows } };
         reps.cutilog = { name: 'riwayat-cuti.xlsx', rep: { head: ['Tanggal cuti', 'Karyawan', 'Pengganti', 'Status'], rows: log.map(function (e) {
-          return [fdate(e.iso, true), byId(e.id).n, byId(e.sub).n, { html: chip('good', e.live ? 'Disetujui owner (baru)' : 'Disetujui owner', 'check'), text: 'Disetujui owner' }];
+          return [fdate(e.iso, true), byId(e.id).n, byId(e.sub).n, { html: chip('good', e.live ? 'Disetujui leader dan owner (baru)' : 'Disetujui leader dan owner', 'check'), text: 'Disetujui leader dan owner' }];
         }) } };
         return '<div class="sec-title">Saldo cuti per karyawan</div>' + repTable(reps.cuti.rep, false) + '<div class="row">' + dlBtn('cuti') + '</div>' +
           '<div class="sec-title">Riwayat cuti periode ini</div>' + repTable(reps.cutilog.rep, false) + '<div class="row">' + dlBtn('cutilog', 'Unduh riwayat cuti (.xlsx)') + '</div>' +
-          callout('info', 'check', 'Kuota cuti ' + CUTI_QUOTA + ' hari per tahun untuk karyawan tetap dan kontrak. Cuti hanya bisa diajukan dengan pengganti yang sudah setuju, lalu disetujui owner. Saat disetujui, jadwal berubah dan uang harian shift itu pindah ke pengganti.') +
-          '<p class="notes">Coba ajukan dan setujui cuti di layar Jadwal shift dan cuti. Hasilnya langsung muncul di riwayat dan mengurangi sisa kuota di sini.</p>';
+          callout('info', 'check', 'Kuota cuti ' + CUTI_QUOTA + ' hari per tahun untuk karyawan tetap dan kontrak. Cuti hanya bisa diajukan dengan pengganti yang sudah setuju, lalu disetujui leader dan owner. Saat disetujui, jadwal berubah dan uang harian shift itu pindah ke pengganti.') +
+          '<p class="notes">Coba ajukan dan setujui cuti di layar Jadwal, cuti, dan tukar shift. Hasilnya langsung muncul di riwayat dan mengurangi sisa kuota di sini.</p>';
       };
 
       var lemburHtml = function () {
@@ -3450,10 +3587,18 @@
         reps.telat = { name: 'laporan-telat.xlsx', rep: { head: ['Tanggal', 'Karyawan', 'Jadwal masuk', 'Absen masuk', 'Terlambat (menit)', 'Kejadian ke-', 'Potongan'], num: [2, 3, 4, 5, 6],
           rows: ev.map(function (e) { return [fdate(e.iso, false), byId(e.id).n, e.sched, e.at, e.m, e.nth, rp(e.pot)]; }),
           total: ['Total', '', '', '', sumBy(ev, function (e) { return e.m; }), ev.length, rp(sumBy(ev, function (e) { return e.pot; }))] } };
+        var sumRows = PEOPLE.map(function (p) {
+          var n = ev.filter(function (e) { return e.id === p.id; }).length;
+          return n ? [p.n, n, Math.min(n, 3) + '× Rp20.000' + (n > 3 ? ' + ' + (n - 3) + '× Rp40.000' : ''), rp(lateTotal(n))] : null;
+        }).filter(function (r) { return r; });
+        reps.telatsum = { name: 'ringkasan-potongan-telat.xlsx', rep: { head: ['Karyawan', 'Kejadian', 'Rincian potongan', 'Potongan'], num: [1, 3], rows: sumRows,
+          total: ['Total', ev.length, '', rp(sumBy(PEOPLE, function (p) { return lateTotal(ev.filter(function (e) { return e.id === p.id; }).length); }))] } };
         return '<div class="sec-title">Lembur front desk · periode 26 Okt-25 Nov (draf)</div>' + repTable(reps.lembur.rep, false) + '<div class="row">' + dlBtn('lembur') + '</div>' +
           '<p class="notes">Tarif per jam = gaji pokok ÷ 173. Lembur dihitung bila jam kerja satu periode melebihi batas jam yang diisi finance, dibulatkan ke bawah ke ribuan. Shift long (12 jam) otomatis menambah jam kerja. Angka Kirana sama dengan slip gajinya.</p>' +
           '<div class="sec-title" style="margin-top:6px">Keterlambatan · 26 Okt-17 Nov</div>' + repTable(reps.telat.rep, false) + '<div class="row">' + dlBtn('telat') + '</div>' +
-          '<p class="notes">Toleransi 10 menit. Kejadian ke-1 sampai ke-3 dipotong Rp20.000, ke-4 dan seterusnya Rp40.000, dihitung per karyawan per periode. Tambah kejadian di layar Absen, lalu lihat di sini.</p>';
+          '<p class="notes">Toleransi 10 menit. Kejadian ke-1 sampai ke-3 dipotong Rp20.000, ke-4 dan seterusnya Rp40.000, dihitung per karyawan per periode. Tambah kejadian di layar Absen, lalu lihat di sini.</p>' +
+          '<div class="sec-title" style="margin-top:6px">Ringkasan potongan per karyawan</div>' + repTable(reps.telatsum.rep, false) + '<div class="row">' + dlBtn('telatsum') + '</div>' +
+          '<p class="notes">Potongan dihitung per kejadian, bukan rata. Contoh 4 kejadian: 3 × Rp20.000 + 1 × Rp40.000 = Rp100.000. Total di tabel ini sama dengan total kolom Potongan di tabel di atas.</p>';
       };
 
       var render = function () {
@@ -3472,7 +3617,12 @@
         var xl = t.getAttribute('data-xl');
         if (xl && reps[xl]) { downloadXlsx(reps[xl].name, repRows(reps[xl].rep)); return; }
         var wa = t.getAttribute('data-wa');
-        if (wa) { var b = bkFind(wa); toast('Pesan konfirmasi siap dikirim ke ' + b.name + ' (' + b.wa + '). Tercatat siapa dan kapan.'); }
+        if (wa) {
+          var b = bkFind(wa);
+          waModal({ title: 'Pengingat untuk ' + b.name, to: b.name, wa: b.wa,
+            text: 'Halo ' + b.name + ', kami mengingatkan jadwal terapi Anda ' + bkLong(b.date) + ' pukul ' + fromMin(b.t) + ' bersama terapis ' + byId(b.th).n + ' (' + BK_SERVICES[b.sv].n + '). Mohon balas OK untuk konfirmasi. Terima kasih.',
+            onSent: function () { S.pendRem[b.id] = 'Diingatkan ' + fromMin(S.svc.clock) + ' oleh Laras'; render(); toast('Tercatat: siapa dan kapan pengingat dikirim.'); } });
+        }
       });
     }
   });
@@ -3590,7 +3740,7 @@
           '<div class="notif">' + ic('bell') + '<div><b>HP finance</b>Pembayaran masuk ' + rp(s.total) + ' · ' + esc(PAY[s.pay]) + ' · ' + esc(s.name) + ' (' + esc(s.inv) + ')</div></div>' +
           '<div class="notif">' + ic('bell') + '<div><b>HP owner</b>Pemasukan hari ini naik menjadi ' + rp(ag.total) + ' dari ' + ag.visits + ' transaksi.</div></div>' +
           '<div class="sec-title">Kuitansi</div>' + receiptHtml(rc) +
-          '<div class="row"><button type="button" class="btn primary" data-act="print">Cetak kuitansi</button><button type="button" class="btn" data-act="wa">Kirim ke WhatsApp pasien</button><button type="button" class="btn" data-act="next">Pasien berikutnya</button></div>';
+          '<div class="row"><button type="button" class="btn primary" data-act="print">Cetak kuitansi</button>' + (D.paid.waSent ? chip('good', 'Kuitansi terkirim ke WhatsApp', 'check') : '<button type="button" class="btn" data-act="wa">Kirim kuitansi ke WhatsApp pasien</button>') + '<button type="button" class="btn" data-act="next">Pasien berikutnya</button></div>';
       };
       var salesHtml = function () {
         var list = D.sales.filter(function (s) { return D.filter === 'all' || s.type === D.filter; }).sort(function (a, b) { return a.time < b.time ? -1 : 1; });
@@ -3657,7 +3807,13 @@
           });
           return;
         }
-        if (act === 'wa') { toast('Kuitansi PDF terkirim ke WhatsApp ' + D.paid.name + '.'); return; }
+        if (act === 'wa') {
+          var ps = D.paid;
+          waModal({ title: 'Kuitansi untuk ' + ps.name, to: ps.name, wa: ps.wa || '0812-0000-0110',
+            text: 'Halo ' + ps.name + ', terima kasih sudah terapi di klinik kami. Tanda terima pembayaran ' + ps.inv + ': ' + (ps.hv ? 'Home Visit' : PKG_NAME[ps.pkg]) + ', total ' + rp(ps.total) + ' lewat ' + PAY[ps.pay] + '. Semoga lekas pulih.',
+            onSent: function () { ps.waSent = true; render(); toast('Tercatat: kuitansi dikirim ke WhatsApp ' + ps.name + '.'); } });
+          return;
+        }
         if (act === 'next') {
           D.step = 0; D.inv = null; D.paid = null; D.type = 'reg'; D.name = 'Ibu Ratna'; D.loc = 'klinik'; D.pkg = '1'; D.promo = ''; D.tind = ['fe', 'ir', 'tens']; D.dx = ''; D.note = ''; D.ref = '';
           render(); return;
@@ -3982,7 +4138,7 @@
           return [p.n, p.st, inP || '-', u.before + u.now, u.sisa + ' hari', inP ? 'Tidak dipotong, uang harian shift itu ke pengganti' : (sub ? 'Menerima uang harian ' + sub + ' shift pengganti' : '-')];
         }) } };
         return '<div class="sec-title">Cuti · periode gaji 26 Okt-25 Nov 2026</div><div class="scroll-y">' + repTable(reps.cuti.rep, false) + '</div><div class="row">' + dlBtn('cuti') + '</div>' +
-          '<p class="notes">Cuti yang disetujui lewat layar Jadwal shift dan cuti langsung muncul di sini. Pengganti menerima uang harian shift yang digantikan.</p>';
+          '<p class="notes">Cuti yang disetujui lewat layar Jadwal, cuti, dan tukar shift langsung muncul di sini. Pengganti menerima uang harian shift yang digantikan.</p>';
       };
       var fdRep = function () {
         var names = ['Uang harian', 'Insentif pasien baru', 'Insentif paket 3x', 'Insentif paket 6x', 'Insentif paket 12x', 'Insentif tapping'], fds = fdGaji();
@@ -4063,200 +4219,218 @@
       });
     }
   });
-
-  /* =====================================================================
-     TAMBAHAN (susulan dari owner): pasien yang tidak kembali, untuk evaluasi dan promo WhatsApp
-     ===================================================================== */
-  var RET_REF = '2026-11-17';
-  var RET_THR = { '1': 30, '2': 60, '3': 90, '6': 180 };
-  var RET_MON = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
-  var RET_SIZE = { p3: 3, p6: 6, p12: 12 };
-  var RET_DX = ['Nyeri punggung', 'Nyeri leher', 'Nyeri bahu', 'Nyeri lutut', 'Saraf kejepit', 'Nyeri tumit', 'Keseleo', 'Pasca stroke', 'Nyeri siku', 'Nyeri paha'];
-  var RET_TPL = [
-    { id: 'back', n: 'Ajak kembali + Promo Paket 6', need: false, txt: 'Halo {nama}, sudah lama kami tidak bertemu. Bagaimana kabar keluhan Anda? Bulan ini ada Promo Paket 6 Cares dengan potongan Rp100.000. Balas pesan ini untuk jadwalkan kunjungan. Balas STOP bila tidak ingin menerima info.' },
-    { id: 'p12', n: 'Promo November: Paket 12', need: false, txt: 'Halo {nama}, ada Promo November: Paket 12 Cares dengan potongan Rp200.000, berlaku sampai 30 November. Balas pesan ini untuk jadwalkan. Balas STOP bila tidak ingin menerima info.' },
-    { id: 'sisa', n: 'Pengingat sisa paket', need: true, txt: 'Halo {nama}, paket terapi Anda masih punya {sisa} sesi yang belum terpakai. Balas pesan ini untuk jadwalkan sesi berikutnya. Balas STOP bila tidak ingin menerima info.' }
-  ];
-  function retMs(iso) { var p = iso.split('-'); return Date.UTC(+p[0], +p[1] - 1, +p[2]); }
-  function retDays(iso) { return Math.round((retMs(RET_REF) - retMs(iso)) / 86400000); }
-  function retMinus(iso, d) { var t = new Date(retMs(iso) - d * 86400000), z = function (n) { return (n < 10 ? '0' : '') + n; }; return t.getUTCFullYear() + '-' + z(t.getUTCMonth() + 1) + '-' + z(t.getUTCDate()); }
-  function retDmy(iso) { var p = iso.split('-'); return (+p[2]) + ' ' + RET_MON[+p[1] - 1] + ' ' + p[0]; }
-  function retLama(d) { return d < 60 ? d + ' hari' : Math.round(d / 30) + ' bulan'; }
-  function seedPasien() {
-    var rnd = mulberry(20261117), list = [], used = {};
-    var fF = ['Ratna', 'Wulan', 'Dewi', 'Maya', 'Yuni', 'Lestari', 'Fitri', 'Anggun', 'Retno', 'Nadia', 'Putri', 'Susi'];
-    var fM = ['Hadi', 'Budi', 'Rudi', 'Agus', 'Dedi', 'Yoga', 'Tono', 'Wawan', 'Surya', 'Eko', 'Bayu', 'Rizal'];
-    var li = 'ABDEHJKMNPRSTW';
-    var pick = function (a) { return a[Math.floor(rnd() * a.length)]; };
-    while (list.length < 84) {
-      var fem = rnd() < 0.62, nm = (fem ? 'Ibu ' : 'Bpk. ') + pick(fem ? fF : fM) + ' ' + li.charAt(Math.floor(rnd() * li.length)) + '.';
-      if (used[nm]) { continue; }
-      used[nm] = 1;
-      var r = rnd(), d = r < 0.42 ? 1 + Math.floor(rnd() * 30) : r < 0.57 ? 31 + Math.floor(rnd() * 30) : r < 0.70 ? 61 + Math.floor(rnd() * 30) : r < 0.84 ? 91 + Math.floor(rnd() * 90) : 181 + Math.floor(rnd() * 150);
-      var k = rnd(), kind = k < 0.45 ? 'sv' : k < 0.57 ? 'p3' : k < 0.79 ? 'p6' : k < 0.92 ? 'p12' : 'hv';
-      var visits, left = 0;
-      if (RET_SIZE[kind]) { var usedS = 1 + Math.floor(rnd() * RET_SIZE[kind]); left = RET_SIZE[kind] - usedS; visits = usedS + (rnd() < 0.4 ? Math.floor(rnd() * 5) : 0); }
-      else { visits = 1 + Math.floor(rnd() * (kind === 'hv' ? 3 : 4)); }
-      var last = retMinus(RET_REF, d), consent = rnd() < 0.9;
-      var p = { id: 'p' + (list.length + 1), name: nm, wa: '0812-0000-' + (2001 + list.length), last: last, first: retMinus(last, (visits - 1) * (7 + Math.floor(rnd() * 7)) + Math.floor(rnd() * 20)),
-        visits: visits, kind: kind, left: left, th: pick(TERAPIS_PICK), dx: pick(RET_DX), consent: consent, sent: null, live: false };
-      if (d > 60 && consent && rnd() < 0.12) { p.sent = { d: '3 Nov', t: 'Ajak kembali + Promo Paket 6' }; }
-      list.push(p);
-    }
-    return list;
-  }
-  S.ret = { pts: seedPasien(), m: '3', f: 'all', sel: {} };
-
-  add({
-    id: 'ret', title: 'Pasien yang tidak kembali, untuk evaluasi owner dan promo WhatsApp',
-    now: 'Nomor WhatsApp pasien sudah ada di data booking, tetapi tidak ada daftar pasien yang sudah lama tidak datang. Owner tidak punya bahan evaluasi, dan front desk tidak punya daftar sasaran untuk promo.',
-    with: 'Sistem mengenali pasien dari nomor WhatsApp dan mencatat kunjungan terakhirnya. Owner memilih batas waktu (disarankan 3 bulan), lalu melihat ringkasan untuk evaluasi. Front desk melihat daftar yang sama lengkap dengan nomor WhatsApp, dan bisa mengirim promo ke pasien yang setuju dihubungi.',
-    who: ['Owner', 'Front desk'],
-    build: function (el) {
-      var D = S.ret, tab = initTab('ret', 'review'), reps = {};
-      var thr = function () { return RET_THR[D.m]; };
-      var lostList = function () { return D.pts.filter(function (p) { return retDays(p.last) > thr(); }); };
-      var eligible = function (p) { return p.consent && !p.sent; };
-      var mLabel = function () { return D.m + ' bulan'; };
-      var segM = function () { return '<div class="ctrl">' + seg('m', [['1', '1 bulan'], ['2', '2 bulan'], ['3', '3 bulan (disarankan)'], ['6', '6 bulan']], D.m) + '</div>'; };
-      var cutoffTxt = function () { return 'Tidak kembali = kunjungan terakhir sebelum ' + retDmy(retMinus(RET_REF, thr())) + ' (lebih dari ' + mLabel() + ' sebelum 17 Nov 2026).'; };
-      var listRows = function (rows) {
-        return rows.map(function (p) {
-          return [p.name, p.wa, retDmy(p.last), retDays(p.last), p.visits, KIND[p.kind], RET_SIZE[p.kind] ? p.left : '-', p.th, p.dx, p.consent ? 'Ya' : 'Tidak', p.sent ? 'Promo terkirim ' + p.sent.d : (p.consent ? 'Belum dihubungi' : 'Tidak dihubungi')];
-        });
-      };
-      var visList = function () {
-        var rows = lostList().filter(function (p) { return D.f === 'all' || (D.f === 'paket' && p.left > 0) || (D.f === 'todo' && eligible(p)); });
-        return rows.sort(function (a, b) { return retDays(a.last) - retDays(b.last); });
-      };
-      var selVisible = function () { return visList().filter(function (p) { return D.sel[p.id] && eligible(p); }); };
-
-      /* ---------- Tab Review owner ---------- */
-      var reviewHtml = function () {
-        var lost = lostList(), all = D.pts, nl = lost.length;
-        var paket = lost.filter(function (p) { return p.left > 0; }).length;
-        var wa = lost.filter(function (p) { return p.consent; }).length;
-        var sent = lost.filter(function (p) { return p.sent; }).length;
-        var buckets = [['Sampai 1 bulan', 0, 30], ['1-2 bulan', 31, 60], ['2-3 bulan', 61, 90], ['3-6 bulan', 91, 180], ['Lebih dari 6 bulan', 181, 9999]];
-        var bRows = buckets.map(function (b) {
-          var n = all.filter(function (p) { var d = retDays(p.last); return d >= b[1] && d <= b[2]; }).length, w = Math.round(n / all.length * 100);
-          return [b[0], n, pct(n, all.length), { html: '<div class="minibar"><i class="' + (b[1] > thr() ? 'warn' : '') + '" style="width:' + w * 2 + '%"></i></div>', text: '' }];
-        });
-        reps.bucket = { name: 'pasien-lama-tidak-datang.xlsx', rep: { head: ['Terakhir datang', 'Pasien', '% dari semua pasien', ''], num: [1, 2], rows: bRows, total: ['Total', all.length, '100%', ''] } };
-        var byKind = KIND_ORDER.map(function (k) {
-          var a = all.filter(function (p) { return p.kind === k; }), l = a.filter(function (p) { return retDays(p.last) > thr(); });
-          return [KIND[k], a.length, l.length, pct(l.length, a.length)];
-        });
-        reps.kind = { name: 'tidak-kembali-per-layanan.xlsx', rep: { head: ['Layanan terakhir', 'Semua pasien', 'Tidak kembali', '% tidak kembali'], num: [1, 2, 3], rows: byKind } };
-        var byTh = TERAPIS_PICK.map(function (n) {
-          var a = all.filter(function (p) { return p.th === n; }), l = a.filter(function (p) { return retDays(p.last) > thr(); });
-          return [n, a.length, l.length, pct(l.length, a.length)];
-        });
-        reps.th = { name: 'tidak-kembali-per-fisioterapis.xlsx', rep: { head: ['Fisioterapis terakhir', 'Pasien yang ditangani', 'Tidak kembali', '% tidak kembali'], num: [1, 2, 3], rows: byTh } };
-        reps.list = { name: 'pasien-tidak-kembali-' + D.m + '-bulan.xlsx', rep: { head: ['Pasien', 'WhatsApp', 'Terakhir datang', 'Hari sejak terakhir', 'Total kunjungan', 'Layanan terakhir', 'Sisa paket (sesi)', 'Fisioterapis terakhir', 'Diagnosa terakhir', 'Setuju info promo', 'Status WhatsApp'], num: [3, 4, 6], rows: listRows(lost.slice().sort(function (a, b) { return retDays(a.last) - retDays(b.last); })) } };
-        return segM() + '<p class="notes">' + esc(cutoffTxt()) + '</p>' +
-          '<div class="grid3">' + tile('Pasien terdaftar', String(all.length)) + tile('Tidak kembali', nl + ' · ' + pct(nl, all.length), 'lebih dari ' + mLabel()) + tile('Paket belum habis', String(paket), 'di antara yang tidak kembali') + '</div>' +
-          '<div class="grid3">' + tile('Bisa dihubungi via WhatsApp', String(wa), 'setuju menerima info') + tile('Sudah dikirim promo', String(sent)) + tile('Belum dihubungi', String(lost.filter(eligible).length)) + '</div>' +
-          callout('info', 'bell', '<b>Kenapa 3 bulan?</b> Paket 12 kali yang dijalani 1 sampai 3 kali seminggu biasanya selesai dalam 1,5 sampai 3 bulan, jadi lewat 3 bulan tanpa kunjungan umumnya berarti terapi berhenti, bukan sekadar jeda. Di bawah itu banyak pasien hanya sedang jeda antar sesi, dan pesan promo terasa mengganggu. Untuk pasien yang <b>paketnya belum habis</b>, boleh dihubungi lebih awal (2 bulan) karena sudah dibayar. Untuk "kami rindu", pakai 6 bulan dengan promo yang lebih kuat. Angka ini sebaiknya disesuaikan setelah owner melihat jarak kunjungan pasien yang sebenarnya.') +
-          '<div class="sec-title">Sudah berapa lama pasien tidak datang</div>' + repTable(reps.bucket.rep, false) +
-          '<div class="sec-title" style="margin-top:6px">Per layanan terakhir</div>' + repTable(reps.kind.rep, false) +
-          '<div class="sec-title" style="margin-top:6px">Per fisioterapis terakhir</div>' + repTable(reps.th.rep, false) +
-          '<p class="notes">Pasien yang tidak kembali belum tentu tidak puas, bisa juga sudah sembuh. Angka per fisioterapis adalah bahan diskusi, bukan penilaian kinerja.</p>' +
-          '<div class="row"><button type="button" class="btn primary" data-seg="tab" data-v="daftar">Lihat daftar pasien dan kirim promo</button><button type="button" class="btn sm" data-xl="list">Unduh daftar pasien (.xlsx)</button></div>';
-      };
-
-      /* ---------- Tab Daftar dan kirim WA ---------- */
-      var daftarHtml = function () {
-        var rows = visList(), all = lostList(), nSel = selVisible().length, elig = rows.filter(eligible);
-        var allOn = elig.length > 0 && elig.every(function (p) { return D.sel[p.id]; });
-        reps.list = { name: 'pasien-tidak-kembali-' + D.m + '-bulan.xlsx', rep: { head: ['Pasien', 'WhatsApp', 'Terakhir datang', 'Hari sejak terakhir', 'Total kunjungan', 'Layanan terakhir', 'Sisa paket (sesi)', 'Fisioterapis terakhir', 'Diagnosa terakhir', 'Setuju info promo', 'Status WhatsApp'], num: [3, 4, 6], rows: listRows(rows) } };
-        var head = '<tr><th><input type="checkbox" data-selall aria-label="Pilih semua yang bisa dihubungi"' + (allOn ? ' checked' : '') + '></th><th>Pasien</th><th>Terakhir datang</th><th class="r">Kunjungan</th><th>Layanan terakhir</th><th class="r">Sisa paket</th><th>Fisio · diagnosa</th><th>Status WhatsApp</th><th></th></tr>';
-        var body = rows.map(function (p) {
-          var st = p.sent ? chip('good', 'Promo terkirim ' + p.sent.d, 'check') : (p.consent ? chip('warn', 'Belum dihubungi') : chip('', 'Tidak setuju info'));
-          return '<tr' + (p.live ? ' class="hl"' : '') + '><td>' + (eligible(p) ? '<input type="checkbox" data-sel="' + p.id + '" aria-label="Pilih ' + esc(p.name) + '"' + (D.sel[p.id] ? ' checked' : '') + '>' : '') + '</td>' +
-            '<td><b>' + esc(p.name) + '</b><div class="muted" style="font-size:12px">' + esc(p.wa) + '</div></td>' +
-            '<td>' + retDmy(p.last) + '<div class="muted" style="font-size:12px">' + retLama(retDays(p.last)) + ' lalu</div></td>' +
-            '<td class="r num">' + p.visits + '</td><td>' + KIND[p.kind] + '</td><td class="r num">' + (RET_SIZE[p.kind] ? (p.left ? p.left + ' sesi' : 'Habis') : '-') + '</td>' +
-            '<td>' + esc(p.th) + '<div class="muted" style="font-size:12px">' + esc(p.dx) + '</div></td><td>' + st + '</td>' +
-            '<td>' + (eligible(p) ? '<button type="button" class="btn sm" data-send1="' + p.id + '">Kirim WA</button>' : '') + '</td></tr>';
-        }).join('') || '<tr><td colspan="9" class="muted">Tidak ada pasien untuk pilihan ini.</td></tr>';
-        return segM() +
-          '<div class="ctrl">' + seg('f', [['all', 'Semua (' + all.length + ')'], ['paket', 'Paket belum habis (' + all.filter(function (p) { return p.left > 0; }).length + ')'], ['todo', 'Belum dihubungi (' + all.filter(eligible).length + ')']], D.f) + '</div>' +
-          '<p class="notes">' + esc(cutoffTxt()) + ' Terurut dari yang paling baru berhenti datang, karena paling mudah diajak kembali.</p>' +
-          '<div class="scroll-y"><div class="tablewrap"><table><thead>' + head + '</thead><tbody>' + body + '</tbody></table></div></div>' +
-          '<div class="row"><button type="button" class="btn primary" data-act="sendsel"' + (nSel ? '' : ' disabled') + '>Kirim promo ke ' + nSel + ' pasien terpilih</button><button type="button" class="btn sm" data-xl="list">Unduh daftar ini (.xlsx)</button></div>' +
-          '<p class="notes">Pasien dikenali dari nomor WhatsApp yang diinput saat booking, jadi nama yang tertulis berbeda tetap dihitung satu orang. Pasien yang tidak setuju menerima info promo tidak bisa dipilih, dan pasien yang sudah dikirimi promo tidak ikut terpilih lagi supaya tidak dikirimi berulang. Ini contoh, tidak ada pesan sungguhan yang terkirim.</p>';
-      };
-
-      var render = function () {
-        var body = '<div>' + seg('tab', TABS.ret, tab) + '</div>' + (tab === 'review' ? reviewHtml() : daftarHtml());
-        el.innerHTML = frame('Pasien tidak kembali', 'Owner dan front desk', body, 'wide');
-      };
-
-      var openSend = function (ids) {
-        var pts = ids.map(function (id) { return D.pts.filter(function (p) { return p.id === id; })[0]; }).filter(function (p) { return p && eligible(p); });
-        if (!pts.length) { toast('Pilih pasien dulu.'); return; }
-        modal('<div id="rt-mb"></div>', function (o, close) {
-          var st = { tpl: RET_TPL[0].id, txt: RET_TPL[0].txt };
-          var tplOf = function () { return RET_TPL.filter(function (t) { return t.id === st.tpl; })[0]; };
-          var recip = function () { return pts.filter(function (p) { return !tplOf().need || p.left > 0; }); };
-          var msgFor = function (p) { return st.txt.replace(/\{nama\}/g, p.name).replace(/\{sisa\}/g, String(p.left)); };
-          var pv = function () {
-            var r = recip(), first = r[0];
-            o.querySelector('#rt-pv').innerHTML = first ? '<b>Contoh untuk ' + esc(first.name) + ' (' + esc(first.wa) + ')</b><div style="white-space:pre-wrap;margin-top:4px">' + esc(msgFor(first)) + '</div>' : 'Tidak ada penerima yang cocok dengan pesan ini.';
-            o.querySelector('#rt-n').textContent = r.length + ' pasien akan menerima pesan' + (r.length < pts.length ? ', ' + (pts.length - r.length) + ' dilewati karena tidak punya sisa paket' : '');
-            o.querySelector('[data-act="rt-send"]').disabled = !r.length;
-          };
-          var draw = function () {
-            o.querySelector('#rt-mb').innerHTML = '<h3>Kirim promo via WhatsApp</h3>' +
-              '<div class="field"><label for="rt-tpl">Isi pesan</label><select id="rt-tpl">' + RET_TPL.map(function (t) { return '<option value="' + t.id + '"' + (t.id === st.tpl ? ' selected' : '') + '>' + esc(t.n) + '</option>'; }).join('') + '</select></div>' +
-              '<div class="field" style="margin-top:8px"><label for="rt-txt">Teks pesan (bisa diubah, {nama} diganti nama pasien)</label><textarea id="rt-txt" rows="5">' + esc(st.txt) + '</textarea></div>' +
-              '<div class="panel soft" style="margin-top:8px" id="rt-pv"></div><p class="notes" id="rt-n" style="margin-top:6px"></p>' +
-              '<div class="row" style="margin-top:8px"><button type="button" class="btn primary" data-act="rt-send">Kirim ke WhatsApp</button><button type="button" class="btn" data-close>Batal</button></div>';
-            pv();
-          };
-          draw();
-          o.addEventListener('change', function (e) { if (e.target.id === 'rt-tpl') { st.tpl = e.target.value; st.txt = tplOf().txt; draw(); } });
-          o.addEventListener('input', function (e) { if (e.target.id === 'rt-txt') { st.txt = e.target.value; pv(); } });
-          o.addEventListener('click', function (e) {
-            var b = e.target.closest ? e.target.closest('button') : null;
-            if (!b || b.getAttribute('data-act') !== 'rt-send') { return; }
-            var r = recip(); if (!r.length) { return; }
-            r.forEach(function (p) { p.sent = { d: '17 Nov', t: tplOf().n }; p.live = true; delete D.sel[p.id]; });
-            close(); render();
-            toast(r.length + ' pesan promo masuk antrean WhatsApp. Ini contoh, tidak ada pesan sungguhan yang terkirim.');
-          });
-        });
-      };
-
-      render();
-      el.addEventListener('change', function (e) {
-        var t = e.target, id = t.getAttribute && t.getAttribute('data-sel');
-        if (id) { if (t.checked) { D.sel[id] = true; } else { delete D.sel[id]; } render(); return; }
-        if (t.getAttribute && t.hasAttribute('data-selall')) {
-          visList().filter(eligible).forEach(function (p) { if (t.checked) { D.sel[p.id] = true; } else { delete D.sel[p.id]; } });
-          render();
-        }
-      });
-      el.addEventListener('click', function (e) {
-        var t = e.target.closest ? e.target.closest('button') : null; if (!t) { return; }
-        var sg = t.getAttribute('data-seg'), v = t.getAttribute('data-v'), act = t.getAttribute('data-act');
-        if (sg === 'tab') { tab = v; render(); return; }
-        if (sg === 'm') { D.m = v; render(); return; }
-        if (sg === 'f') { D.f = v; render(); return; }
-        var xl = t.getAttribute('data-xl');
-        if (xl && reps[xl]) { downloadXlsx(reps[xl].name, repRows(reps[xl].rep)); return; }
-        if (t.getAttribute('data-send1')) { openSend([t.getAttribute('data-send1')]); return; }
-        if (act === 'sendsel') { openSend(selVisible().map(function (p) { return p.id; })); return; }
-      });
-    }
-  });
+// [DITUNDA]
+// [DITUNDA]   /* =====================================================================
+// [DITUNDA]      TAMBAHAN (susulan dari owner): pasien yang tidak kembali, untuk evaluasi dan promo WhatsApp
+// [DITUNDA]      ===================================================================== */
+// [DITUNDA]   var RET_REF = '2026-11-17';
+// [DITUNDA]   var RET_THR = { '1': 30, '2': 60, '3': 90, '6': 180 };
+// [DITUNDA]   var RET_MON = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+// [DITUNDA]   var RET_SIZE = { p3: 3, p6: 6, p12: 12 };
+// [DITUNDA]   var RET_DX = ['Nyeri punggung', 'Nyeri leher', 'Nyeri bahu', 'Nyeri lutut', 'Saraf kejepit', 'Nyeri tumit', 'Keseleo', 'Pasca stroke', 'Nyeri siku', 'Nyeri paha'];
+// [DITUNDA]   var RET_TPL = [
+// [DITUNDA]     { id: 'back', n: 'Ajak kembali + Promo Paket 6', need: false, txt: 'Halo {nama}, sudah lama kami tidak bertemu. Bagaimana kabar keluhan Anda? Bulan ini ada Promo Paket 6 Cares dengan potongan Rp100.000. Balas pesan ini untuk jadwalkan kunjungan. Balas STOP bila tidak ingin menerima info.' },
+// [DITUNDA]     { id: 'p12', n: 'Promo November: Paket 12', need: false, txt: 'Halo {nama}, ada Promo November: Paket 12 Cares dengan potongan Rp200.000, berlaku sampai 30 November. Balas pesan ini untuk jadwalkan. Balas STOP bila tidak ingin menerima info.' },
+// [DITUNDA]     { id: 'sisa', n: 'Pengingat sisa paket', need: true, txt: 'Halo {nama}, paket terapi Anda masih punya {sisa} sesi yang belum terpakai. Balas pesan ini untuk jadwalkan sesi berikutnya. Balas STOP bila tidak ingin menerima info.' }
+// [DITUNDA]   ];
+// [DITUNDA]   function retMs(iso) { var p = iso.split('-'); return Date.UTC(+p[0], +p[1] - 1, +p[2]); }
+// [DITUNDA]   function retDays(iso) { return Math.round((retMs(RET_REF) - retMs(iso)) / 86400000); }
+// [DITUNDA]   function retMinus(iso, d) { var t = new Date(retMs(iso) - d * 86400000), z = function (n) { return (n < 10 ? '0' : '') + n; }; return t.getUTCFullYear() + '-' + z(t.getUTCMonth() + 1) + '-' + z(t.getUTCDate()); }
+// [DITUNDA]   function retDmy(iso) { var p = iso.split('-'); return (+p[2]) + ' ' + RET_MON[+p[1] - 1] + ' ' + p[0]; }
+// [DITUNDA]   function retLama(d) { return d < 60 ? d + ' hari' : Math.round(d / 30) + ' bulan'; }
+// [DITUNDA]   function seedPasien() {
+// [DITUNDA]     var rnd = mulberry(20261117), list = [], used = {};
+// [DITUNDA]     var fF = ['Ratna', 'Wulan', 'Dewi', 'Maya', 'Yuni', 'Lestari', 'Fitri', 'Anggun', 'Retno', 'Nadia', 'Putri', 'Susi'];
+// [DITUNDA]     var fM = ['Hadi', 'Budi', 'Rudi', 'Agus', 'Dedi', 'Yoga', 'Tono', 'Wawan', 'Surya', 'Eko', 'Bayu', 'Rizal'];
+// [DITUNDA]     var li = 'ABDEHJKMNPRSTW';
+// [DITUNDA]     var pick = function (a) { return a[Math.floor(rnd() * a.length)]; };
+// [DITUNDA]     while (list.length < 84) {
+// [DITUNDA]       var fem = rnd() < 0.62, nm = (fem ? 'Ibu ' : 'Bpk. ') + pick(fem ? fF : fM) + ' ' + li.charAt(Math.floor(rnd() * li.length)) + '.';
+// [DITUNDA]       if (used[nm]) { continue; }
+// [DITUNDA]       used[nm] = 1;
+// [DITUNDA]       var r = rnd(), d = r < 0.42 ? 1 + Math.floor(rnd() * 30) : r < 0.57 ? 31 + Math.floor(rnd() * 30) : r < 0.70 ? 61 + Math.floor(rnd() * 30) : r < 0.84 ? 91 + Math.floor(rnd() * 90) : 181 + Math.floor(rnd() * 150);
+// [DITUNDA]       var k = rnd(), kind = k < 0.45 ? 'sv' : k < 0.57 ? 'p3' : k < 0.79 ? 'p6' : k < 0.92 ? 'p12' : 'hv';
+// [DITUNDA]       var visits, left = 0;
+// [DITUNDA]       if (RET_SIZE[kind]) { var usedS = 1 + Math.floor(rnd() * RET_SIZE[kind]); left = RET_SIZE[kind] - usedS; visits = usedS + (rnd() < 0.4 ? Math.floor(rnd() * 5) : 0); }
+// [DITUNDA]       else { visits = 1 + Math.floor(rnd() * (kind === 'hv' ? 3 : 4)); }
+// [DITUNDA]       var last = retMinus(RET_REF, d), consent = rnd() < 0.9;
+// [DITUNDA]       var p = { id: 'p' + (list.length + 1), name: nm, wa: '0812-0000-' + (2001 + list.length), last: last, first: retMinus(last, (visits - 1) * (7 + Math.floor(rnd() * 7)) + Math.floor(rnd() * 20)),
+// [DITUNDA]         visits: visits, kind: kind, left: left, th: pick(TERAPIS_PICK), dx: pick(RET_DX), consent: consent, sent: null, live: false };
+// [DITUNDA]       if (d > 60 && consent && rnd() < 0.12) { p.sent = { d: '3 Nov', t: 'Ajak kembali + Promo Paket 6', by: 'Kirana' }; }
+// [DITUNDA]       list.push(p);
+// [DITUNDA]     }
+// [DITUNDA]     return list;
+// [DITUNDA]   }
+// [DITUNDA]   S.ret = { pts: seedPasien(), m: '3', f: 'all', sel: {} };
+// [DITUNDA]
+// [DITUNDA]   add({
+// [DITUNDA]     id: 'ret', title: 'Pasien yang tidak kembali, untuk evaluasi owner dan promo WhatsApp',
+// [DITUNDA]     now: 'Nomor WhatsApp pasien sudah ada di data booking, tetapi tidak ada daftar pasien yang sudah lama tidak datang. Owner tidak punya bahan evaluasi, dan front desk tidak punya daftar sasaran untuk promo.',
+// [DITUNDA]     with: 'Sistem mengenali pasien dari nomor WhatsApp dan mencatat kunjungan terakhirnya. Owner memilih batas waktu (disarankan 3 bulan), lalu melihat ringkasan untuk evaluasi. Front desk melihat daftar yang sama lengkap dengan nomor WhatsApp, lalu mengirim promo ke pasien yang setuju dihubungi lewat WhatsApp Web dengan teks yang sudah terisi, tinggal menekan Enter.',
+// [DITUNDA]     who: ['Owner', 'Front desk'],
+// [DITUNDA]     build: function (el) {
+// [DITUNDA]       var D = S.ret, tab = initTab('ret', 'review'), reps = {};
+// [DITUNDA]       var thr = function () { return RET_THR[D.m]; };
+// [DITUNDA]       var lostList = function () { return D.pts.filter(function (p) { return retDays(p.last) > thr(); }); };
+// [DITUNDA]       var eligible = function (p) { return p.consent && !p.sent; };
+// [DITUNDA]       var mLabel = function () { return D.m + ' bulan'; };
+// [DITUNDA]       var segM = function () { return '<div class="ctrl">' + seg('m', [['1', '1 bulan'], ['2', '2 bulan'], ['3', '3 bulan (disarankan)'], ['6', '6 bulan']], D.m) + '</div>'; };
+// [DITUNDA]       var cutoffTxt = function () { return 'Tidak kembali = kunjungan terakhir sebelum ' + retDmy(retMinus(RET_REF, thr())) + ' (lebih dari ' + mLabel() + ' sebelum 17 Nov 2026).'; };
+// [DITUNDA]       var listRows = function (rows) {
+// [DITUNDA]         return rows.map(function (p) {
+// [DITUNDA]           return [p.name, p.wa, retDmy(p.last), retDays(p.last), p.visits, KIND[p.kind], RET_SIZE[p.kind] ? p.left : '-', p.th, p.dx, p.consent ? 'Ya' : 'Tidak', p.sent ? 'Promo terkirim ' + p.sent.d + ' oleh ' + p.sent.by : (p.consent ? 'Belum dihubungi' : 'Tidak dihubungi')];
+// [DITUNDA]         });
+// [DITUNDA]       };
+// [DITUNDA]       var visList = function () {
+// [DITUNDA]         var rows = lostList().filter(function (p) { return D.f === 'all' || (D.f === 'paket' && p.left > 0) || (D.f === 'todo' && eligible(p)); });
+// [DITUNDA]         return rows.sort(function (a, b) { return retDays(a.last) - retDays(b.last); });
+// [DITUNDA]       };
+// [DITUNDA]       var selVisible = function () { return visList().filter(function (p) { return D.sel[p.id] && eligible(p); }); };
+// [DITUNDA]
+// [DITUNDA]       /* ---------- Tab Review owner ---------- */
+// [DITUNDA]       var reviewHtml = function () {
+// [DITUNDA]         var lost = lostList(), all = D.pts, nl = lost.length;
+// [DITUNDA]         var paket = lost.filter(function (p) { return p.left > 0; }).length;
+// [DITUNDA]         var wa = lost.filter(function (p) { return p.consent; }).length;
+// [DITUNDA]         var sent = lost.filter(function (p) { return p.sent; }).length;
+// [DITUNDA]         var buckets = [['Sampai 1 bulan', 0, 30], ['1-2 bulan', 31, 60], ['2-3 bulan', 61, 90], ['3-6 bulan', 91, 180], ['Lebih dari 6 bulan', 181, 9999]];
+// [DITUNDA]         var bRows = buckets.map(function (b) {
+// [DITUNDA]           var n = all.filter(function (p) { var d = retDays(p.last); return d >= b[1] && d <= b[2]; }).length, w = Math.round(n / all.length * 100);
+// [DITUNDA]           return [b[0], n, pct(n, all.length), { html: '<div class="minibar"><i class="' + (b[1] > thr() ? 'warn' : '') + '" style="width:' + w * 2 + '%"></i></div>', text: '' }];
+// [DITUNDA]         });
+// [DITUNDA]         reps.bucket = { name: 'pasien-lama-tidak-datang.xlsx', rep: { head: ['Terakhir datang', 'Pasien', '% dari semua pasien', ''], num: [1, 2], rows: bRows, total: ['Total', all.length, '100%', ''] } };
+// [DITUNDA]         var byKind = KIND_ORDER.map(function (k) {
+// [DITUNDA]           var a = all.filter(function (p) { return p.kind === k; }), l = a.filter(function (p) { return retDays(p.last) > thr(); });
+// [DITUNDA]           return [KIND[k], a.length, l.length, pct(l.length, a.length)];
+// [DITUNDA]         });
+// [DITUNDA]         reps.kind = { name: 'tidak-kembali-per-layanan.xlsx', rep: { head: ['Layanan terakhir', 'Semua pasien', 'Tidak kembali', '% tidak kembali'], num: [1, 2, 3], rows: byKind } };
+// [DITUNDA]         var byTh = TERAPIS_PICK.map(function (n) {
+// [DITUNDA]           var a = all.filter(function (p) { return p.th === n; }), l = a.filter(function (p) { return retDays(p.last) > thr(); });
+// [DITUNDA]           return [n, a.length, l.length, pct(l.length, a.length)];
+// [DITUNDA]         });
+// [DITUNDA]         reps.th = { name: 'tidak-kembali-per-fisioterapis.xlsx', rep: { head: ['Fisioterapis terakhir', 'Pasien yang ditangani', 'Tidak kembali', '% tidak kembali'], num: [1, 2, 3], rows: byTh } };
+// [DITUNDA]         reps.list = { name: 'pasien-tidak-kembali-' + D.m + '-bulan.xlsx', rep: { head: ['Pasien', 'WhatsApp', 'Terakhir datang', 'Hari sejak terakhir', 'Total kunjungan', 'Layanan terakhir', 'Sisa paket (sesi)', 'Fisioterapis terakhir', 'Diagnosa terakhir', 'Setuju info promo', 'Status WhatsApp'], num: [3, 4, 6], rows: listRows(lost.slice().sort(function (a, b) { return retDays(a.last) - retDays(b.last); })) } };
+// [DITUNDA]         return segM() + '<p class="notes">' + esc(cutoffTxt()) + '</p>' +
+// [DITUNDA]           '<div class="grid3">' + tile('Pasien terdaftar', String(all.length)) + tile('Tidak kembali', nl + ' · ' + pct(nl, all.length), 'lebih dari ' + mLabel()) + tile('Paket belum habis', String(paket), 'di antara yang tidak kembali') + '</div>' +
+// [DITUNDA]           '<div class="grid3">' + tile('Bisa dihubungi via WhatsApp', String(wa), 'setuju menerima info') + tile('Sudah dikirim promo', String(sent)) + tile('Belum dihubungi', String(lost.filter(eligible).length)) + '</div>' +
+// [DITUNDA]           callout('info', 'bell', '<b>Kenapa 3 bulan?</b> Paket 12 kali yang dijalani 1 sampai 3 kali seminggu biasanya selesai dalam 1,5 sampai 3 bulan, jadi lewat 3 bulan tanpa kunjungan umumnya berarti terapi berhenti, bukan sekadar jeda. Di bawah itu banyak pasien hanya sedang jeda antar sesi, dan pesan promo terasa mengganggu. Untuk pasien yang <b>paketnya belum habis</b>, boleh dihubungi lebih awal (2 bulan) karena sudah dibayar. Untuk "kami rindu", pakai 6 bulan dengan promo yang lebih kuat. Angka ini sebaiknya disesuaikan setelah owner melihat jarak kunjungan pasien yang sebenarnya.') +
+// [DITUNDA]           '<div class="sec-title">Sudah berapa lama pasien tidak datang</div>' + repTable(reps.bucket.rep, false) +
+// [DITUNDA]           '<div class="sec-title" style="margin-top:6px">Per layanan terakhir</div>' + repTable(reps.kind.rep, false) +
+// [DITUNDA]           '<div class="sec-title" style="margin-top:6px">Per fisioterapis terakhir</div>' + repTable(reps.th.rep, false) +
+// [DITUNDA]           '<p class="notes">Pasien yang tidak kembali belum tentu tidak puas, bisa juga sudah sembuh. Angka per fisioterapis adalah bahan diskusi, bukan penilaian kinerja.</p>' +
+// [DITUNDA]           '<div class="row"><button type="button" class="btn primary" data-seg="tab" data-v="daftar">Lihat daftar pasien dan kirim promo</button><button type="button" class="btn sm" data-xl="list">Unduh daftar pasien (.xlsx)</button></div>';
+// [DITUNDA]       };
+// [DITUNDA]
+// [DITUNDA]       /* ---------- Tab Daftar dan kirim WA ---------- */
+// [DITUNDA]       var daftarHtml = function () {
+// [DITUNDA]         var rows = visList(), all = lostList(), nSel = selVisible().length, elig = rows.filter(eligible);
+// [DITUNDA]         var allOn = elig.length > 0 && elig.every(function (p) { return D.sel[p.id]; });
+// [DITUNDA]         reps.list = { name: 'pasien-tidak-kembali-' + D.m + '-bulan.xlsx', rep: { head: ['Pasien', 'WhatsApp', 'Terakhir datang', 'Hari sejak terakhir', 'Total kunjungan', 'Layanan terakhir', 'Sisa paket (sesi)', 'Fisioterapis terakhir', 'Diagnosa terakhir', 'Setuju info promo', 'Status WhatsApp'], num: [3, 4, 6], rows: listRows(rows) } };
+// [DITUNDA]         var head = '<tr><th><input type="checkbox" data-selall aria-label="Pilih semua yang bisa dihubungi"' + (allOn ? ' checked' : '') + '></th><th>Pasien</th><th>Terakhir datang</th><th class="r">Kunjungan</th><th>Layanan terakhir</th><th class="r">Sisa paket</th><th>Fisio · diagnosa</th><th>Status WhatsApp</th><th></th></tr>';
+// [DITUNDA]         var body = rows.map(function (p) {
+// [DITUNDA]           var st = p.sent ? chip('good', 'Promo terkirim ' + p.sent.d, 'check') : (p.consent ? chip('warn', 'Belum dihubungi') : chip('', 'Tidak setuju info'));
+// [DITUNDA]           return '<tr' + (p.live ? ' class="hl"' : '') + '><td>' + (eligible(p) ? '<input type="checkbox" data-sel="' + p.id + '" aria-label="Pilih ' + esc(p.name) + '"' + (D.sel[p.id] ? ' checked' : '') + '>' : '') + '</td>' +
+// [DITUNDA]             '<td><b>' + esc(p.name) + '</b><div class="muted" style="font-size:12px">' + esc(p.wa) + '</div></td>' +
+// [DITUNDA]             '<td>' + retDmy(p.last) + '<div class="muted" style="font-size:12px">' + retLama(retDays(p.last)) + ' lalu</div></td>' +
+// [DITUNDA]             '<td class="r num">' + p.visits + '</td><td>' + KIND[p.kind] + '</td><td class="r num">' + (RET_SIZE[p.kind] ? (p.left ? p.left + ' sesi' : 'Habis') : '-') + '</td>' +
+// [DITUNDA]             '<td>' + esc(p.th) + '<div class="muted" style="font-size:12px">' + esc(p.dx) + '</div></td><td>' + st + '</td>' +
+// [DITUNDA]             '<td>' + (eligible(p) ? '<button type="button" class="btn sm" data-send1="' + p.id + '">Kirim WA</button>' : '') + '</td></tr>';
+// [DITUNDA]         }).join('') || '<tr><td colspan="9" class="muted">Tidak ada pasien untuk pilihan ini.</td></tr>';
+// [DITUNDA]         return segM() +
+// [DITUNDA]           '<div class="ctrl">' + seg('f', [['all', 'Semua (' + all.length + ')'], ['paket', 'Paket belum habis (' + all.filter(function (p) { return p.left > 0; }).length + ')'], ['todo', 'Belum dihubungi (' + all.filter(eligible).length + ')']], D.f) + '</div>' +
+// [DITUNDA]           '<p class="notes">' + esc(cutoffTxt()) + ' Terurut dari yang paling baru berhenti datang, karena paling mudah diajak kembali.</p>' +
+// [DITUNDA]           '<div class="scroll-y"><div class="tablewrap"><table><thead>' + head + '</thead><tbody>' + body + '</tbody></table></div></div>' +
+// [DITUNDA]           '<div class="row"><button type="button" class="btn primary" data-act="sendsel"' + (nSel ? '' : ' disabled') + '>Kirim promo ke ' + nSel + ' pasien terpilih</button><button type="button" class="btn sm" data-xl="list">Unduh daftar ini (.xlsx)</button></div>' +
+// [DITUNDA]           '<p class="notes">Pasien dikenali dari nomor WhatsApp yang diinput saat booking, jadi nama yang tertulis berbeda tetap dihitung satu orang. Pasien yang tidak setuju menerima info promo tidak bisa dipilih, dan pasien yang sudah dikirimi promo tidak ikut terpilih lagi supaya tidak dikirimi berulang. Pesan dikirim front desk lewat WhatsApp Web dengan teks yang sudah terisi, dan baru ditandai terkirim setelah Enter. Di prototype tidak ada pesan sungguhan yang terkirim.</p>';
+// [DITUNDA]       };
+// [DITUNDA]
+// [DITUNDA]       var render = function () {
+// [DITUNDA]         var body = '<div>' + seg('tab', TABS.ret, tab) + '</div>' + (tab === 'review' ? reviewHtml() : daftarHtml());
+// [DITUNDA]         el.innerHTML = frame('Pasien tidak kembali', 'Owner dan front desk', body, 'wide');
+// [DITUNDA]       };
+// [DITUNDA]
+// [DITUNDA]       var openSend = function (ids) {
+// [DITUNDA]         var pts = ids.map(function (id) { return D.pts.filter(function (p) { return p.id === id; })[0]; }).filter(function (p) { return p && eligible(p); });
+// [DITUNDA]         if (!pts.length) { toast('Pilih pasien dulu.'); return; }
+// [DITUNDA]         modal('<div id="rt-mb"></div>', function (o, close) {
+// [DITUNDA]           var st = { tpl: RET_TPL[0].id, txt: RET_TPL[0].txt, stage: 'edit', q: [], msg: {}, done: {} };
+// [DITUNDA]           var tplOf = function () { return RET_TPL.filter(function (t) { return t.id === st.tpl; })[0]; };
+// [DITUNDA]           var recip = function () { return pts.filter(function (p) { return !tplOf().need || p.left > 0; }); };
+// [DITUNDA]           var fill = function (p) { return st.txt.replace(/\{nama\}/g, p.name).replace(/\{sisa\}/g, String(p.left)); };
+// [DITUNDA]           var pv = function () {
+// [DITUNDA]             var r = recip(), first = r[0];
+// [DITUNDA]             o.querySelector('#rt-pv').innerHTML = first ? '<b>Contoh untuk ' + esc(first.name) + ' (' + esc(first.wa) + ')</b><div style="white-space:pre-wrap;margin-top:4px">' + esc(fill(first)) + '</div>' : 'Tidak ada penerima yang cocok dengan pesan ini.';
+// [DITUNDA]             o.querySelector('#rt-n').textContent = r.length + ' pasien masuk antrean kirim' + (r.length < pts.length ? ', ' + (pts.length - r.length) + ' dilewati karena tidak punya sisa paket' : '');
+// [DITUNDA]             o.querySelector('[data-act="rt-next"]').disabled = !r.length;
+// [DITUNDA]           };
+// [DITUNDA]           var drawEdit = function () {
+// [DITUNDA]             o.querySelector('#rt-mb').innerHTML = '<h3>Kirim promo via WhatsApp</h3>' +
+// [DITUNDA]               '<div class="field"><label for="rt-tpl">Isi pesan</label><select id="rt-tpl">' + RET_TPL.map(function (t) { return '<option value="' + t.id + '"' + (t.id === st.tpl ? ' selected' : '') + '>' + esc(t.n) + '</option>'; }).join('') + '</select></div>' +
+// [DITUNDA]               '<div class="field" style="margin-top:8px"><label for="rt-txt">Teks pesan (bisa diubah, {nama} diganti nama pasien)</label><textarea id="rt-txt" rows="5">' + esc(st.txt) + '</textarea></div>' +
+// [DITUNDA]               '<div class="panel soft" style="margin-top:8px" id="rt-pv"></div><p class="notes" id="rt-n" style="margin-top:6px"></p>' +
+// [DITUNDA]               '<div class="row" style="margin-top:8px"><button type="button" class="btn primary" data-act="rt-next">Lanjut ke antrean kirim</button><button type="button" class="btn" data-close>Batal</button></div>';
+// [DITUNDA]             pv();
+// [DITUNDA]           };
+// [DITUNDA]           var drawQueue = function () {
+// [DITUNDA]             var n = st.q.length, d = st.q.filter(function (p) { return st.done[p.id]; }).length;
+// [DITUNDA]             o.querySelector('#rt-mb').innerHTML = '<h3>Antrean kirim promo</h3><p class="sub">' + d + ' dari ' + n + ' terkirim. Untuk tiap pasien: buka WhatsApp Web (pesan sudah terisi), tekan Enter, lalu tandai terkirim.</p>' +
+// [DITUNDA]               '<div class="list" style="max-height:320px;overflow:auto">' + st.q.map(function (p) {
+// [DITUNDA]                 return '<div class="li"><div class="t"><b>' + esc(p.name) + '</b><small>' + esc(p.wa) + '</small></div>' +
+// [DITUNDA]                   (st.done[p.id] ? chip('good', 'Terkirim', 'check') : '<div class="row" style="gap:6px"><button type="button" class="btn sm primary" data-qopen="' + p.id + '">Buka WhatsApp Web</button><button type="button" class="btn sm" data-qdone="' + p.id + '">Tandai terkirim</button></div>') + '</div>';
+// [DITUNDA]               }).join('') + '</div>' +
+// [DITUNDA]               (d === n ? callout('good', 'check', 'Semua pesan sudah ditandai terkirim dan tercatat atas nama Laras.') : '<p class="notes" style="margin-top:6px">Di prototype, WhatsApp Web dibuka tanpa nomor tujuan (kontak dipilih sendiri), supaya tidak ada pesan ke nomor sungguhan. Pasien yang belum ditandai tetap muncul sebagai belum dihubungi.</p>') +
+// [DITUNDA]               '<div class="row" style="margin-top:8px"><button type="button" class="btn primary" data-close>' + (d === n ? 'Selesai' : 'Tutup, lanjutkan nanti') + '</button></div>';
+// [DITUNDA]           };
+// [DITUNDA]           drawEdit();
+// [DITUNDA]           o.addEventListener('change', function (e) { if (e.target.id === 'rt-tpl') { st.tpl = e.target.value; st.txt = tplOf().txt; drawEdit(); } });
+// [DITUNDA]           o.addEventListener('input', function (e) { if (e.target.id === 'rt-txt') { st.txt = e.target.value; pv(); } });
+// [DITUNDA]           o.addEventListener('click', function (e) {
+// [DITUNDA]             var b = e.target.closest ? e.target.closest('button') : null; if (!b) { return; }
+// [DITUNDA]             var P = function (id) { return D.pts.filter(function (p) { return p.id === id; })[0]; };
+// [DITUNDA]             if (b.getAttribute('data-act') === 'rt-next') {
+// [DITUNDA]               var r = recip(); if (!r.length) { return; }
+// [DITUNDA]               st.q = r; st.stage = 'queue'; r.forEach(function (p) { st.msg[p.id] = fill(p); }); drawQueue(); return;
+// [DITUNDA]             }
+// [DITUNDA]             var qo = b.getAttribute('data-qopen');
+// [DITUNDA]             if (qo) { var po = P(qo); waOpenToast(po.wa, st.msg[qo]); return; }
+// [DITUNDA]             var qd = b.getAttribute('data-qdone');
+// [DITUNDA]             if (qd) {
+// [DITUNDA]               var pd = P(qd); pd.sent = { d: '17 Nov', t: tplOf().n, by: 'Laras' }; pd.live = true; delete D.sel[qd]; st.done[qd] = true;
+// [DITUNDA]               render(); drawQueue(); toast('Tercatat: promo ke ' + pd.name + ' dikirim oleh Laras.');
+// [DITUNDA]             }
+// [DITUNDA]           });
+// [DITUNDA]         });
+// [DITUNDA]       };
+// [DITUNDA]
+// [DITUNDA]       render();
+// [DITUNDA]       el.addEventListener('change', function (e) {
+// [DITUNDA]         var t = e.target, id = t.getAttribute && t.getAttribute('data-sel');
+// [DITUNDA]         if (id) { if (t.checked) { D.sel[id] = true; } else { delete D.sel[id]; } render(); return; }
+// [DITUNDA]         if (t.getAttribute && t.hasAttribute('data-selall')) {
+// [DITUNDA]           visList().filter(eligible).forEach(function (p) { if (t.checked) { D.sel[p.id] = true; } else { delete D.sel[p.id]; } });
+// [DITUNDA]           render();
+// [DITUNDA]         }
+// [DITUNDA]       });
+// [DITUNDA]       el.addEventListener('click', function (e) {
+// [DITUNDA]         var t = e.target.closest ? e.target.closest('button') : null; if (!t) { return; }
+// [DITUNDA]         var sg = t.getAttribute('data-seg'), v = t.getAttribute('data-v'), act = t.getAttribute('data-act');
+// [DITUNDA]         if (sg === 'tab') { tab = v; render(); return; }
+// [DITUNDA]         if (sg === 'm') { D.m = v; render(); return; }
+// [DITUNDA]         if (sg === 'f') { D.f = v; render(); return; }
+// [DITUNDA]         var xl = t.getAttribute('data-xl');
+// [DITUNDA]         if (xl && reps[xl]) { downloadXlsx(reps[xl].name, repRows(reps[xl].rep)); return; }
+// [DITUNDA]         if (t.getAttribute('data-send1')) { openSend([t.getAttribute('data-send1')]); return; }
+// [DITUNDA]         if (act === 'sendsel') { openSend(selVisible().map(function (p) { return p.id; })); return; }
+// [DITUNDA]       });
+// [DITUNDA]     }
+// [DITUNDA]   });
+// [DITUNDA]
 
   /* ---------- Urutan presentasi: satu periode kerja, dengan satu hari penuh di tengahnya ---------- */
   var BAB = [
     { t: 'Awal periode', d: 'Sebelum periode jadwal berjalan, leader menyusun jadwal shift untuk semua karyawan.', ids: ['m2'], w: { m2: 'Sebelum periode dimulai' } },
-    { t: 'Satu hari di klinik: Selasa, 17 November', d: 'Dari karyawan masuk di pagi hari sampai laporan dikirim di malam hari. Semua yang terjadi hari ini tercatat sendiri di sistem.', ids: ['m2b', 'm8', 'm10', 'm1', 'm6', 'm7', /* 'm11', */ 'm4', 'm3'],
-      w: { m2b: '07:30 · Karyawan masuk', m8: '08:00 · Pengingat untuk pasien hari ini', m10: '09:00 · Pasien baru menghubungi klinik', m1: '11:20 · Owner membuka HP', m6: '14:00 · Pasien selesai terapi', m7: '14:30 · Bonus kunjungan pasien', /* m11: '16:00 · Kebutuhan operasional', */ m4: '19:30 · Penutupan hari dan laporan harian', m3: '20:00 · Owner melihat pemasukan hari ini' } },
+    { t: 'Satu hari di klinik: Selasa, 17 November', d: 'Dari karyawan masuk di pagi hari sampai laporan dikirim di malam hari. Semua yang terjadi hari ini tercatat sendiri di sistem.', ids: ['m2b', 'm8', 'm10', 'm1', 'm6', /* 'm7', */ /* 'm11', */ 'm4', 'm3'],
+      w: { m2b: '07:30 · Karyawan masuk', m8: '08:00 · Pengingat untuk pasien hari ini', m10: '09:00 · Pasien baru menghubungi klinik', m1: '11:20 · Owner membuka HP', m6: '14:00 · Pasien selesai terapi', /* m7: '14:30 · Bonus kunjungan pasien', */ /* m11: '16:00 · Kebutuhan operasional', */ m4: '19:30 · Penutupan hari dan laporan harian', m3: '20:00 · Owner melihat pemasukan hari ini' } },
     { t: 'Akhir periode dan akhir bulan', d: 'Semua laporan harian yang sudah final menjadi dasar gaji dan laporan bulanan.', ids: ['m5', 'm9'], w: { m5: '25 November · Hari gajian', m9: '30 November · Akhir bulan' } }
   ];
   var ALL = {};
@@ -4284,7 +4458,7 @@
       '<div class="topbar"><div class="brand"><span class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.500" stroke-linecap="round" aria-hidden="true">' + ICON.cross + '</svg></span><span>Sistem Klinik</span></div>' +
       '<a class="btn sm" href="#daftar">Daftar isi</a></div>';
   };
-  var FULL_IDS = ['t1r', 't2r', 't3r', 't4r', 'ret'];
+  var FULL_IDS = ['t1r', 't2r', 't3r', 't4r'];
   function parseHash() {
     var h = (location.hash || '').replace(/^#/, ''), q = '', i = h.indexOf('?'), o = {};
     if (i >= 0) { q = h.slice(i + 1); h = h.slice(0, i); }
@@ -4311,7 +4485,7 @@
       '<div class="row" style="margin-top:20px"><a class="btn primary" href="#m2?o=t">Mulai dari Tahap 1</a><a class="btn" href="#daftar?s=cerita">Atau ikuti cerita satu hari</a></div>' +
       '<div class="peta-sum">' + chip('good', total + ' dari ' + total + ' poin sudah ada layarnya', 'check') + chip('info', '4 tahap, ' + ORDER_TAHAP.filter(function (s) { return TH_OF[s.id]; }).length + ' layar') + '</div></div>' +
       TAHAP.map(tahapHtml).join('') +
-      '<section class="tahap"><header><div><span class="n">Tambahan</span><h2>Di luar daftar 4 tahap</h2><p>Permintaan susulan dan pelengkap yang tidak ada di daftar 4 tahap.</p></div></header>' +
+      '<section class="tahap"><header><div><span class="n">Tambahan</span><h2>Di luar daftar 4 tahap</h2><p>Layar pelengkap yang tidak ada di daftar 4 tahap, sudah termasuk dalam pengembangan.</p></div></header>' +
       extra.map(function (sc) {
         return '<div class="pitem"><span class="k">+</span><div class="tx">' + esc(sc.title) + '</div><div class="go"><a class="plink main" href="#' + sc.id + '?o=t">Buka</a></div></div>';
       }).join('') + '</section>' +
@@ -4332,14 +4506,14 @@
       (next ? '<a class="btn sm primary" href="#' + next.id + q + '">Berikutnya ' + ic('right') + '</a>' : '') + '</div></div>';
     var th = TH_OF[s.id];
     var tag, sub;
-    if (mode === 't') { tag = th ? 'Tahap ' + th + ' · ' + TAHAP[th - 1].t : 'Tambahan di luar daftar'; sub = SHORT[s.id] || ''; }
+    if (mode === 't') { tag = th ? 'Tahap ' + th + ' · ' + TAHAP[th - 1].t : 'Tambahan di luar daftar 4 tahap'; sub = SHORT[s.id] || ''; }
     else { tag = 'Masalah ' + (i + 1) + ' · ' + s.waktu; sub = s.bab; }
     var keys = SC_ITEMS[s.id] || [];
     var pdfBox = keys.length
       ? '<div class="box pdf"><small>Poin permintaan owner di layar ini</small><ul>' + keys.map(function (k) { return '<li><b>' + k + '</b> ' + esc(pdfItem(k).n) + '</li>'; }).join('') + '</ul></div>'
-      : '<div class="box pdf"><small>Tambahan</small>Layar ini tidak ada di daftar 4 tahap. Ditambahkan sebagai permintaan susulan atau pelengkap.</div>';
+      : '<div class="box pdf"><small>Tambahan</small>Layar ini tidak ada di daftar 4 tahap. Sudah termasuk dalam pengembangan sebagai pelengkap.</div>';
     root.innerHTML = header() + nav +
-      '<div class="scene' + (FULL_IDS.indexOf(s.id) > -1 ? ' full' : '') + '"><div class="story"><span class="tag">' + esc(tag) + '</span><div class="muted" style="font-size:12px">' + esc(sub) + '</div><h2>' + esc(s.title) + '</h2>' +
+      '<div class="scene full"><div class="story"><span class="tag">' + esc(tag) + '</span><div class="muted" style="font-size:12px">' + esc(sub) + '</div><h2>' + esc(s.title) + '</h2>' +
       '<div class="box before"><small>Sekarang</small>' + esc(s.now) + '</div>' +
       '<div class="box after"><small>Dengan sistem</small>' + esc(s.with) + '</div>' + pdfBox +
       '<div class="row">' + s.who.map(function (w) { return chip('info', w); }).join('') + '<span class="muted" style="font-size:12px">yang melihat layar ini</span></div></div>' +
