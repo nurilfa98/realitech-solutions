@@ -19,11 +19,14 @@ import { formatRupiah } from "@/lib/format";
 import { SITE, whatsappLink } from "@/lib/site";
 
 export function productMetadata(product: Product): Metadata {
+  const title = product.seo?.title ?? `${product.name}: ${product.tagline}`;
+  const description = product.seo?.description ?? product.summary;
   return {
-    title: `${product.name}: ${product.tagline}`,
-    description: product.summary,
+    title,
+    description,
     alternates: { canonical: `/${product.slug}` },
-    openGraph: { url: `/${product.slug}`, title: `${product.name} | ${SITE.name}`, description: product.summary },
+    // Twitter/X mengambil judul, deskripsi, dan gambar dari openGraph secara otomatis.
+    openGraph: { url: `/${product.slug}`, title: `${title} | ${SITE.name}`, description },
   };
 }
 
@@ -73,11 +76,6 @@ export function ProductPage({ product }: { product: Product }) {
                 </li>
               ))}
             </ul>
-            <ul className="flex flex-col gap-1 text-sm text-muted-foreground">
-              {product.report.notes.map((note) => (
-                <li key={note}>· {note}</li>
-              ))}
-            </ul>
           </div>
           <ReportMockup className="mx-2 sm:mx-8" />
         </div>
@@ -107,8 +105,8 @@ export function ProductPage({ product }: { product: Product }) {
       <Section key="usecases" id="cocok-untuk" className="bg-product-soft/60">
         <SectionHeading
           eyebrow="Cocok untuk"
-          title="Usaha apa saja yang menjual per barang"
-          description="Syaratnya satu: barang dijual per item, dengan harga modal dan harga jual."
+          title={product.useCasesIntro?.title ?? `Apakah ${product.name} cocok untuk usaha Anda?`}
+          description={product.useCasesIntro?.description}
         />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {product.useCases.map((item) => (
@@ -246,7 +244,6 @@ export function ProductPage({ product }: { product: Product }) {
                 Masuk
               </Button>
             </div>
-            {product.heroNote && <p className="-mt-2 text-sm text-muted-foreground">{product.heroNote}</p>}
             <div className="flex flex-wrap gap-2">
               {product.audiences.map((audience) => (
                 <span key={audience} className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
@@ -281,9 +278,11 @@ function JsonLd({ product }: { product: Product }) {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     name: product.name,
-    description: product.summary,
+    description: product.seo?.description ?? product.summary,
     applicationCategory: "BusinessApplication",
     operatingSystem: "Web",
+    inLanguage: "id",
+    image: `${SITE.url}${product.logo}`,
     url: `${SITE.url}/${product.slug}`,
     publisher: { "@type": "Organization", name: SITE.name, url: SITE.url },
     ...(prices.length > 0 && {
@@ -292,6 +291,7 @@ function JsonLd({ product }: { product: Product }) {
         priceCurrency: "IDR",
         lowPrice: Math.min(...prices),
         highPrice: Math.max(...prices),
+        offerCount: prices.length,
       },
     }),
   };

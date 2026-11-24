@@ -10,9 +10,9 @@ import { useId } from "react";
 export function FaqList({ items }: { items: { question: string; answer: string }[] }) {
   const group = useId();
   return (
-    <div className="mx-auto flex max-w-3xl flex-col divide-y rounded-3xl border bg-card px-2 shadow-sm">
+    <div className="mx-auto flex max-w-3xl flex-col">
       {items.map((item) => (
-        <details key={item.question} name={group} className="group px-4 sm:px-5">
+        <details key={item.question} name={group} className="group border-b px-1 sm:px-2">
           <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 py-4 font-medium [&::-webkit-details-marker]:hidden">
             {item.question}
             <ChevronDownIcon className="size-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" />

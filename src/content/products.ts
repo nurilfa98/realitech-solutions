@@ -50,6 +50,9 @@ export type Product = {
   // Satu kalimat untuk kartu produk & meta description.
   summary: string;
   appUrl: string;
+  // Judul dan deskripsi untuk mesin pencari dan pratinjau tautan. Memuat frasa yang
+  // dicari orang (mis. "aplikasi kasir dan stok toko"). Bila kosong, memakai nama + tagline dan summary.
+  seo?: { title: string; description: string };
   // Untuk siapa produk ini cocok.
   audiences: string[];
   hero: { title: string; description: string };
@@ -58,8 +61,8 @@ export type Product = {
   features: { icon: LucideIcon; title: string; description: string }[];
   // Jenis usaha yang cocok memakai produk ini (opsional, seksi "usecases").
   useCases?: { title: string; description: string; examples: string[] }[];
-  // Satu baris kecil di bawah tombol hero (mis. "Tanpa bayar di muka"). Opsional.
-  heroNote?: string;
+  // Judul dan syarat singkat di atas seksi "usecases". Opsional.
+  useCasesIntro?: { title: string; description: string };
   // Kalimat pembuka seksi harga untuk produk tanpa model harga per pengguna. Opsional.
   pricingIntro?: string;
   steps: { title: string; description: string }[];
@@ -83,7 +86,6 @@ export type Product = {
     title: string;
     description: string;
     contents: { title: string; description: string }[];
-    notes: string[];
   };
   // Add-on opsional (harga per pengguna ada di `pricing.addons`, dicocokkan lewat nama).
   addons?: {
@@ -131,6 +133,11 @@ export const ARCHIPAY: Product = {
   summary:
     "Pantau uang muka karyawan dari saat diserahkan sampai nota dan sisa dananya lunas, lalu lihat untung proyek dari nota yang sudah disetujui.",
   appUrl: "https://archipay.realitech.id",
+  seo: {
+    title: "ArchiPay: Aplikasi Uang Muka dan Nota Proyek",
+    description:
+      "Aplikasi uang muka dan nota proyek: pantau uang muka karyawan sampai lunas, nota dari HP, pengingat WhatsApp, dan untung tiap proyek. Coba gratis 30 hari.",
+  },
   audiences: ["Owner yang memberi uang muka ke tim lapangan", "Kontraktor & developer", "Event organizer", "Konsultan arsitek & interior"],
   hero: {
     title: "Kirim uang ke lapangan tanpa kehilangan jejaknya",
@@ -226,12 +233,6 @@ export const ARCHIPAY: Product = {
         description: "Tanggal, nomor laporan, karyawan, kategori, keterangan, dan jumlah. Biaya tanpa nota ditandai.",
       },
     ],
-    notes: [
-      "Hanya Owner yang dapat mengunduh laporan.",
-      "Keuntungan berlabel sementara selama proyek aktif, dan final setelah proyek ditandai selesai.",
-      "Foto nota tidak ikut dicetak di PDF.",
-      "Daftar nota juga bisa diunduh sebagai Excel beserta rekap per kategori dan ringkasan, siap diolah akuntan.",
-    ],
   },
   addons: {
     title: "Perlu absensi dan penggajian juga? Aktifkan sebagai add-on",
@@ -258,8 +259,34 @@ export const ARCHIPAY: Product = {
     { title: "Unduh laporan PDF", description: "Untuk arsip atau rapat, kapan saja dengan data terbaru." },
   ],
   pricing: ARCHIPAY_PRICING,
-  // Masalah uang muka dulu, lalu fitur. Laporan PDF diletakkan setelah fitur agar tidak mendominasi.
-  sectionOrder: ["problems", "features", "report", "steps", "pricing", "faq"],
+  useCasesIntro: {
+    title: "Usaha apa saja yang memberi uang muka ke tim?",
+    description: "Syaratnya satu: ada karyawan yang memegang uang kantor lebih dulu, lalu melaporkan notanya, biasanya per proyek atau per acara.",
+  },
+  useCases: [
+    {
+      title: "Kontraktor & renovasi",
+      description: "Mandor dan pelaksana memegang uang muka untuk material, upah, dan sewa alat. Setiap nota masuk ke proyeknya, jadi untung tiap proyek terlihat.",
+      examples: ["Material", "Upah harian", "Sewa alat", "Transportasi"],
+    },
+    {
+      title: "Developer & properti",
+      description: "Banyak proyek berjalan bersamaan. Biaya lapangan, perizinan, dan operasional tiap proyek tercatat terpisah, lengkap dengan bukti notanya.",
+      examples: ["Perizinan", "Materai", "Survei lokasi", "Operasional lapangan"],
+    },
+    {
+      title: "Event & wedding organizer",
+      description: "Crew membawa uang muka untuk vendor, konsumsi, dan sewa perlengkapan. Selesai acara, nota dan sisa uang langsung terhitung.",
+      examples: ["Konsumsi", "Sewa perlengkapan", "Transportasi crew", "Parkir & tol"],
+    },
+    {
+      title: "Konsultan, arsitek & interior",
+      description: "Survei, cetak gambar, dan belanja sampel dibayar dulu oleh tim. Pengeluaran terikat ke proyek klien, tidak bercampur dengan biaya kantor.",
+      examples: ["Survei", "Cetak gambar", "Fotokopi", "Sampel material"],
+    },
+  ],
+  // Masalah uang muka dulu, lalu cocok untuk siapa, lalu fitur. Laporan PDF setelah fitur agar tidak mendominasi.
+  sectionOrder: ["problems", "usecases", "features", "report", "steps", "pricing", "faq"],
   planBenefits: ["Proyek aktif tanpa batas"],
   plans: [
     { months: 1, price: archipayPlanPrice(1), normalPrice: archipayPlanPrice(1, ARCHIPAY_PRICING.normalBasePrice) },
@@ -334,13 +361,17 @@ export const SAKUDAGANG: Product = {
   tagline: "Kasir, stok & laba toko di HP",
   summary: "Jualan dicatat dari HP, stok berkurang sendiri, bon tidak lupa ditagih, dan laba toko terlihat jelas.",
   appUrl: "https://sakudagang.realitech.id",
+  seo: {
+    title: "SakuDagang: Aplikasi Kasir dan Stok Toko",
+    description:
+      "Aplikasi kasir dan stok toko di HP: catat penjualan, bon, dan belanja stok, lalu lihat laba toko yang sebenarnya. Coba gratis 30 hari.",
+  },
   audiences: ["Warung sembako & kelontong", "Toko bangunan & pertanian", "Konter HP & aksesoris", "Toko ritel kecil"],
   hero: {
     title: "Tahu untung toko Anda yang sebenarnya, langsung dari HP",
     description:
-      "Tinggalkan buku catatan. SakuDagang mencatat penjualan, belanja stok, bon, dan pengeluaran, lalu menghitung sendiri berapa uang modal yang harus diputar, berapa laba yang boleh Anda ambil, dan siapa yang belum bayar.",
+      "SakuDagang mencatat penjualan, belanja stok, bon, dan pengeluaran, lalu menghitung sendiri berapa uang modal yang harus diputar, berapa laba yang boleh Anda ambil, dan siapa yang belum bayar.",
   },
-  heroNote: `Tanpa bayar di muka. Setelah masa coba, ${formatRupiah(SAKUDAGANG_MONTHLY)}/bulan, tanpa batas jumlah kasir.`,
   problems: [
     {
       problem: "Toko ramai, tetapi uang terasa habis dan tidak tahu ke mana.",
@@ -429,6 +460,10 @@ export const SAKUDAGANG: Product = {
       description: "Penjualan atau pembelian yang salah dibatalkan dengan alasan dan stok kembali sendiri. Tidak ada data yang hilang diam-diam.",
     },
   ],
+  useCasesIntro: {
+    title: "Usaha apa saja yang menjual per barang",
+    description: "Syaratnya satu: barang dijual per item, dengan harga modal dan harga jual.",
+  },
   useCases: [
     {
       title: "Warung sembako & kelontong",

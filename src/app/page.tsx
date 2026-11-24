@@ -13,6 +13,7 @@ import {
   TargetIcon,
   type LucideIcon,
 } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ProductMockup } from "@/components/mockups/product-mockup";
 import { ProductLogo } from "@/components/product-logo";
@@ -24,7 +25,17 @@ import { Button } from "@/components/ui/button";
 import { PRODUCTS } from "@/content/products";
 import { SITE, whatsappLink } from "@/lib/site";
 
-const CONSULT_MESSAGE = "Halo Realitech, saya ingin konsultasi kebutuhan aplikasi untuk usaha saya.";
+// Deskripsi beranda menyebut jenis aplikasi tiap produk (diambil dari `seo.title`,
+// mis. "aplikasi kasir dan stok toko") supaya sesuai dengan yang dicari orang.
+const PRODUCT_PHRASES = PRODUCTS.map((p) => `${p.name} (${(p.seo?.title.split(": ")[1] ?? p.tagline).toLowerCase()})`);
+const HOME_DESCRIPTION = `Aplikasi bisnis siap pakai untuk usaha Indonesia dari ${SITE.name}: ${PRODUCT_PHRASES.join(" dan ")}. Coba gratis, dibantu sampai jalan.`;
+
+export const metadata: Metadata = {
+  description: HOME_DESCRIPTION,
+  openGraph: { url: "/", title: `${SITE.name} | ${SITE.tagline}`, description: HOME_DESCRIPTION },
+};
+
+const CONSULT_MESSAGE ="Halo Realitech, saya ingin konsultasi kebutuhan aplikasi untuk usaha saya.";
 
 const STRENGTHS: { icon: LucideIcon; title: string; description: string }[] = [
   {
@@ -245,16 +256,39 @@ export default function HomePage() {
   );
 }
 
-// Data terstruktur untuk mesin pencari (schema.org Organization).
+// Data terstruktur untuk mesin pencari: Organization (lengkap dengan kontak dan
+// logo PNG) dan WebSite. Belum ada akun media sosial, jadi `sameAs` sengaja tidak diisi.
 function JsonLd() {
   const data = {
     "@context": "https://schema.org",
-    "@type": "Organization",
-    name: SITE.name,
-    url: SITE.url,
-    email: SITE.email,
-    description: SITE.description,
-    logo: `${SITE.url}/icon.svg`,
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": `${SITE.url}/#organization`,
+        name: SITE.name,
+        alternateName: SITE.shortName,
+        url: SITE.url,
+        email: SITE.email,
+        description: SITE.description,
+        logo: `${SITE.url}/brand/realitech-mark-512.png`,
+        areaServed: { "@type": "Country", name: "Indonesia" },
+        contactPoint: {
+          "@type": "ContactPoint",
+          contactType: "customer support",
+          telephone: `+${SITE.whatsapp}`,
+          email: SITE.email,
+          availableLanguage: "id",
+        },
+      },
+      {
+        "@type": "WebSite",
+        "@id": `${SITE.url}/#website`,
+        name: SITE.name,
+        url: SITE.url,
+        inLanguage: "id",
+        publisher: { "@id": `${SITE.url}/#organization` },
+      },
+    ],
   };
   return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }} />;
 }
