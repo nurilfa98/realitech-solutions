@@ -152,3 +152,21 @@
     cursor: pointer;
   }
 }
+
+/* FAQ: kotak isi pertanyaan membuka dan menutup dengan tinggi yang berubah halus
+   (lewat ::details-content, browser baru). Teksnya sendiri tidak dianimasikan. */
+@media (prefers-reduced-motion: no-preference) {
+  :root {
+    interpolate-size: allow-keywords;
+  }
+  details::details-content {
+    block-size: 0;
+    overflow: clip;
+    transition:
+      block-size 0.3s ease-out,
+      content-visibility 0.3s allow-discrete;
+  }
+  details[open]::details-content {
+    block-size: auto;
+  }
+}

@@ -14,22 +14,27 @@ import {
   FileClockIcon,
   FileTextIcon,
   FolderKanbanIcon,
+  KeyRoundIcon,
   NotebookPenIcon,
   PiggyBankIcon,
   ReceiptIcon,
   ScanLineIcon,
   ShoppingCartIcon,
   SheetIcon,
+  SmartphoneIcon,
   TruckIcon,
+  Undo2Icon,
   UserLockIcon,
   WalletIcon,
   type LucideIcon,
 } from "lucide-react";
 
+import { formatRupiah } from "@/lib/format";
+
 export type ProductSlug = "archipay" | "sakudagang";
 
 // Seksi yang bisa diatur urutannya per produk (lihat `sectionOrder`).
-export type ProductSectionKey = "problems" | "report" | "features" | "steps" | "pricing" | "faq";
+export type ProductSectionKey = "problems" | "report" | "features" | "usecases" | "steps" | "pricing" | "faq";
 
 export const DEFAULT_SECTION_ORDER: ProductSectionKey[] = ["problems", "report", "features", "steps", "pricing", "faq"];
 
@@ -51,6 +56,12 @@ export type Product = {
   // Pasangan masalah → jawaban produk.
   problems: { problem: string; solution: string }[];
   features: { icon: LucideIcon; title: string; description: string }[];
+  // Jenis usaha yang cocok memakai produk ini (opsional, seksi "usecases").
+  useCases?: { title: string; description: string; examples: string[] }[];
+  // Satu baris kecil di bawah tombol hero (mis. "Tanpa bayar di muka"). Opsional.
+  heroNote?: string;
+  // Kalimat pembuka seksi harga untuk produk tanpa model harga per pengguna. Opsional.
+  pricingIntro?: string;
   steps: { title: string; description: string }[];
   // Harga total per periode dalam rupiah. null = belum diumumkan
   // (tampil "Hubungi kami"). TODO: isi harga sebelum web dipublikasikan.
@@ -303,114 +314,198 @@ export const ARCHIPAY: Product = {
   ],
 };
 
+// Harga SakuDagang, sama dengan aplikasi (docs/BUSINESS-FLOW.md bagian 14.1, pengaturan platform):
+//   paket N bulan = harga per bulan x N x (100 - diskon N bulan) / 100
+// Diatur 24 Nov 2026: Rp99.000 per bulan, diskon 7% (6 bulan) dan 15% (1 tahun), tanpa batas pengguna.
+const SAKUDAGANG_MONTHLY = 99_000;
+const SAKUDAGANG_DISCOUNT: Record<6 | 12, number> = { 6: 7, 12: 15 };
+
+function sakudagangPlanPrice(months: PlanMonths) {
+  const discount = months === 1 ? 0 : SAKUDAGANG_DISCOUNT[months];
+  return Math.round((SAKUDAGANG_MONTHLY * months * (100 - discount)) / 100);
+}
+
+const SAKUDAGANG_TRIAL_DAYS = 30;
+
 export const SAKUDAGANG: Product = {
   slug: "sakudagang",
   name: "SakuDagang",
   logo: "/brand/sakudagang-icon.png",
-  tagline: "Kasir, stok & laba toko",
-  summary:
-    "Kasir di HP, stok otomatis, bon pelanggan, dan laporan laba yang memisahkan uang modal dari uang yang boleh Anda ambil.",
+  tagline: "Kasir, stok & laba toko di HP",
+  summary: "Jualan dicatat dari HP, stok berkurang sendiri, bon tidak lupa ditagih, dan laba toko terlihat jelas.",
   appUrl: "https://sakudagang.realitech.id",
-  audiences: ["Warung sembako & kelontong", "Toko bangunan", "Toko pertanian", "Toko ritel kecil"],
+  audiences: ["Warung sembako & kelontong", "Toko bangunan & pertanian", "Konter HP & aksesoris", "Toko ritel kecil"],
   hero: {
-    title: "Tahu persis mana uang modal, mana uang laba",
+    title: "Tahu untung toko Anda yang sebenarnya, langsung dari HP",
     description:
-      "SakuDagang mencatat penjualan, belanja stok, bon, dan pengeluaran toko Anda, lalu menghitung sendiri berapa uang yang harus diputar lagi dan berapa yang benar-benar untung.",
+      "Tinggalkan buku catatan. SakuDagang mencatat penjualan, belanja stok, bon, dan pengeluaran, lalu menghitung sendiri berapa uang modal yang harus diputar, berapa laba yang boleh Anda ambil, dan siapa yang belum bayar.",
   },
+  heroNote: `Tanpa bayar di muka. Setelah masa coba, ${formatRupiah(SAKUDAGANG_MONTHLY)}/bulan, tanpa batas jumlah kasir.`,
   problems: [
     {
       problem: "Toko ramai, tetapi uang terasa habis dan tidak tahu ke mana.",
-      solution: "Dashboard memisahkan uang modal (harus diputar), uang laba (boleh diambil), dan piutang.",
+      solution: "Beranda memisahkan uang modal (untuk belanja lagi), uang laba (boleh Anda ambil), dan piutang. Laba tidak lagi terpakai jadi modal tanpa disadari.",
     },
     {
-      problem: "Laba hanya ditebak karena harga modal berubah setiap belanja.",
-      solution: "Harga modal rata-rata dihitung otomatis dari setiap pembelian, laba per transaksi langsung tercatat.",
+      problem: "Laba hanya ditebak karena harga modal naik-turun setiap belanja.",
+      solution: "Harga modal rata-rata dihitung otomatis dari setiap pembelian, dan setiap penjualan langsung menyimpan labanya.",
     },
     {
-      problem: "Stok sering selisih atau tiba-tiba habis.",
-      solution: "Setiap barang masuk & keluar tercatat, ada daftar perlu restock, dan stok opname bulanan menghitung selisihnya.",
+      problem: "Stok sering selisih, atau baru ketahuan habis saat pembeli sudah datang.",
+      solution: "Stok berkurang otomatis saat terjual dan bertambah saat belanja. Barang yang hampir habis masuk daftar perlu restock.",
     },
     {
-      problem: "Bon pelanggan lupa ditagih.",
-      solution: "Semua bon tercatat per pelanggan, lengkap dengan sisa dan tombol tagih lewat WhatsApp.",
+      problem: "Bon pelanggan lupa ditagih, uang tertahan di luar.",
+      solution: "Bon tercatat per pelanggan lengkap dengan sisanya. Tagih lewat WhatsApp dengan satu ketukan, dan bon yang lewat 30 hari ditandai di beranda.",
+    },
+    {
+      problem: "Karyawan kasir tahu semua angka toko, atau salah catat tanpa jejak.",
+      solution: "Kasir hanya melihat harga jual. Harga modal dan laba hanya untuk pemilik, setiap transaksi mencatat siapa yang menginput, dan salah input dibatalkan dengan alasan.",
+    },
+    {
+      problem: "Rekap akhir bulan memakan waktu dan catatan berserakan.",
+      solution: "Laporan harian, bulanan, dan tahunan tersusun sendiri dari transaksi. Laporan bulanan dan tahunan bisa diunduh ke Excel.",
     },
   ],
   features: [
     {
       icon: ShoppingCartIcon,
       title: "Kasir di HP",
-      description: "Cari barang, atur jumlah, bayar tunai (kembalian dihitung otomatis), QRIS, atau bon.",
+      description: "Cari barang, atur jumlah, lalu bayar tunai (kembalian dihitung otomatis), QRIS, atau bon. Satu transaksi selesai dalam beberapa ketukan.",
     },
     {
       icon: BoxesIcon,
       title: "Stok otomatis",
-      description: "Stok berkurang saat terjual dan bertambah saat belanja, dengan riwayat mutasi per barang.",
+      description: "Stok berkurang saat terjual dan bertambah saat belanja, dengan riwayat keluar-masuk per barang. Stok kosong tidak menghalangi penjualan.",
     },
     {
       icon: TruckIcon,
       title: "Pembelian & harga modal",
-      description: "Catat belanja stok; harga modal rata-rata diperbarui otomatis.",
+      description: "Catat belanja dari grosir, harga modal rata-rata diperbarui sendiri. Harga jual baru bisa langsung diisi saat belanja.",
     },
     {
       icon: NotebookPenIcon,
       title: "Bon pelanggan",
-      description: "Piutang per pelanggan, pelunasan bertahap, dan tagih lewat WhatsApp.",
+      description: "Piutang per pelanggan, pelunasan sebagian atau penuh, dan tagih lewat WhatsApp dengan pesan yang sudah terisi.",
     },
     {
       icon: ReceiptIcon,
       title: "Pengeluaran operasional",
-      description: "Listrik, plastik, bensin, gaji kasir, dan biaya lain ikut mengurangi laba bersih.",
+      description: "Listrik, plastik, bensin, gaji kasir, dan biaya lain ikut mengurangi laba bersih, jadi angka laba yang Anda lihat apa adanya.",
     },
     {
       icon: ClipboardCheckIcon,
       title: "Stok opname",
-      description: "Cocokkan stok fisik dan sistem tiap akhir bulan; barang hilang/rusak dihitung sebagai penyusutan.",
+      description: "Cocokkan stok fisik dan sistem di akhir bulan. Barang rusak, kedaluwarsa, atau hilang dihitung sebagai penyusutan beserta alasannya, dan toko tetap bisa berjualan.",
     },
     {
       icon: PiggyBankIcon,
       title: "Pemisahan dana",
-      description: "Uang modal, uang laba, dan piutang tampil terpisah di beranda pemilik.",
+      description: "Uang modal, uang laba, dan piutang tampil terpisah di beranda pemilik, lengkap dengan grafik omset dan laba per hari.",
     },
     {
       icon: SheetIcon,
       title: "Laporan & Excel",
-      description: "Laporan harian, bulanan, dan tahunan, barang terlaris, dan ekspor ke Excel.",
+      description: "Laporan harian, bulanan, dan tahunan beserta barang terlaris. Laporan bulanan dan tahunan bisa diunduh ke Excel.",
     },
     {
       icon: UserLockIcon,
       title: "Akun kasir",
-      description: "Kasir mencatat penjualan tanpa melihat harga modal, dan tidak bisa menjual di bawah modal.",
+      description: "Kasir mencatat penjualan tanpa melihat harga modal dan laba, dan tidak bisa menjual di bawah modal. Karyawan baru cukup dibuatkan akun.",
+    },
+    {
+      icon: SmartphoneIcon,
+      title: "Pasang di HP, tanpa Play Store",
+      description: "Berbentuk PWA: dipasang di layar utama HP dan tampil layar penuh seperti aplikasi biasa, atau cukup dibuka lewat browser.",
+    },
+    {
+      icon: KeyRoundIcon,
+      title: "Masuk dengan email atau WhatsApp",
+      description: "Tidak punya email? Cukup nomor WhatsApp untuk masuk. Password sementara akun baru dikirim otomatis lewat WhatsApp.",
+    },
+    {
+      icon: Undo2Icon,
+      title: "Salah input? Batalkan",
+      description: "Penjualan atau pembelian yang salah dibatalkan dengan alasan dan stok kembali sendiri. Tidak ada data yang hilang diam-diam.",
+    },
+  ],
+  useCases: [
+    {
+      title: "Warung sembako & kelontong",
+      description: "Banyak barang kecil dan banyak bon langganan. Modal, laba, dan piutang tercatat rapi tanpa buku bon.",
+      examples: ["Beras", "Minyak goreng", "Gula", "Rokok", "Galon"],
+    },
+    {
+      title: "Toko bangunan & pertanian",
+      description: "Harga grosir naik-turun. Harga modal rata-rata menjaga laba per barang tetap akurat.",
+      examples: ["Semen", "Cat", "Pipa", "Pupuk", "Bibit"],
+    },
+    {
+      title: "Konter HP & aksesoris",
+      description: "HP, casing, charger, tempered glass, dan headset dicatat per item beserta modal dan labanya. Pulsa dan paket data bisa dicatat sebagai barang per nominal.",
+      examples: ["HP", "Charger", "Casing", "Tempered glass", "Headset"],
+    },
+    {
+      title: "Toko ritel lainnya",
+      description: "Kosmetik, alat tulis, perlengkapan bayi, oleh-oleh, dan toko lain yang menjual per item. Ukuran atau warna berbeda dicatat sebagai barang terpisah.",
+      examples: ["Kosmetik", "Alat tulis", "Perlengkapan bayi", "Oleh-oleh"],
     },
   ],
   steps: [
-    { title: "Masukkan barang", description: "Nama, satuan, harga jual, dan stok awal setiap barang." },
-    { title: "Catat belanja", description: "Setiap belanja stok memperbarui stok dan harga modal." },
-    { title: "Jualan dari HP", description: "Kasir mencatat penjualan tunai, QRIS, atau bon." },
-    { title: "Lihat laba", description: "Beranda menunjukkan uang modal, uang laba, dan piutang bulan ini." },
+    { title: "Kami siapkan akun toko", description: `Hubungi kami lewat WhatsApp. Akun pemilik dibuat dan dikirim lewat WhatsApp, dan masa coba ${SAKUDAGANG_TRIAL_DAYS} hari mulai berjalan.` },
+    { title: "Masukkan barang", description: "Nama, satuan, harga jual, serta stok dan modal awal setiap barang." },
+    { title: "Jualan dan catat belanja", description: "Kasir mencatat penjualan tunai, QRIS, atau bon. Setiap belanja stok memperbarui stok dan harga modal." },
+    { title: "Lihat laba", description: "Beranda menunjukkan uang modal, uang laba, dan piutang. Laporan siap kapan saja." },
   ],
+  sectionOrder: ["problems", "features", "usecases", "steps", "pricing", "faq"],
+  pricingIntro: `Gratis ${SAKUDAGANG_TRIAL_DAYS} hari dengan semua fitur. Setelah itu ${formatRupiah(SAKUDAGANG_MONTHLY)}/bulan, tanpa batas jumlah pengguna. Paket 6 bulan hemat ${SAKUDAGANG_DISCOUNT[6]}% dan paket 1 tahun hemat ${SAKUDAGANG_DISCOUNT[12]}%.`,
+  planBenefits: ["Pengguna dan kasir tanpa batas"],
   plans: [
-    { months: 1, price: null },
-    { months: 6, price: null },
-    { months: 12, price: null },
+    { months: 1, price: sakudagangPlanPrice(1) },
+    { months: 6, price: sakudagangPlanPrice(6) },
+    { months: 12, price: sakudagangPlanPrice(12) },
   ],
-  trialDays: 14,
+  trialDays: SAKUDAGANG_TRIAL_DAYS,
   faq: [
+    {
+      question: `Apakah saya bisa mencoba dulu?`,
+      answer: `Bisa. Setiap toko baru mendapat masa gratis ${SAKUDAGANG_TRIAL_DAYS} hari (1 bulan) dengan semua fitur, tanpa bayar di muka. Kami bantu membuat akun toko dan akun pemilik, lalu Anda bisa langsung memasukkan barang dan berjualan.`,
+    },
+    {
+      question: "Berapa biayanya setelah masa coba?",
+      answer: `${formatRupiah(SAKUDAGANG_MONTHLY)} per bulan, tanpa batas jumlah pengguna dan kasir, dan semua fitur sudah termasuk. Paket 6 bulan diskon ${SAKUDAGANG_DISCOUNT[6]}% (${formatRupiah(sakudagangPlanPrice(6))}), paket 1 tahun diskon ${SAKUDAGANG_DISCOUNT[12]}% (${formatRupiah(sakudagangPlanPrice(12))}).`,
+    },
     {
       question: "Apakah perlu komputer atau mesin kasir khusus?",
       answer:
         "Tidak. SakuDagang dirancang untuk HP dan berbentuk PWA: bisa dipasang di layar utama seperti aplikasi biasa, tanpa Play Store atau App Store, atau dibuka lewat browser.",
     },
     {
-      question: "Bagaimana kalau ada barang terjual tapi stok di sistem kosong?",
-      answer: "Penjualan tetap bisa disimpan dengan peringatan. Stok diluruskan saat belanja berikutnya atau stok opname.",
+      question: "Barangnya ada di toko, tetapi stok di sistem masih 0. Apakah tetap bisa dijual?",
+      answer:
+        "Bisa. Itu biasa terjadi bila barang sudah ada di rak tetapi belum dicatat di sistem. Kasir hanya mendapat peringatan \"Stok sistem: 0\", penjualan tetap tersimpan, dan stok boleh minus. Angkanya diluruskan saat Anda mencatat belanja berikutnya atau saat stok opname.",
     },
     {
       question: "Apakah kasir bisa melihat keuntungan toko?",
-      answer: "Tidak. Kasir hanya melihat harga jual dan transaksinya sendiri; laba hanya untuk pemilik.",
+      answer: "Tidak. Kasir hanya melihat harga jual dan transaksinya sendiri. Harga modal dan laba hanya untuk pemilik.",
     },
     {
-      question: "Apakah saya bisa mencoba dulu?",
-      answer: "Bisa. Setiap toko baru mendapat masa gratis sebelum memilih paket langganan.",
+      question: "Bagaimana kalau kasir salah input?",
+      answer:
+        "Transaksi yang sudah tersimpan tidak diedit, tetapi dibatalkan dengan alasan dan stoknya kembali otomatis. Kasir hanya bisa membatalkan transaksinya sendiri di hari yang sama, pemilik bisa membatalkan semua. Transaksi yang dibatalkan tetap tampil di riwayat.",
+    },
+    {
+      question: "Bagaimana cara membayar langganan?",
+      answer:
+        "Transfer bank atau QRIS, lalu unggah bukti bayar di menu Langganan. Setelah dicek, masa aktif toko diperpanjang dan pemilik mendapat pemberitahuan lewat WhatsApp. Pengingat juga dikirim sebelum masa aktif habis.",
+    },
+    {
+      question: "Apakah data toko saya terlihat oleh toko lain?",
+      answer: "Tidak. Setiap toko hanya bisa melihat datanya sendiri, dan setiap transaksi mencatat siapa yang menginputnya.",
+    },
+    {
+      question: "Bagaimana kalau saya punya lebih dari satu toko?",
+      answer: "Satu akun untuk satu toko, jadi pemilik dua toko memakai dua akun. Laporan gabungan antar cabang belum tersedia.",
     },
   ],
 };

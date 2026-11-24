@@ -102,6 +102,32 @@ export function ProductPage({ product }: { product: Product }) {
       </Section>
     ),
 
+    // Jenis usaha yang cocok
+    usecases: product.useCases ? (
+      <Section key="usecases" id="cocok-untuk" className="bg-product-soft/60">
+        <SectionHeading
+          eyebrow="Cocok untuk"
+          title="Usaha apa saja yang menjual per barang"
+          description="Syaratnya satu: barang dijual per item, dengan harga modal dan harga jual."
+        />
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {product.useCases.map((item) => (
+            <div key={item.title} className="flex flex-col gap-3 rounded-3xl border bg-card p-6 transition-transform duration-300 ease-out motion-safe:hover:scale-[1.03] hover:shadow-lg">
+              <p className="font-semibold">{item.title}</p>
+              <p className="text-sm text-muted-foreground">{item.description}</p>
+              <ul className="mt-auto flex flex-wrap gap-1.5 pt-1">
+                {item.examples.map((example) => (
+                  <li key={example} className="rounded-full bg-product-soft px-2.5 py-0.5 text-xs text-product">
+                    {example}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </Section>
+    ) : null,
+
     // Alur kerja
     steps: (
       <Section key="steps" className="bg-card">
@@ -135,7 +161,7 @@ export function ProductPage({ product }: { product: Product }) {
           description={
             product.pricing
               ? `Gratis ${product.trialDays} hari dengan semua fitur. Setelah itu ${formatRupiah(product.pricing.basePrice)}/bulan untuk ${product.pricing.includedUsers} pengguna${product.pricing.normalBasePrice ? ` (harga normal ${formatRupiah(product.pricing.normalBasePrice)} berlaku untuk klien baru)` : ""}, makin hemat untuk paket 6 bulan dan 1 tahun.`
-              : "Harga total per periode. Makin panjang periodenya, makin hemat."
+              : (product.pricingIntro ?? "Harga total per periode. Makin panjang periodenya, makin hemat.")
           }
         />
         <PricingTable product={product} />
@@ -220,6 +246,7 @@ export function ProductPage({ product }: { product: Product }) {
                 Masuk
               </Button>
             </div>
+            {product.heroNote && <p className="-mt-2 text-sm text-muted-foreground">{product.heroNote}</p>}
             <div className="flex flex-wrap gap-2">
               {product.audiences.map((audience) => (
                 <span key={audience} className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">

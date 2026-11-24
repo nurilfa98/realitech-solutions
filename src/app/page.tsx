@@ -87,9 +87,9 @@ const FAQ = [
     answer: "Melalui transfer bank atau QRIS. Detailnya kami kirimkan saat Anda memilih paket.",
   },
   {
-    question: "Apa yang terjadi bila langganan berakhir?",
+    question: "Apa yang terjadi bila masa coba atau langganan berakhir?",
     answer:
-      "Pelanggan berbayar mendapat masa tenggang beberapa hari dengan pengingat. Setelah itu akses dikunci sementara, dan data tetap tersimpan sampai langganan diperpanjang. Pada masa coba gratis, akses langsung terkunci begitu masa coba habis.",
+      "Anda mendapat pengingat sebelum masa aktif habis. Setelah berakhir, akses dikunci sementara sampai langganan diperpanjang, dan data tetap tersimpan. Sebagian produk memberi masa tenggang beberapa hari lebih dulu. Pemilik akun tetap bisa membuka halaman Langganan untuk memperpanjang.",
   },
 ];
 
@@ -200,7 +200,7 @@ export default function HomePage() {
         />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {STRENGTHS.map((item) => (
-            <div key={item.title} className="flex flex-col gap-3 rounded-3xl border bg-background p-6 transition duration-300 hover:shadow-md">
+            <div key={item.title} className="flex flex-col gap-3 rounded-3xl border bg-background p-6 transition-transform duration-300 ease-out motion-safe:hover:scale-[1.03] hover:shadow-lg">
               <div className="flex size-11 items-center justify-center rounded-2xl bg-brand-soft text-brand">
                 <item.icon className="size-5" />
               </div>
@@ -216,7 +216,7 @@ export default function HomePage() {
         <SectionHeading eyebrow="Cara mulai" title="Mulai dalam empat langkah" description="Dari konsultasi sampai dipakai tim Anda." />
         <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {STEPS.map((step, index) => (
-            <li key={step.title} className="flex flex-col gap-3 rounded-3xl border bg-card p-6">
+            <li key={step.title} className="flex flex-col gap-3 rounded-3xl border bg-card p-6 transition-transform duration-300 ease-out motion-safe:hover:scale-[1.03] hover:shadow-lg">
               <span className="flex size-9 items-center justify-center rounded-full bg-brand text-sm font-semibold text-brand-foreground">
                 {index + 1}
               </span>

@@ -36,17 +36,21 @@ export default function TermsPage() {
       <section>
         <h2>2. Masa coba & langganan</h2>
         <ul>
-          <li>Akun baru mendapat masa coba gratis sesuai yang tertera di halaman produk. Masa coba tidak punya masa tenggang: begitu habis, akses dikunci sampai paket dibayar.</li>
+          <li>Akun baru mendapat masa coba gratis sesuai yang tertera di halaman produk.</li>
           <li>
             ArchiPay memiliki add-on opsional Absensi dan Penggajian yang dibayar terpisah per pengguna per bulan.
             Selama masa coba keduanya ikut aktif. Setelah itu, add-on aktif hanya bila dipilih saat memilih paket atau
             diaktifkan kemudian, dan berhenti begitu periodenya habis.
           </li>
           <li>Langganan tersedia dalam periode 1, 6, atau 12 bulan, dibayar di muka.</li>
-          <li>Perpanjangan dihitung dari tanggal berakhirnya langganan yang sedang berjalan.</li>
           <li>
-            Setelah langganan berakhir, tersedia masa tenggang singkat. Lewat dari itu, akses ke Layanan dikunci
-            sementara sampai langganan diperpanjang. Data tetap tersimpan selama masa yang wajar.
+            Perpanjangan dihitung dari tanggal berakhirnya langganan yang sedang berjalan bila masih berlaku, atau dari
+            tanggal pembayaran dikonfirmasi bila sudah berakhir.
+          </li>
+          <li>
+            Setelah masa coba atau langganan berakhir, akses ke Layanan dikunci sementara sampai langganan
+            diperpanjang. Sebagian produk memberi masa tenggang singkat dengan pengingat sebelum akses dikunci;
+            ketentuannya mengikuti masing-masing produk. Data tetap tersimpan selama masa yang wajar.
           </li>
         </ul>
       </section>

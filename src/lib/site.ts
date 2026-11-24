@@ -13,7 +13,7 @@ export const SITE = {
   // TODO: isi nomor WhatsApp bisnis (format 62..., tanpa + dan spasi).
   whatsapp: "6285714325506",
   // TODO: isi email bisnis.
-  email: "halo@realitech.com",
+  email: "halo@realitech.id",
   // Ditulis manual agar halaman tetap statis. Perbarui tiap tahun.
   copyrightYear: 2026,
 } as const;
