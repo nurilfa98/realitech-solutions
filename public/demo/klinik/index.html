@@ -310,14 +310,17 @@
   .bk-head { display: flex; flex-direction: column; padding: 6px 6px 5px; min-width: 0; border-left: 1px solid var(--grid); }
   .bk-head b { font-size: 13px; line-height: 1.3; }
   .bk-head small { font-size: 11px; color: var(--muted); line-height: 1.25; }
-  .bk-time { position: sticky; left: 0; z-index: 3; grid-column: 1; background: var(--surface); border-top: 1px solid var(--grid); padding: 2px 6px 0 0; text-align: right; font-size: 11px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
-  .bk-time.half { color: var(--muted); }
+  .bk-time { position: sticky; left: 0; z-index: 3; grid-column: 1; background: var(--surface); border-top: 1px solid var(--grid); padding: 0 8px 0 0; text-align: right; font-size: 12px; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .bk-time span { position: absolute; right: 8px; top: -8px; line-height: 16px; padding: 0 2px; background: var(--surface); }
+  .bk-time.first span { top: 2px; }
+  .bk-time.half { color: var(--muted); font-weight: 500; font-size: 11px; }
+  .bk-time.end { border-top: 1px solid var(--grid); }
   .bk-off, .bk-free { min-width: 0; border: 0; border-top: 1px solid var(--grid); border-left: 1px solid var(--grid); border-radius: 0; }
   .bk-off { background: var(--surface-2); opacity: 0.7; }
   .bk-gap { min-width: 0; border-top: 1px solid var(--grid); border-left: 1px solid var(--grid); background: var(--surface-2); opacity: 0.45; }
   .bk-free { background: var(--surface); color: var(--axis); font-size: 18px; line-height: 1; padding: 0; }
   .bk-free:hover, .bk-free:focus-visible { background: var(--accent-soft); color: var(--accent-text); }
-  .bk-card { position: relative; z-index: 1; margin: 2px 3px; padding: 4px 8px; min-width: 0; overflow: hidden; display: flex; flex-direction: column; gap: 1px; text-align: left; border-radius: 8px; border: 1px solid var(--line); border-left: 4px solid var(--axis); background: var(--surface-2); color: var(--ink); }
+  .bk-card { position: relative; z-index: 1; margin: 3px 4px; padding: 8px 10px 10px; min-width: 0; overflow: hidden; display: flex; flex-direction: column; gap: 3px; text-align: left; border-radius: 8px; border: 1px solid var(--line); border-left: 4px solid var(--axis); background: var(--surface-2); color: var(--ink); }
   .bk-card:hover { filter: brightness(0.97); }
   .bk-card { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
   .bk-card[data-drag] { cursor: grab; }
@@ -325,9 +328,11 @@
   .bk-ghost { position: absolute; z-index: 2; box-sizing: border-box; pointer-events: none; padding: 3px 6px; overflow: hidden; border-radius: 8px; border: 2px dashed var(--accent); background: var(--accent-soft); color: var(--accent-text); font-size: 11px; font-weight: 600; line-height: 1.3; }
   .bk-ghost small { display: block; font-weight: 500; font-size: 11px; }
   .bk-ghost.no { border-color: var(--bad); background: var(--bad-soft); color: var(--bad); }
-  .bk-card b { font-size: 13px; line-height: 1.25; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .bk-card .bk-t, .bk-card .bk-sv { font-size: 11px; line-height: 1.25; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bk-card b { font-size: 14px; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bk-card .bk-t, .bk-card .bk-sv { font-size: 12px; line-height: 1.3; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bk-card .bk-badge { margin-top: auto; }
   .bk-card.short { flex-direction: row; align-items: center; gap: 6px; padding-top: 2px; padding-bottom: 2px; }
+  .bk-card.short .bk-badge { margin-top: 0; }
   .bk-card.short .bk-t { display: none; }
   .bk-card.short b { flex: 1 1 auto; min-width: 0; }
   .bk-card.short .bk-badge { flex: none; }
@@ -352,7 +357,7 @@
   .bk-lt small { display: block; font-weight: 400; font-size: 11px; color: var(--muted); }
   .bk-more { cursor: pointer; min-height: 36px; padding: 6px 0; font-weight: 500; color: var(--accent-text); }
   .bk-cat { font-size: 11px; font-weight: 600; line-height: 1.25; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .bk-card.narrow { padding: 3px 4px; }
+  .bk-card.narrow { padding: 6px 6px 8px; }
   .bk-card.narrow .bk-t, .bk-card.narrow .bk-sv, .bk-card.narrow .bk-cat { display: none; }
   .bk-card.hascat .bk-t { display: none; }
   .bk-hint { display: none; }
@@ -1688,12 +1693,18 @@
   }
   function pkName(pk) { return 'Paket ' + pk.kind; }
   function pkSisa(pk) { return pk ? pk.total - pk.used : 0; }
+  /* Tiap paket punya satu link web publik (tanpa login). Satu link per paket: pasien yang berbagi paket 12 memakai link yang sama. Di sistem sungguhan kodenya acak dan sulit ditebak. */
+  var PK_BASE = 'https://paket.klinikdemo.id/p/', PK_TOK = 'abcdefghjkmnpqrstuvwxyz23456789';
+  function pkUrl(P) {
+    if (!P.tok) { var t = '', i; for (i = 0; i < 8; i++) { t += PK_TOK.charAt(Math.floor(Math.random() * PK_TOK.length)); } P.tok = t; }
+    return PK_BASE + P.tok;
+  }
 
   /* M6: PWA pasien dan front desk */
   add({
     id: 'm6', title: 'Sisa paket yang selalu cocok',
     now: 'Sisa paket dihitung dengan mata dari kolom tanggal di Excel. Pasien ingat sisa 3, catatan front desk sisa 2, dan tidak ada yang bisa membuktikan.',
-    with: 'Paket dibeli dan dipakai di layar Layanan dan pembayaran. Setiap pemakaian langsung mengurangi kuota, dan sisa paket dihitung dari buku mutasi, jadi pasien dan front desk melihat angka yang sama.',
+    with: 'Setiap pembelian paket menghasilkan satu link web untuk pasien, dikirim bersama kuitansi WhatsApp. Pasien membuka sisa paket dan riwayat pemakaiannya tanpa login. Angkanya sama dengan yang dilihat front desk.',
     who: ['Pasien', 'Front desk'],
     build: function (el) {
       var view = 'fd', owners = S.booking.pts.filter(function (x) { return !!x.pk; }), pick = owners[0].wa;
@@ -1706,7 +1717,8 @@
       };
       var pasienHtml = function () {
         var pt = cur(), P = pt.pk, s = pkSisa(P);
-        return '<div class="panel"><div class="lbl">Sisa ' + pkName(P) + 'x</div><div class="hero-fig num">' + s + '<span class="muted" style="font-size:22px;font-weight:600"> dari ' + P.total + '</span></div>' +
+        return '<div class="panel soft"><div class="row" style="justify-content:space-between"><span style="font-size:12px;word-break:break-all;font-variant-numeric:tabular-nums">' + esc(pkUrl(P)) + '</span>' + chip('good', 'Tanpa login') + '</div></div>' +
+          '<div class="panel"><div class="lbl">Sisa ' + pkName(P) + 'x</div><div class="hero-fig num">' + s + '<span class="muted" style="font-size:22px;font-weight:600"> dari ' + P.total + '</span></div>' +
           '<div class="bar" style="margin-top:12px" role="img" aria-label="Terpakai ' + P.used + ' dari ' + P.total + '"><i style="width:' + (P.used / P.total * 100) + '%"></i></div>' +
           '<div class="row" style="margin-top:10px;justify-content:space-between"><span class="sub" style="font-size:13px">Paket atas nama ' + esc(pt.n) + '</span>' + (P.people.length > 1 ? chip('info', 'Dibagi ' + P.people.length + ' orang') : '') + '</div></div>' +
           (P.people.length > 1 ? '<div><div class="sec-title" style="margin-bottom:6px">Pemakai paket</div><div class="row">' + P.people.map(function (n) {
@@ -1720,13 +1732,15 @@
         return '<div class="panel"><div class="field"><label for="fd-pt">Pasien pemilik paket</label><select id="fd-pt">' + owners.map(function (x) { return '<option value="' + esc(x.wa) + '"' + (x.wa === pt.wa ? ' selected' : '') + '>' + esc(x.n) + ' · ' + pkName(x.pk) + ' · sisa ' + pkSisa(x.pk) + '</option>'; }).join('') + '</select></div>' +
           '<div class="row" style="justify-content:space-between;margin-top:12px"><div><b>' + esc(pt.n) + '</b><div class="muted" style="font-size:12px">' + pkName(P) + 'x' + (P.people.length > 1 ? ' · dibagi ' + P.people.length + ' orang' : '') + '</div></div><div class="tile" style="min-width:90px;text-align:center"><div class="l">Sisa</div><div class="v num">' + s + '/' + P.total + '</div></div></div>' +
           '<div class="row" style="margin-top:10px">' + (P.kind === '12' ? '<button type="button" class="btn" data-act="share4">Tambah peserta ke-4</button>' : '') + '</div></div>' +
+          '<div class="panel soft"><div class="sec-title" style="margin-bottom:4px">Link untuk pasien</div><div style="font-size:13px;word-break:break-all;user-select:all">' + esc(pkUrl(P)) + '</div>' +
+          '<p class="notes" style="margin-top:6px">Pasien membuka link ini tanpa login untuk melihat sisa paket dan riwayat pemakaian. Link dikirim otomatis bersama kuitansi WhatsApp saat paket dibeli.' + (P.people.length > 1 ? ' Paket yang dibagi memakai satu link yang sama.' : '') + '</p></div>' +
           '<div><div class="sec-title" style="margin-bottom:6px">Buku mutasi</div>' + histHtml(pt) + '</div>' +
           '<p class="notes">Pemakaian paket dicatat di layar Layanan dan pembayaran: begitu front desk memilih pasien yang punya sisa paket, sistem menampilkan sisanya dan mengurangi 1 saat sesi dicatat. Tidak ada invoice untuk sesi itu.</p>' +
           '<p class="notes">Aturan: sharing hanya untuk paket 12, paling banyak 3 orang. Paket 3 dan 6 tidak bisa dibagi.</p>' +
           '<p class="notes">Insentif paket masuk ke front desk yang sedang login dan menekan Buat invoice saat paket dijual, satu kali per paket. Pemakaian sesi berikutnya tidak menambah insentif.</p>';
       };
       var render = function () {
-        var body = '<div>' + seg('view', [['fd', 'Front desk'], ['pasien', 'HP pasien']], view) + '</div>' +
+        var body = '<div>' + seg('view', [['fd', 'Front desk'], ['pasien', 'Web pasien']], view) + '</div>' +
           (view === 'pasien' ? pasienHtml() : fdHtml());
         el.innerHTML = frame(view === 'pasien' ? 'Paket saya' : 'Paket pasien', view === 'pasien' ? 'Pasien' : 'Front desk', body);
       };
@@ -1918,12 +1932,12 @@
 
   /* M10: Jadwal pasien (booking) */
   add({
-    id: 'm10', title: 'Jadwal pasien rapi per 30 menit, nyaman di HP maupun komputer',
+    id: 'm10', title: 'Jadwal pasien per terapis, rapi di HP maupun komputer',
     now: 'Janji pasien diatur di Setmore. Tampilannya tabel untuk desktop, sulit dipakai dari HP, dan jam kerja terapis harus diinput ulang dari jadwal shift.',
-    with: 'Front desk mengatur janji per 30 menit di kalender terapis. Jam kerja diambil dari jadwal shift, dan daftar jam menampilkan jam kosong terapis dari masuk sampai pulang, janji yang sudah ada tampil satu baris dan tidak bisa dipilih. Tiap sesi 60 menit. Booking hanya mencatat tanggal, jam, terapis, tipe pasien (baru atau reguler), kategori, dan status. Setelah terapi, satu klik melanjutkan ke Layanan dan pembayaran dengan data pasien sudah terisi. Status janji tampil sebagai lencana berwarna. Pasien gratis 10x, teman owner, dan warrior ditandai di jadwal dan masuk laporan harian. Layar yang sama nyaman di HP.',
+    with: 'Kalender per terapis, jam kerjanya otomatis dari jadwal shift. Pilih jam kosong, isi pasien, selesai. Pasien gratis 10x, teman owner, dan warrior ditandai di jadwal. Setelah terapi, satu klik lanjut ke pembayaran.',
     who: ['Front desk', 'Terapis'],
     build: function (el) {
-      var B = S.booking, ROWH = 44, drag = null, dragEnd = 0;
+      var B = S.booking, ROWH = 52, END_H = 20, drag = null, dragEnd = 0;
       var whoOk = function (p) {
         if (B.who === 'all') { return true; }
         if (B.who.indexOf('g:') === 0) { return p.g === B.who.slice(2); }
@@ -1957,15 +1971,17 @@
       /* ----- Tampilan: kalender kolom per terapis ----- */
       var calHtml = function (ths) {
         var lo = Math.min.apply(null, ths.map(function (w) { return w.s; })), hi = Math.max.apply(null, ths.map(function (w) { return w.e; }));
-        var rows = (hi - lo) / BK_SLOT, colMin = ths.length === 1 ? 220 : 124, r, m;
-        var out = '<div class="bk-scroll" tabindex="0" aria-label="Kalender terapis"><div class="bk-grid" data-lo="' + lo + '" style="grid-template-columns:52px repeat(' + ths.length + ',minmax(' + colMin + 'px,1fr));grid-template-rows:auto repeat(' + rows + ',' + ROWH + 'px);min-width:' + (52 + colMin * ths.length) + 'px">';
+        var rows = (hi - lo) / BK_SLOT, colMin = ths.length === 1 ? 240 : 148, r, m;
+        var out = '<div class="bk-scroll" tabindex="0" aria-label="Kalender terapis"><div class="bk-grid" data-lo="' + lo + '" style="grid-template-columns:56px repeat(' + ths.length + ',minmax(' + colMin + 'px,1fr));grid-template-rows:auto repeat(' + rows + ',' + ROWH + 'px) ' + END_H + 'px;min-width:' + (56 + colMin * ths.length) + 'px">';
         out += '<div class="bk-corner"></div>' + ths.map(function (w, i) {
           return '<div class="bk-head" data-th="' + w.p.id + '" style="grid-column:' + (i + 2) + '"><b>' + esc(w.p.n) + '</b><small>' + esc(w.name) + ' ' + fromMin(w.s) + '-' + fromMin(w.e) + '</small></div>';
         }).join('');
         for (r = 0; r < rows; r++) {
           m = lo + r * BK_SLOT;
-          out += '<div class="bk-time' + (m % 60 ? ' half' : '') + '" style="grid-row:' + (r + 2) + '">' + fromMin(m) + '</div>';
+          out += '<div class="bk-time' + (m % 60 ? ' half' : '') + (r === 0 ? ' first' : '') + '" style="grid-row:' + (r + 2) + '"><span>' + fromMin(m) + '</span></div>';
         }
+        /* Jam pulang paling akhir ikut diberi label, supaya janji terakhir jelas berakhir di jam berapa. */
+        out += '<div class="bk-time end" style="grid-row:' + (rows + 2) + '"><span>' + fromMin(hi) + '</span></div>';
         ths.forEach(function (w, ci) {
           var col = ci + 2, starts = {}, cover = {}, okStart = {};
           bkStarts(B.date, w.p.id).forEach(function (s) { okStart[s] = true; });
@@ -2025,7 +2041,7 @@
         var isToday = B.date === BK_TODAY;
         var act = B.list.filter(function (b) { return b.date === B.date && bkActive(b) && whoOk(byId(b.th)); });
         var pend = act.filter(function (b) { return b.st === 'PENDING'; }).length;
-        var freeMin = 0; ths.forEach(function (w) { freeRanges(w).forEach(function (x) { freeMin += x.e - x.s; }); });
+        var freeMin = 0; ths.forEach(function (w) { freeRanges(w).forEach(function (x) { var s0 = isToday ? Math.max(x.s, BK_NOW) : x.s; if (B.date >= BK_TODAY && x.e > s0) { freeMin += x.e - s0; } }); });
         var orphans = B.list.filter(function (b) { return b.date === B.date && bkActive(b) && !bkFits(b) && whoOk(byId(b.th)); });
         var cnt = function (g) { return all.filter(function (w) { return w.p.g === g; }).length; };
         var cats = ['gratis', 'teman', 'warrior'].map(function (k) { return [k, act.filter(function (b) { return bkEff(b).cat === k && b.st !== 'NO_SHOW'; }).length]; }).filter(function (x) { return x[1] > 0; });
@@ -2060,7 +2076,7 @@
           '<div class="bk-top">' + seg('bkview', [['cal', 'Kalender'], ['list', 'Daftar']], B.view) + '<button type="button" class="btn primary" data-act="new">' + ic('plus') + ' Booking baru</button></div>' +
           '<div class="grid3"><div class="tile"><div class="l">Janji</div><div class="v num">' + act.length + '</div></div>' +
           '<div class="tile"><div class="l">Perlu konfirmasi</div><div class="v num">' + pend + '</div></div>' +
-          '<div class="tile"><div class="l">Jam kosong</div><div class="v num" style="font-size:18px">' + hoursText(freeMin) + '</div></div></div>' +
+          '<div class="tile"><div class="l">Jam kosong' + (isToday ? ' (mulai ' + fromMin(BK_NOW) + ')' : '') + '</div><div class="v num" style="font-size:18px">' + (B.date < BK_TODAY ? '-' : hoursText(freeMin)) + '</div></div></div>' +
           (cats.length ? '<p class="notes">Kategori pasien hari ini: ' + cats.map(function (x) { return esc(BK_CATS[x[0]].n) + ' ' + x[1]; }).join(' · ') + '. Masuk laporan harian.</p>' : '') +
           (orphans.length ? callout('warn', 'warn', '<b>' + orphans.length + ' janji di luar jam kerja</b> karena jadwal shift berubah. Pindahkan: ' + orphans.map(function (b) { return '<button type="button" class="btn sm" data-bk="' + b.id + '">' + esc(b.name) + ' ' + fromMin(b.t) + '</button>'; }).join(' ')) : '') +
           main +
@@ -2882,47 +2898,6 @@
   /* ---------- Util baru ---------- */
   var PERIOD_START = '2026-10-26', PERIOD_END = '2026-11-25';
   function isoRange(a, b) { var out = [], d = a; while (d <= b) { out.push(d); d = isoAdd(d, 1); } return out; }
-  function terbilang(n) {
-    var s = ['', 'satu', 'dua', 'tiga', 'empat', 'lima', 'enam', 'tujuh', 'delapan', 'sembilan', 'sepuluh', 'sebelas'];
-    n = Math.floor(n);
-    if (n === 0) { return 'nol'; }
-    if (n < 12) { return s[n]; }
-    if (n < 20) { return terbilang(n - 10) + ' belas'; }
-    if (n < 100) { return terbilang(Math.floor(n / 10)) + ' puluh' + (n % 10 ? ' ' + terbilang(n % 10) : ''); }
-    if (n < 200) { return 'seratus' + (n % 100 ? ' ' + terbilang(n % 100) : ''); }
-    if (n < 1000) { return terbilang(Math.floor(n / 100)) + ' ratus' + (n % 100 ? ' ' + terbilang(n % 100) : ''); }
-    if (n < 2000) { return 'seribu' + (n % 1000 ? ' ' + terbilang(n % 1000) : ''); }
-    if (n < 1000000) { return terbilang(Math.floor(n / 1000)) + ' ribu' + (n % 1000 ? ' ' + terbilang(n % 1000) : ''); }
-    if (n < 1000000000) { return terbilang(Math.floor(n / 1000000)) + ' juta' + (n % 1000000 ? ' ' + terbilang(n % 1000000) : ''); }
-    return String(n);
-  }
-  var AC = null;
-  function chime() {
-    try {
-      var Ctx = window.AudioContext || window.webkitAudioContext;
-      if (!Ctx) { return false; }
-      AC = AC || new Ctx();
-      if (AC.state === 'suspended') { AC.resume(); }
-      [[880, 0], [1175, 0.2]].forEach(function (n) {
-        var o = AC.createOscillator(), g = AC.createGain(), t0 = AC.currentTime + n[1];
-        o.type = 'sine'; o.frequency.value = n[0]; o.connect(g); g.connect(AC.destination);
-        g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(0.25, t0 + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.5);
-        o.start(t0); o.stop(t0 + 0.55);
-      });
-      return true;
-    } catch (e) { return false; }
-  }
-  function speak(text) {
-    try {
-      if (!('speechSynthesis' in window)) { return false; }
-      window.speechSynthesis.cancel();
-      var u = new SpeechSynthesisUtterance(text); u.lang = 'id-ID'; u.rate = 0.95;
-      var v = window.speechSynthesis.getVoices().filter(function (x) { return /^id/i.test(x.lang); })[0];
-      if (v) { u.voice = v; }
-      setTimeout(function () { window.speechSynthesis.speak(u); }, 700);
-      return true;
-    } catch (e) { return false; }
-  }
   /* ---------- Unduh .xlsx sungguhan (tanpa pustaka): zip tanpa kompresi + OOXML minimal ---------- */
   var CRC_T = (function () { var t = [], c, n, k; for (n = 0; n < 256; n++) { c = n; for (k = 0; k < 8; k++) { c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1); } t[n] = c >>> 0; } return t; })();
   function crc32(u8) { var c = 0xFFFFFFFF, i; for (i = 0; i < u8.length; i++) { c = CRC_T[(c ^ u8[i]) & 255] ^ (c >>> 8); } return (c ^ 0xFFFFFFFF) >>> 0; }
@@ -3349,7 +3324,7 @@
 
   /* ---------- State tambahan ---------- */
   S.pendRem = {};
-  S.svc = { bk: null, wa: '', mode: '', step: 0, type: 'baru', name: 'Bapak Wawan', loc: 'klinik', tind: ['fe', 'ir', 'tens'], dx: 'Nyeri punggung', note: '', th: 'Dina', pkg: '1', promo: '', pay: 'bca', ref: '', sound: true, inv: null, paid: null, filter: 'all', cat: 'umum', disc: 10, seq: 148, clock: 14 * 60 + 5, sales: seedSales(), uses: [] };
+  S.svc = { bk: null, wa: '', mode: '', step: 0, type: 'baru', name: 'Bapak Wawan', loc: 'klinik', tind: ['fe', 'ir', 'tens'], dx: 'Nyeri punggung', note: '', th: 'Dina', pkg: '1', promo: '', pay: 'bca', ref: '', inv: null, paid: null, filter: 'all', cat: 'umum', disc: 10, seq: 148, clock: 14 * 60 + 5, sales: seedSales(), uses: [] };
   S.stok = seedStok();
 
   /* =====================================================================
@@ -3487,7 +3462,7 @@
   });
 
   /* =====================================================================
-     TAHAP 2a: Layanan, diagnosa, paket, invoice, pembayaran, kuitansi, notif suara
+     TAHAP 2a: Layanan, diagnosa, paket, invoice, pembayaran, kuitansi, notifikasi ke HP finance dan owner
      ===================================================================== */
   var PKG_NAME = { '1': 'Single Visit', '3': 'Paket 3', '6': 'Paket 6', '12': 'Paket 12' };
   var PROMO_T2 = { '3': [], '6': [{ id: 'p6', n: 'Promo awal bulan', off: 100000 }], '12': [{ id: 'p12', n: 'Promo November', off: 200000 }] };
@@ -3514,9 +3489,9 @@
   }
 
   add({
-    id: 't2a', title: 'Dari pasien datang sampai kuitansi, dan pembayaran masuk berbunyi',
+    id: 't2a', title: 'Dari layanan sampai kuitansi, pembayaran langsung terkabar ke HP finance dan owner',
     now: 'Kuitansi ditulis tangan di formulir Tanda Terima Pembayaran, lalu penjualan diketik ulang ke Excel harian. Finance baru tahu rinciannya setelah laporan harian masuk.',
-    with: 'Satu alur di sistem: pilih pasien baru atau reguler, jenis layanan dan diagnosa, paket, lalu invoice, pembayaran, dan kuitansi. Begitu pembayaran dicatat, notifikasi suara berbunyi dan penjualan langsung masuk ke daftar dan laporan.',
+    with: 'Satu alur di sistem: pilih pasien, layanan dan diagnosa, paket, invoice, bayar, lalu kuitansi. Begitu pembayaran dicatat, HP finance dan HP owner menerima notifikasi berbunyi, dan penjualan otomatis masuk ke daftar dan laporan. Tidak perlu ditulis tangan atau diketik ulang ke Excel.',
     who: ['Front desk', 'Finance', 'Owner'],
     build: function (el) {
       var D = S.svc;
@@ -3646,15 +3621,13 @@
           '<div class="panel"><div class="sec-title" style="margin-bottom:8px">Rekening penerimaan</div>' + seg('pay', ['tunai', 'bca', 'mandiri', 'bni', 'transfer', 'qris'].map(function (k) { return [k, PAY[k]]; }), D.pay) +
           '<p class="notes" style="margin-top:8px">' + esc(PAY_NOTE[D.pay]) + '. Pembayaran ini masuk ke laporan per rekening penerimaan.</p>' +
           (D.pay !== 'tunai' ? '<div class="field" style="margin-top:8px"><label for="sv-ref">Nomor approval / referensi (opsional)</label><input type="text" id="sv-ref" value="' + esc(D.ref) + '" placeholder="Contoh: 152059" autocomplete="off"></div>' : '') + '</div>' +
-          '<div class="panel soft"><div class="row" style="justify-content:space-between"><div><b>Notifikasi suara</b><div class="muted" style="font-size:12px">Berbunyi di komputer front desk, dan notifikasi di HP finance dan owner</div></div>' +
-          '<span class="switch"><button type="button" role="switch" aria-checked="' + D.sound + '" aria-label="Notifikasi suara" data-act="snd"></button></span></div>' +
-          '<div class="row" style="margin-top:8px"><button type="button" class="btn sm" data-act="snd-test">Tes suara</button><span class="muted" style="font-size:12px">Nyalakan volume perangkat Anda.</span></div></div>' +
+          '<div class="panel soft"><b>Notifikasi pembayaran masuk</b><div class="muted" style="font-size:12px;margin-top:2px">Begitu pembayaran dicatat, notifikasi masuk dan berbunyi di HP finance dan HP owner, tanpa suara di komputer front desk.</div></div>' +
           '<div class="row"><button type="button" class="btn" data-act="back1">Kembali</button><button type="button" class="btn primary" data-act="paid">Tandai pembayaran diterima</button></div>';
       };
       var useDoneHtml = function () {
         var u = D.use;
         return callout('good', 'check', '<b>' + esc(u.name) + '</b>: ' + (u.kind === 'paket' ? 'sesi memakai ' + esc(u.label) + '. Kuota berkurang 1, sisa sekarang <b>' + u.sisa + '</b>.' : 'sesi gratis karena kartu bonus sudah 10x. Kartu direset ke 0.') + ' Tidak ada invoice dan pembayaran.') +
-          callout('info', 'clock', u.kind === 'paket' ? 'Pemakaian tercatat di buku mutasi paket pasien (layar Sisa paket), sama dengan yang dilihat pasien di HP.' : 'Sesi gratis tercatat di laporan akhir bulan sebagai Gratis (bonus 10x), lengkap dengan nama pasien dan front desk ' + esc(u.fd) + '.') +
+          callout('info', 'clock', u.kind === 'paket' ? 'Pemakaian tercatat di buku mutasi paket pasien (layar Sisa paket), sama dengan yang dilihat pasien di halaman web paketnya.' : 'Sesi gratis tercatat di laporan akhir bulan sebagai Gratis (bonus 10x), lengkap dengan nama pasien dan front desk ' + esc(u.fd) + '.') +
           '<div class="row"><button type="button" class="btn primary" data-act="next">Pasien berikutnya</button></div>';
       };
       var doneHtml = function () {
@@ -3662,10 +3635,10 @@
         var s = D.paid, ag = todayAgg();
         var rc = { date: '17 / 11 / 2026', no: s.inv, name: s.name, type: s.type, tind: s.tind, th: s.th, note: s.note, dx: s.dx, pay: s.pay, pkg: s.pkg, hv: s.hv, total: s.total, fd: s.fd };
         return callout('good', 'check', 'Pembayaran <b>' + rp(s.total) + '</b> dari <b>' + esc(s.name) + '</b> diterima lewat <b>' + esc(PAY[s.pay]) + '</b> dan sudah masuk daftar penjualan, laporan per rekening, dan insentif front desk.') +
-          '<div class="sec-title">Notifikasi yang terkirim</div>' +
-          '<div class="notif">' + ic('bell') + '<div><b>Komputer front desk' + (D.sound ? ' · suara berbunyi' : ' · suara dimatikan') + '</b>' + (D.sound ? 'Terdengar: "Pembayaran diterima. ' + esc(s.name) + ', ' + esc(terbilang(s.total)) + ' rupiah, lewat ' + esc(PAY[s.pay]) + '."' : 'Notifikasi hanya tampil di layar.') + '</div></div>' +
-          '<div class="notif">' + ic('bell') + '<div><b>HP finance</b>Pembayaran masuk ' + rp(s.total) + ' · ' + esc(PAY[s.pay]) + ' · ' + esc(s.name) + ' (' + esc(s.inv) + ')</div></div>' +
-          '<div class="notif">' + ic('bell') + '<div><b>HP owner</b>Pemasukan hari ini naik menjadi ' + rp(ag.total) + ' dari ' + ag.visits + ' transaksi.</div></div>' +
+          '<div class="sec-title">Notifikasi yang terkirim ke HP</div>' +
+          '<div class="notif">' + ic('bell') + '<div><b>HP Finance</b>Pembayaran masuk ' + rp(s.total) + ' · ' + esc(PAY[s.pay]) + ' · ' + esc(s.name) + ' (' + esc(s.inv) + ')</div></div>' +
+          '<div class="notif">' + ic('bell') + '<div><b>HP Owner</b>Pemasukan hari ini naik menjadi ' + rp(ag.total) + ' dari ' + ag.visits + ' transaksi.</div></div>' +
+          (s.pkLink ? '<div class="notif">' + ic('bell') + '<div><b>Link sisa paket untuk pasien</b>' + esc(s.pkLink) + '<br><span class="muted">Ikut terkirim di pesan WhatsApp bersama kuitansi. Pasien membukanya tanpa login.</span></div></div>' : '') +
           '<div class="sec-title">Kuitansi</div>' + receiptHtml(rc) +
           '<div class="row"><button type="button" class="btn primary" data-act="print">Cetak kuitansi</button>' + (D.paid.waSent ? chip('good', 'Kuitansi terkirim ke WhatsApp', 'check') : '<button type="button" class="btn" data-act="wa">Kirim kuitansi ke WhatsApp pasien</button>') + '<button type="button" class="btn" data-act="next">Pasien berikutnya</button></div>';
       };
@@ -3750,13 +3723,11 @@
         if (act === 'back0') { D.step = 0; render(); return; }
         if (act === 'to-pay') { D.step = 2; render(); return; }
         if (act === 'back1') { D.step = 1; render(); return; }
-        if (act === 'snd') { D.sound = !D.sound; render(); return; }
-        if (act === 'snd-test') { var ok = chime(); speak('Pembayaran diterima. Tes suara.'); if (!ok) { toast('Suara tidak didukung di browser ini.'); } return; }
         if (act === 'paid') {
           if (booked()) { toast('Janji ini sudah dibayar. Pembayaran tidak dicatat dua kali.'); return; }
-          var inv = D.inv, text = 'Pembayaran diterima. ' + inv.name + ', ' + terbilang(inv.calc.total) + ' rupiah, lewat ' + PAY[D.pay];
+          var inv = D.inv;
           D.paid = { id: 's' + (D.sales.length + 1), time: fromMin(D.clock), name: inv.name, type: inv.type, pkg: inv.calc.pk, hv: inv.calc.hv, tind: D.tind.slice(), dx: D.dx, note: D.note, th: inv.th, fd: FD_ME, pay: D.pay, total: inv.calc.total, cat: D.cat, disc: inv.calc.pct, discRp: inv.calc.dsc, live: true, inv: inv.no, wa: D.wa };
-          D.sales.push(D.paid); D.clock += 7; D.step = 3;
+          D.sales.push(D.paid); D.clock += 7; D.step = 3; D.paid.pkLink = '';
           /* Sesi dibayar menambah kartu bonus. Paket yang dijual menjadi kuota pasien, dan sesi ini jadi pemakaian ke-1. Promo ditandai untuk owner. */
           var ppt = ptNow();
           if (!ppt) { var nwa = D.wa || ('0800-' + (1000 + S.booking.pts.length)); ppt = { n: inv.name, wa: nwa, loy: 0, pk: null, share: '' }; S.booking.pts.push(ppt); D.wa = nwa; }
@@ -3768,6 +3739,7 @@
               else { ppt.share = ''; ppt.pk = { kind: inv.calc.pk, total: pn, used: 1, people: [ppt.n], buy: { d: '17 Nov', by: FD_ME }, hist: [{ d: '17 Nov', who: ppt.n, th: inv.th }] }; }
             }
           }
+          if (ppt && ppt.pk && !inv.calc.hv && inv.calc.pk !== '1') { D.paid.pkLink = pkUrl(ppt.pk); }
           /* Penjualan di bawah harga normal (promo paket atau diskon teman owner) tercatat untuk owner, bersama front desk yang membuat invoice. */
           if ((inv.calc.promo && !inv.calc.hv && inv.calc.pk !== '1') || inv.calc.dsc) {
             var lbl = [], pr = inv.calc.promo && !inv.calc.hv && inv.calc.pk !== '1' ? inv.calc.promo.n : '';
@@ -3777,7 +3749,7 @@
           /* Pembayaran tercatat: janji di Jadwal pasien otomatis Selesai, jadi tidak bisa dilanjutkan ke pembayaran lagi. */
           if (D.bk && bkFind(D.bk)) { var bb = bkFind(D.bk); bb.st = 'DONE'; bb.cat = D.cat; bb.disc = inv.calc.pct; bb.log.push({ at: fromMin(BK_NOW), by: 'Laras', txt: 'Pembayaran diterima (' + inv.no + '), status menjadi Selesai' }); }
           render();
-          if (D.sound) { chime(); speak(text); } else { toast('Pembayaran dicatat. Suara dimatikan.'); }
+          toast('Pembayaran dicatat. Notifikasi dikirim ke HP finance dan owner.');
           return;
         }
         if (act === 'print') {
@@ -3790,7 +3762,7 @@
         if (act === 'wa') {
           var ps = D.paid;
           waModal({ title: 'Kuitansi untuk ' + ps.name, to: ps.name, wa: ps.wa || '0812-0000-0110',
-            text: 'Halo ' + ps.name + ', terima kasih sudah terapi di klinik kami. Tanda terima pembayaran ' + ps.inv + ': ' + (ps.hv ? 'Home Visit' : PKG_NAME[ps.pkg]) + ', total ' + rp(ps.total) + ' lewat ' + PAY[ps.pay] + '. Semoga lekas pulih.',
+            text: 'Halo ' + ps.name + ', terima kasih sudah terapi di klinik kami. Tanda terima pembayaran ' + ps.inv + ': ' + (ps.hv ? 'Home Visit' : PKG_NAME[ps.pkg]) + ', total ' + rp(ps.total) + ' lewat ' + PAY[ps.pay] + '.' + (ps.pkLink ? ' Cek sisa paket dan riwayat pemakaian kapan saja, tanpa login, di ' + ps.pkLink + '.' : '') + ' Semoga lekas pulih.',
             onSent: function () { ps.waSent = true; render(); toast('Tercatat: kuitansi dikirim ke WhatsApp ' + ps.name + '.'); } });
           return;
         }
@@ -4492,7 +4464,6 @@
     s.build($('#stage-host'));
   }
   function route() {
-    try { if ('speechSynthesis' in window) { window.speechSynthesis.cancel(); } } catch (e) { /* abaikan */ }
     var h = parseHash(), sc = ALL[h.id];
     START.tab = h.o.tab || '';
     if (!sc) { listPage(h.o); } else { scenePage(sc, (h.o.o === 't' || SCENES.indexOf(sc) < 0) ? 't' : 's'); }
