@@ -1,15 +1,15 @@
-// Identitas & kontak Realitech Solutions. SATU-SATUNYA tempat mengubah nomor
+// Identitas & kontak Realitech Solusi Digital. SATU-SATUNYA tempat mengubah nomor
 // WhatsApp, email, dan alamat web; semua tombol "Konsultasi" / "Minta demo"
 // membaca dari sini.
 
 export const SITE = {
-  name: "Realitech Solutions",
+  name: "Realitech Solusi Digital",
   shortName: "Realitech",
   url: "https://realitech.id",
   // Tagline umum (tidak menyebut produk) agar tetap berlaku saat produk bertambah.
-  tagline: "Solusi teknologi nyata untuk usaha Indonesia",
+  tagline: "Digitalisasi bisnis Anda. Coba gratis.",
   description:
-    "Realitech Solutions membuat aplikasi bisnis yang sederhana, siap pakai, dan dibuat untuk cara kerja usaha di Indonesia.",
+    "Realitech Solusi Digital membuat aplikasi bisnis yang sederhana, siap pakai, dan dibuat untuk cara kerja usaha di Indonesia.",
   // TODO: isi nomor WhatsApp bisnis (format 62..., tanpa + dan spasi).
   whatsapp: "6285714325506",
   // TODO: isi email bisnis.

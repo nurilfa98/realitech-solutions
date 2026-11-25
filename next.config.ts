@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
-// Web profil Realitech Solutions: semua halaman statis (tanpa database),
+// Web pemasaran dan portal produk Realitech: semua halaman statis (tanpa database),
 // jadi cukup konfigurasi Tailwind untuk Turbopack.
 const nextConfig: NextConfig = {
   turbopack: {

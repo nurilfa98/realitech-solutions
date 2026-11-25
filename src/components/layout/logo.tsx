@@ -1,4 +1,4 @@
-// Logo Realitech Solutions: huruf R geometris dengan simpul amber di ujung kaki ("R." = solusi yang tuntas).
+// Logo Realitech Solusi Digital: huruf R geometris dengan simpul amber di ujung kaki ("R." = solusi yang tuntas).
 // Warna identitas tetap (bukan token tema): navy #0B2545 = kokoh & tepercaya, amber #F5A623 = solusi yang menyala.
 // Mode gelap memakai kotak terang agar tetap terbaca. Sama dengan app/icon.svg dan public/brand/realitech-mark.svg. Lockup bertulisan ada di public/brand/realitech-logo*.svg.
 
@@ -28,7 +28,7 @@ export function Logo() {
       <LogoMark className="size-9" />
       <span className="flex flex-col gap-1 leading-none">
         <span className="text-[1.15rem] font-semibold tracking-tight">{SITE.shortName}</span>
-        <span className="text-[0.5625rem] font-medium tracking-[0.26em] text-muted-foreground uppercase">Solutions</span>
+        <span className="text-[0.5625rem] font-medium tracking-[0.26em] text-muted-foreground uppercase">Solusi Digital</span>
       </span>
     </Link>
   );

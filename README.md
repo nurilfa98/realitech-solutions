@@ -1,6 +1,6 @@
-# Realitech Solutions — realitech.id
+# Realitech Solusi Digital — realitech.id
 
-Web profil & showcase produk Realitech Solutions: **ArchiPay**
+Web pemasaran dan portal produk Realitech Solusi Digital: **ArchiPay**
 (archipay.realitech.id) dan **SakuDagang** (sakudagang.realitech.id).
 Semua halaman statis (tanpa database), dibuat dengan Next.js 16, Tailwind v4,
 dan komponen shadcn (Base UI), sama dengan kedua aplikasinya.
