@@ -3,9 +3,17 @@
 // harga, FAQ) yang urutannya bisa diatur per produk lewat `sectionOrder`.
 // Isi diambil dari content/products.ts.
 
-import { ArrowRightIcon, CheckIcon, LogInIcon, MessageCircleIcon, PlusIcon, XIcon } from "lucide-react";
+import {
+  ArrowRightIcon,
+  CheckIcon,
+  LogInIcon,
+  MessageCircleIcon,
+  PlusIcon,
+  XIcon,
+} from "lucide-react";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { PageTransition } from "@/components/page-transition";
 import { ProductMockup } from "@/components/mockups/product-mockup";
 import { ReportMockup } from "@/components/mockups/report-mockup";
 import { CtaBand } from "@/components/sections/cta-band";
@@ -14,7 +22,11 @@ import { FaqList } from "@/components/sections/faq-list";
 import { PricingTable } from "@/components/sections/pricing-table";
 import { Section, SectionHeading } from "@/components/sections/section";
 import { Button } from "@/components/ui/button";
-import { DEFAULT_SECTION_ORDER, type Product, type ProductSectionKey } from "@/content/products";
+import {
+  DEFAULT_SECTION_ORDER,
+  type Product,
+  type ProductSectionKey,
+} from "@/content/products";
 import { formatRupiah } from "@/lib/format";
 import { SITE, whatsappLink } from "@/lib/site";
 
@@ -26,7 +38,11 @@ export function productMetadata(product: Product): Metadata {
     description,
     alternates: { canonical: `/${product.slug}` },
     // Twitter/X mengambil judul, deskripsi, dan gambar dari openGraph secara otomatis.
-    openGraph: { url: `/${product.slug}`, title: `${title} | ${SITE.name}`, description },
+    openGraph: {
+      url: `/${product.slug}`,
+      title: `${title} | ${SITE.name}`,
+      description,
+    },
   };
 }
 
@@ -37,10 +53,17 @@ export function ProductPage({ product }: { product: Product }) {
     // Masalah → solusi
     problems: (
       <Section key="problems" className="bg-card">
-        <SectionHeading eyebrow="Masalah & solusi" title={`Yang berubah setelah memakai ${product.name}`} />
+        <SectionHeading
+          eyebrow="Masalah & solusi"
+          title={`Yang berubah setelah memakai ${product.name}`}
+        />
         <div className="grid gap-4 md:grid-cols-2">
           {product.problems.map((item) => (
-            <div key={item.problem} className="flex flex-col gap-4 rounded-3xl border bg-background p-6 transition-transform duration-300 ease-out motion-safe:hover:scale-[1.03] hover:shadow-lg">
+            <div
+              key={item.problem}
+             
+              className="flex flex-col gap-4 rounded-3xl border bg-background transition duration-300 hover:-translate-y-1 hover:shadow-xl p-6"
+            >
               <p className="flex gap-3 text-sm text-muted-foreground">
                 <XIcon className="mt-0.5 size-4 shrink-0 text-rose-500" />
                 {item.problem}
@@ -57,13 +80,23 @@ export function ProductPage({ product }: { product: Product }) {
 
     // Laporan (mis. PDF)
     report: product.report ? (
-      <section key="report" id="laporan" className="bg-product-soft/60 py-16 sm:py-24">
+      <section
+        key="report"
+        id="laporan"
+        className="bg-product-soft/60 py-16 sm:py-24"
+      >
         <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-4 lg:grid-cols-2">
           <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-3">
-              <p className="text-sm font-semibold text-product">{product.report.eyebrow}</p>
-              <h2 className="text-3xl font-semibold tracking-tight text-balance sm:text-4xl">{product.report.title}</h2>
-              <p className="text-base text-pretty text-muted-foreground sm:text-lg">{product.report.description}</p>
+              <p className="text-sm font-semibold text-product">
+                {product.report.eyebrow}
+              </p>
+              <h2 className="text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
+                {product.report.title}
+              </h2>
+              <p className="text-base text-pretty text-muted-foreground sm:text-lg">
+                {product.report.description}
+              </p>
             </div>
             <ul className="flex flex-col gap-4">
               {product.report.contents.map((item) => (
@@ -71,7 +104,9 @@ export function ProductPage({ product }: { product: Product }) {
                   <CheckIcon className="mt-1 size-4 shrink-0 text-product" />
                   <p className="text-sm">
                     <span className="font-semibold">{item.title}.</span>{" "}
-                    <span className="text-muted-foreground">{item.description}</span>
+                    <span className="text-muted-foreground">
+                      {item.description}
+                    </span>
                   </p>
                 </li>
               ))}
@@ -85,15 +120,24 @@ export function ProductPage({ product }: { product: Product }) {
     // Fitur
     features: (
       <Section key="features" id="fitur">
-        <SectionHeading eyebrow="Fitur" title="Hanya yang Anda butuhkan, langsung ke intinya" />
+        <SectionHeading
+          eyebrow="Fitur"
+          title="Hanya yang Anda butuhkan, langsung ke intinya"
+        />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {product.features.map((feature) => (
-            <div key={feature.title} className="flex flex-col gap-3 rounded-3xl border bg-card p-6 transition-transform duration-300 ease-out motion-safe:hover:scale-[1.03] hover:shadow-lg">
+            <div
+              key={feature.title}
+             
+              className="flex flex-col gap-3 rounded-3xl border bg-card transition duration-300 hover:-translate-y-1 hover:shadow-xl p-6"
+            >
               <div className="flex size-10 items-center justify-center rounded-lg bg-product-soft text-product">
                 <feature.icon className="size-5" />
               </div>
               <p className="font-semibold">{feature.title}</p>
-              <p className="text-sm text-muted-foreground">{feature.description}</p>
+              <p className="text-sm text-muted-foreground">
+                {feature.description}
+              </p>
             </div>
           ))}
         </div>
@@ -105,17 +149,29 @@ export function ProductPage({ product }: { product: Product }) {
       <Section key="usecases" id="cocok-untuk" className="bg-product-soft/60">
         <SectionHeading
           eyebrow="Cocok untuk"
-          title={product.useCasesIntro?.title ?? `Apakah ${product.name} cocok untuk usaha Anda?`}
+          title={
+            product.useCasesIntro?.title ??
+            `Apakah ${product.name} cocok untuk usaha Anda?`
+          }
           description={product.useCasesIntro?.description}
         />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {product.useCases.map((item) => (
-            <div key={item.title} className="flex flex-col gap-3 rounded-3xl border bg-card p-6 transition-transform duration-300 ease-out motion-safe:hover:scale-[1.03] hover:shadow-lg">
+            <div
+              key={item.title}
+             
+              className="flex flex-col gap-3 rounded-3xl border bg-card transition duration-300 hover:-translate-y-1 hover:shadow-xl p-6"
+            >
               <p className="font-semibold">{item.title}</p>
-              <p className="text-sm text-muted-foreground">{item.description}</p>
+              <p className="text-sm text-muted-foreground">
+                {item.description}
+              </p>
               <ul className="mt-auto flex flex-wrap gap-1.5 pt-1">
                 {item.examples.map((example) => (
-                  <li key={example} className="rounded-full bg-product-soft px-2.5 py-0.5 text-xs text-product">
+                  <li
+                    key={example}
+                    className="rounded-full bg-product-soft px-2.5 py-0.5 text-xs text-product"
+                  >
                     {example}
                   </li>
                 ))}
@@ -130,14 +186,20 @@ export function ProductPage({ product }: { product: Product }) {
     steps: (
       <Section key="steps" className="bg-card">
         <SectionHeading eyebrow="Alur kerja" title="Begini cara kerjanya" />
-        <ol className="grid gap-4 sm:grid-cols-2 lg:grid-flow-col lg:auto-cols-fr lg:grid-cols-none">
+        <ol className="grid gap-4 sm:grid-cols-2 lg:auto-cols-fr lg:grid-flow-col lg:grid-cols-none">
           {product.steps.map((step, index) => (
-            <li key={step.title} className="relative flex flex-col gap-2 rounded-3xl border bg-background p-6 transition-transform duration-300 ease-out motion-safe:hover:scale-[1.03] hover:shadow-lg">
+            <li
+              key={step.title}
+             
+              className="relative flex flex-col gap-2 rounded-3xl border bg-background transition duration-300 hover:-translate-y-1 hover:shadow-xl p-6"
+            >
               <span className="flex size-8 items-center justify-center rounded-full bg-product text-sm font-semibold text-product-foreground">
                 {index + 1}
               </span>
               <p className="font-semibold">{step.title}</p>
-              <p className="text-sm text-muted-foreground">{step.description}</p>
+              <p className="text-sm text-muted-foreground">
+                {step.description}
+              </p>
               {index < product.steps.length - 1 && (
                 <ArrowRightIcon
                   aria-hidden="true"
@@ -159,21 +221,32 @@ export function ProductPage({ product }: { product: Product }) {
           description={
             product.pricing
               ? `Gratis ${product.trialDays} hari dengan semua fitur. Setelah itu ${formatRupiah(product.pricing.basePrice)}/bulan untuk ${product.pricing.includedUsers} pengguna${product.pricing.normalBasePrice ? ` (harga normal ${formatRupiah(product.pricing.normalBasePrice)} berlaku untuk klien baru)` : ""}, makin hemat untuk paket 6 bulan dan 1 tahun.`
-              : (product.pricingIntro ?? "Harga total per periode. Makin panjang periodenya, makin hemat.")
+              : (product.pricingIntro ??
+                "Harga total per periode. Makin panjang periodenya, makin hemat.")
           }
         />
         <PricingTable product={product} />
         {product.addons && (
           <div className="mt-14 flex flex-col gap-6">
             <div className="mx-auto flex max-w-2xl flex-col gap-2 text-center">
-              <h3 className="text-xl font-semibold tracking-tight text-balance sm:text-2xl">{product.addons.title}</h3>
-              <p className="text-sm text-pretty text-muted-foreground sm:text-base">{product.addons.description}</p>
+              <h3 className="text-xl font-semibold tracking-tight text-balance sm:text-2xl">
+                {product.addons.title}
+              </h3>
+              <p className="text-sm text-pretty text-muted-foreground sm:text-base">
+                {product.addons.description}
+              </p>
             </div>
             <div className="mx-auto grid w-full max-w-3xl gap-4 md:grid-cols-2">
               {product.addons.items.map((addon) => {
-                const price = product.pricing?.addons.find((item) => item.name === addon.name)?.pricePerUserMonth;
+                const price = product.pricing?.addons.find(
+                  (item) => item.name === addon.name,
+                )?.pricePerUserMonth;
                 return (
-                  <div key={addon.name} className="flex flex-col gap-3 rounded-3xl border bg-card p-6">
+                  <div
+                    key={addon.name}
+                   
+                    className="flex flex-col gap-3 rounded-3xl border bg-card p-6"
+                  >
                     <div className="flex items-start justify-between gap-3">
                       <p className="flex items-center gap-2 font-semibold">
                         <PlusIcon className="size-4 text-product" />
@@ -185,7 +258,9 @@ export function ProductPage({ product }: { product: Product }) {
                         </span>
                       )}
                     </div>
-                    <p className="text-sm text-muted-foreground">{addon.description}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {addon.description}
+                    </p>
                     <ul className="flex flex-col gap-1.5 text-sm">
                       {addon.points.map((point) => (
                         <li key={point} className="flex gap-2">
@@ -215,65 +290,96 @@ export function ProductPage({ product }: { product: Product }) {
   const order = product.sectionOrder ?? DEFAULT_SECTION_ORDER;
 
   return (
-    <div className={`product-${product.slug}`}>
-      <JsonLd product={product} />
+    <PageTransition>
+      <div className={`product-${product.slug}`}>
+        <JsonLd product={product} />
 
-      {/* Hero (selalu paling atas) */}
-      <section className="relative overflow-hidden">
-        <HeroBackdrop glow="bg-product/15" />
-        <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-4 pt-14 pb-16 animate-in fade-in slide-in-from-bottom-3 duration-700 sm:pt-20 lg:grid-cols-2">
-          <div className="flex flex-col gap-6">
-            <p className="w-fit rounded-full border bg-background/80 px-3.5 py-1.5 text-xs font-medium shadow-sm backdrop-blur">
-              <span className="text-product">{product.name}</span>
-              <span className="text-muted-foreground"> · {product.tagline}</span>
-            </p>
-            <h1 className="text-[2.1rem] leading-[1.12] font-semibold tracking-tight text-balance sm:text-5xl sm:leading-[1.1]">{product.hero.title}</h1>
-            <p className="text-lg text-pretty text-muted-foreground">{product.hero.description}</p>
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <Button
-                size="xl"
-                variant="product"
-                nativeButton={false}
-                render={<a href={whatsappLink(demoMessage)} target="_blank" rel="noopener noreferrer" />}
-              >
-                <MessageCircleIcon />
-                Coba gratis {product.trialDays} hari
-              </Button>
-              <Button size="xl" variant="outline" nativeButton={false} render={<a href={product.appUrl} target="_blank" rel="noopener noreferrer" />}>
-                <LogInIcon />
-                Masuk
-              </Button>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {product.audiences.map((audience) => (
-                <span key={audience} className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
-                  {audience}
+        {/* Hero (selalu paling atas) */}
+        <section className="relative overflow-hidden">
+          <HeroBackdrop glow="bg-product/15" />
+          <div className="mx-auto grid max-w-6xl animate-in grid-cols-1 items-center gap-12 px-4 pt-14 pb-16 duration-700 fade-in slide-in-from-bottom-3 sm:pt-20 lg:grid-cols-2">
+            <div className="flex flex-col gap-6">
+              <p className="w-fit rounded-full border bg-background/80 px-3.5 py-1.5 text-xs font-medium shadow-sm backdrop-blur">
+                <span className="text-product">{product.name}</span>
+                <span className="text-muted-foreground">
+                  {" "}
+                  · {product.tagline}
                 </span>
-              ))}
+              </p>
+              <h1 className="text-[2.1rem] leading-[1.12] font-semibold tracking-tight text-balance sm:text-5xl sm:leading-[1.1]">
+                {product.hero.title}
+              </h1>
+              <p className="text-lg text-pretty text-muted-foreground">
+                {product.hero.description}
+              </p>
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <Button
+                  size="xl"
+                  variant="product"
+                  nativeButton={false}
+                  render={
+                    <a
+                      href={whatsappLink(demoMessage)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    />
+                  }
+                >
+                  <MessageCircleIcon />
+                  Coba gratis {product.trialDays} hari
+                </Button>
+                <Button
+                  size="xl"
+                  variant="outline"
+                  nativeButton={false}
+                  render={
+                    <a
+                      href={product.appUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    />
+                  }
+                >
+                  <LogInIcon />
+                  Masuk
+                </Button>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {product.audiences.map((audience) => (
+                  <span
+                    key={audience}
+                    className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground"
+                  >
+                    {audience}
+                  </span>
+                ))}
+              </div>
             </div>
+            <ProductMockup slug={product.slug} className="mx-2 mb-10 sm:mx-8" />
           </div>
-          <ProductMockup slug={product.slug} className="mx-2 mb-10 sm:mx-8" />
+        </section>
+
+        {/* Seksi sesuai urutan per produk */}
+        {order.map((key) => sections[key])}
+
+        <div className="pt-16 sm:pt-24">
+          <CtaBand
+            title={`Siap mencoba ${product.name}?`}
+            description={`Gratis ${product.trialDays} hari. Kami bantu menyiapkan akun sampai tim Anda siap memakai.`}
+            whatsappMessage={demoMessage}
+            emailSubject={`Ingin mencoba ${product.name}`}
+          />
         </div>
-      </section>
-
-      {/* Seksi sesuai urutan per produk */}
-      {order.map((key) => sections[key])}
-
-      <div className="pt-16 sm:pt-24">
-        <CtaBand
-          title={`Siap mencoba ${product.name}?`}
-          description={`Gratis ${product.trialDays} hari. Kami bantu menyiapkan akun sampai tim Anda siap memakai.`}
-          whatsappMessage={demoMessage}
-          emailSubject={`Ingin mencoba ${product.name}`}
-        />
       </div>
-    </div>
+    </PageTransition>
   );
 }
 
 // Data terstruktur schema.org SoftwareApplication. Harga hanya ikut bila sudah diisi.
 function JsonLd({ product }: { product: Product }) {
-  const prices = product.plans.flatMap((plan) => (plan.price === null ? [] : [plan.price]));
+  const prices = product.plans.flatMap((plan) =>
+    plan.price === null ? [] : [plan.price],
+  );
   const data = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
@@ -295,5 +401,10 @@ function JsonLd({ product }: { product: Product }) {
       },
     }),
   };
-  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }} />;
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+    />
+  );
 }

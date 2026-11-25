@@ -27,7 +27,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   // Dipakai untuk mengubah URL relatif (gambar OG, canonical) menjadi absolut.
   metadataBase: new URL(SITE.url),
-  title: { default: `${SITE.name} | ${SITE.tagline}`, template: `%s | ${SITE.name}` },
+  title: {
+    default: `${SITE.name} | ${SITE.tagline}`,
+    template: `%s | ${SITE.name}`,
+  },
   description: SITE.description,
   applicationName: SITE.name,
   alternates: { canonical: "/" },
@@ -46,6 +49,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="id"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      // Next.js 16 tidak lagi mematikan scroll-smooth saat pindah halaman kecuali diminta
+      // lewat atribut ini. Tanpanya, halaman baru terlihat "menggulung" ke atas dengan
+      // animasi dan seperti masih terbawa tampilan sebelumnya.
+      data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
       <body className="flex min-h-full flex-col">

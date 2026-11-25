@@ -170,3 +170,60 @@
     block-size: auto;
   }
 }
+
+/* ---------------------------------------------------------------------
+   Gerak halaman
+   --------------------------------------------------------------------- */
+
+/* Pindah halaman (View Transitions): isi lama memudar cepat, isi baru naik halus
+   setelah itu. Header tidak ikut bergerak. */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(.page-out) {
+    animation: 0.15s ease-in both page-fade-out;
+  }
+  ::view-transition-new(.page-in) {
+    animation:
+      0.35s ease-out 0.12s both page-fade-in,
+      0.5s cubic-bezier(0.2, 0.7, 0.2, 1) 0.12s both page-rise;
+  }
+  @keyframes page-fade-out {
+    to {
+      opacity: 0;
+    }
+  }
+  @keyframes page-fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes page-rise {
+    from {
+      translate: 0 1.25rem;
+    }
+  }
+}
+
+::view-transition-group(site-header) {
+  animation: none;
+  z-index: 100;
+}
+::view-transition-old(site-header) {
+  display: none;
+}
+::view-transition-new(site-header) {
+  animation: none;
+}
+
+/* Klik saat animasi berjalan tetap sampai ke halaman. */
+::view-transition {
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}

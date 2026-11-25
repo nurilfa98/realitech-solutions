@@ -14,7 +14,7 @@ const CONSULT_MESSAGE = "Halo Realitech, saya ingin konsultasi kebutuhan aplikas
 
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-md supports-backdrop-filter:bg-background/70">
+    <header style={{ viewTransitionName: "site-header" }} className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-md supports-backdrop-filter:bg-background/70">
       <div className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-4">
         <Logo />
         <nav aria-label="Menu utama" className="ml-4 hidden items-center gap-1 md:flex">

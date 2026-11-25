@@ -5,6 +5,7 @@
 import {
   ArrowRightIcon,
   CheckIcon,
+  ChevronDownIcon,
   HeadsetIcon,
   MessageCircleIcon,
   ReceiptTextIcon,
@@ -16,6 +17,7 @@ import {
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ProductMockup } from "@/components/mockups/product-mockup";
+import { PageTransition } from "@/components/page-transition";
 import { ProductLogo } from "@/components/product-logo";
 import { CtaBand } from "@/components/sections/cta-band";
 import { FaqList } from "@/components/sections/faq-list";
@@ -104,20 +106,23 @@ const FAQ = [
   },
 ];
 
+// Animasi masuk hero: tiap baris muncul bergantian (jeda lewat style animationDelay).
+const HERO_ENTER = "animate-in fade-in slide-in-from-bottom-3 duration-700 fill-mode-backwards";
+
 export default function HomePage() {
   return (
-    <>
+    <PageTransition>
       <JsonLd />
 
       {/* Hero */}
-      <section className="relative overflow-hidden">
+      <section className="relative flex min-h-[calc(100svh-4.0625rem)] items-center overflow-hidden">
         <HeroBackdrop />
-        <div className="mx-auto flex max-w-6xl flex-col items-center gap-7 px-4 pt-16 pb-14 text-center animate-in fade-in slide-in-from-bottom-3 duration-700 sm:pt-24 sm:pb-20">
-          <p className="flex items-center gap-2 rounded-full border bg-background/80 px-3.5 py-1.5 text-xs font-medium text-muted-foreground shadow-sm backdrop-blur">
+        <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-7 px-4 pt-10 pb-28 text-center sm:pt-12 sm:pb-40">
+          <p className={`${HERO_ENTER} flex items-center gap-2 rounded-full border bg-background/80 px-3.5 py-1.5 text-xs font-medium text-muted-foreground shadow-sm backdrop-blur`}>
             <span aria-hidden="true" className="size-1.5 rounded-full bg-brand-accent" />
             Aplikasi bisnis buatan Indonesia
           </p>
-          <h1 className="max-w-3xl text-[2.5rem] leading-[1.1] font-semibold tracking-tight text-balance sm:text-6xl sm:leading-[1.08]">
+          <h1 style={{ animationDelay: "100ms" }} className={`${HERO_ENTER} max-w-3xl text-[2.5rem] leading-[1.1] font-semibold tracking-tight text-balance sm:text-6xl sm:leading-[1.08]`}>
             Solusi teknologi{" "}
             <span className="relative isolate inline-block">
               <span className="relative z-10">nyata</span>
@@ -125,11 +130,11 @@ export default function HomePage() {
             </span>{" "}
             untuk usaha Anda
           </h1>
-          <p className="max-w-xl text-base text-pretty text-muted-foreground sm:text-lg">
+          <p style={{ animationDelay: "200ms" }} className={`${HERO_ENTER} max-w-xl text-base text-pretty text-muted-foreground sm:text-lg`}>
             {SITE.name} membuat aplikasi bisnis yang sederhana, siap pakai, dan dibuat untuk cara kerja usaha di
             Indonesia.
           </p>
-          <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+          <div style={{ animationDelay: "300ms" }} className={`${HERO_ENTER} flex w-full flex-col gap-3 sm:w-auto sm:flex-row`}>
             <Button
               size="xl"
               nativeButton={false}
@@ -143,7 +148,7 @@ export default function HomePage() {
               <ArrowRightIcon />
             </Button>
           </div>
-          <ul className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
+          <ul style={{ animationDelay: "400ms" }} className={`${HERO_ENTER} flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm text-muted-foreground`}>
             {["Coba gratis", "Dibantu setup", "Berbentuk PWA, pasang di layar HP"].map((item) => (
               <li key={item} className="flex items-center gap-1.5">
                 <CheckIcon className="size-4 text-brand" />
@@ -152,6 +157,14 @@ export default function HomePage() {
             ))}
           </ul>
         </div>
+        <a
+          href="#produk"
+          aria-label="Gulir ke bagian produk"
+          style={{ animationDelay: "700ms" }}
+          className={`${HERO_ENTER} absolute bottom-6 left-1/2 hidden size-10 -translate-x-1/2 items-center justify-center rounded-full border bg-background/70 text-muted-foreground shadow-sm backdrop-blur transition-colors hover:text-foreground sm:flex`}
+        >
+          <ChevronDownIcon className="size-5 motion-safe:animate-bounce" />
+        </a>
       </section>
 
       {/* Produk */}
@@ -165,6 +178,7 @@ export default function HomePage() {
           {PRODUCTS.map((product) => (
             <article
               key={product.slug}
+             
               className={`product-${product.slug} group flex flex-col overflow-hidden rounded-3xl border bg-card shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl`}
             >
               <div className="relative h-64 overflow-hidden bg-product-soft/70 px-5 pt-8 sm:px-8">
@@ -211,7 +225,7 @@ export default function HomePage() {
         />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {STRENGTHS.map((item) => (
-            <div key={item.title} className="flex flex-col gap-3 rounded-3xl border bg-background p-6 transition-transform duration-300 ease-out motion-safe:hover:scale-[1.03] hover:shadow-lg">
+            <div key={item.title} className="flex flex-col gap-3 rounded-3xl border bg-background transition duration-300 hover:-translate-y-1 hover:shadow-xl p-6">
               <div className="flex size-11 items-center justify-center rounded-2xl bg-brand-soft text-brand">
                 <item.icon className="size-5" />
               </div>
@@ -227,7 +241,7 @@ export default function HomePage() {
         <SectionHeading eyebrow="Cara mulai" title="Mulai dalam empat langkah" description="Dari konsultasi sampai dipakai tim Anda." />
         <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {STEPS.map((step, index) => (
-            <li key={step.title} className="flex flex-col gap-3 rounded-3xl border bg-card p-6 transition-transform duration-300 ease-out motion-safe:hover:scale-[1.03] hover:shadow-lg">
+            <li key={step.title} className="flex flex-col gap-3 rounded-3xl border bg-card transition duration-300 hover:-translate-y-1 hover:shadow-xl p-6">
               <span className="flex size-9 items-center justify-center rounded-full bg-brand text-sm font-semibold text-brand-foreground">
                 {index + 1}
               </span>
@@ -252,7 +266,7 @@ export default function HomePage() {
           emailSubject="Konsultasi aplikasi untuk usaha saya"
         />
       </div>
-    </>
+    </PageTransition>
   );
 }
 
